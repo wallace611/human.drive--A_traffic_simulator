@@ -5,10 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7ec58115-9cd6-4f8f-9386-46447ab19eb4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/com/HDEngine/Object/HDObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/HDEngine/Object/Dynamic/DynamicObj.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/HDEngine/Object/Static/StaticObj.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/HDEngine/Test.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/HDEngine/Utilities/Vector2D.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/JDGnvd/Editor/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Editor/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/JDGnvd/Simulator/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/human_drive.iml" beforeDir="false" afterPath="$PROJECT_DIR$/human_drive.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Editor/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Editor/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Object/HDObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Object/HDObject.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,22 +39,48 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/urmom/IdeaProjects/human.drive--A_traffic_simulator&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/我/IdeaProjects/human_drive/src/Main.java&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Test.executor": "Run",
+    "Downloaded.Files.Path.Enabled": "false",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "E:/human.drive--A_traffic_simulator",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "onboarding.tips.debug.path": "C:/Users/我/IdeaProjects/human_drive/src/Main.java",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
+  <component name="RunManager">
+    <configuration name="Test" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.HDEngine.Test" />
+      <module name="human_drive" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.HDEngine.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Test" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -71,6 +102,7 @@
       <workItem from="1713347433162" duration="2877000" />
       <workItem from="1713431688168" duration="999000" />
       <workItem from="1713442758081" duration="643000" />
+      <workItem from="1713591911185" duration="4845000" />
     </task>
     <servers />
   </component>
