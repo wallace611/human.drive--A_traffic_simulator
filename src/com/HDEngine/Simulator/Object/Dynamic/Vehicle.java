@@ -1,6 +1,8 @@
-package com.HDEngine.Object.Dynamic;
+package com.HDEngine.Simulator.Object.Dynamic;
 
-public class Vehicle extends DynamicObj{
+import com.HDEngine.Simulator.Object.HDObject;
+
+public class Vehicle extends HDObject {
     private double maxSpeed;
     private double acceleration;
     private double reactionDelay;
