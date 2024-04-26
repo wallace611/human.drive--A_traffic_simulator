@@ -1,4 +1,4 @@
-package com.HDEngine.Simulator.Object;
+package com.HDEngine.Simulator.Objects;
 
 import com.HDEngine.Utilities.*;
 
