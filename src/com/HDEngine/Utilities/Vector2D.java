@@ -1,5 +1,8 @@
 package com.HDEngine.Utilities;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+
 import static java.lang.Math.*;
 
 public class Vector2D {
@@ -63,6 +66,18 @@ public class Vector2D {
         return new Vector2D(x + others.x, y + others.y);
     }
 
+    public static int compare(Vector2D v1, Vector2D v2) {
+        int xCmp = Double.compare(v1.x, v2.x);
+        if (xCmp == 0) {
+            return Double.compare(v1.y, v2.y);
+        }
+        return xCmp;
+    }
+
+    public static void sort(Vector2D[] vecArr) {
+        Arrays.sort(vecArr, Vector2D::compare);
+    }
+
     public void addOn(Vector2D others) {
         if (others == null) throw new NullPointerException();
         x += others.x;
@@ -96,6 +111,11 @@ public class Vector2D {
     public void divideBy(double n) {
         x /= n;
         y /= n;
+    }
+
+    public double dot(Vector2D others) {
+        if (others == null) throw new NullPointerException();
+        return this.x * others.x + this.y * others.y;
     }
 
 }

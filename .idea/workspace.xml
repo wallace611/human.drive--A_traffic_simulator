@@ -5,12 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7ec58115-9cd6-4f8f-9386-46447ab19eb4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Components/CollisionArea.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2024_4_19__02_23__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2024_4_19__02_23__Changes_.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2024_4_19_下午_02_23_[Changes]/shelved.patch" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Object/Dynamic/Vehicle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Objects/Dynamic/Vehicle.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Object/HDObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Objects/HDObject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Object/Static/RoadChunk.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Objects/Static/RoadChunk.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Components/CollisionArea.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Components/CollisionArea.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Test.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Test.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Utilities/Vector2D.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Utilities/Vector2D.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,7 +47,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Application.Simulator.executor": "Debug",
-    "Application.Test.executor": "Run",
+    "Application.Test.executor": "Debug",
     "Downloaded.Files.Path.Enabled": "false",
     "Repository.Attach.Annotations": "false",
     "Repository.Attach.JavaDocs": "false",
@@ -127,6 +127,7 @@
       <workItem from="1713938500687" duration="1962000" />
       <workItem from="1714035310960" duration="5241000" />
       <workItem from="1714103144084" duration="4409000" />
+      <workItem from="1714457017804" duration="6438000" />
     </task>
     <servers />
   </component>
