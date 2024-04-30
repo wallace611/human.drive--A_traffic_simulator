@@ -1,6 +1,6 @@
-package com.HDEngine.Simulator.Object.Dynamic;
+package com.HDEngine.Simulator.Objects.Dynamic;
 
-import com.HDEngine.Simulator.Object.HDObject;
+import com.HDEngine.Simulator.Objects.HDObject;
 
 public class Vehicle extends HDObject {
     private double maxSpeed;
