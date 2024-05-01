@@ -45,7 +45,7 @@ public class CollisionArea {
     }
 
     private static Vector2D[] getNormals(Vector2D[]... rects) {
-        Vector2D[] normals = new Vector2D[rects.length * 4];
+        Vector2D[] normals = new Vector2D[rects.length << 2];
         int ind = 0;
         for (Vector2D[] rect : rects) {
             for (int i = 0; i < rect.length; i++) {

@@ -3,8 +3,8 @@ package com.HDEngine.Simulator.Objects;
 import com.HDEngine.Utilities.*;
 
 public class HDObject {
-    private Vector2D location;
-    private double rotation;
+    protected Vector2D location;
+    protected double rotation;
 
     public HDObject() {
         location = new Vector2D();
@@ -17,5 +17,21 @@ public class HDObject {
 
     public void tick(double deltaTime) {
 
+    }
+
+    public Vector2D getLocation() {
+        return location;
+    }
+
+    public void setLocation(Vector2D location) {
+        this.location = location;
+    }
+
+    public double getRotation() {
+        return rotation;
+    }
+
+    public void setRotation(double rotation) {
+        this.rotation = rotation;
     }
 }

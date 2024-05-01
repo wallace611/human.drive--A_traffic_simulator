@@ -1,18 +1,58 @@
 package com.HDEngine;
 
-import com.HDEngine.Simulator.Components.CollisionArea;
-import com.HDEngine.Utilities.Vector2D;
+import com.HDEngine.Simulator.Objects.Dynamic.Vehicle;
+import com.HDEngine.Utilities.InputManager;
+
+import javax.swing.*;
 
 public class Test {
-    public static void main(String[] args) {
-        CollisionArea c = new CollisionArea(new Vector2D(0, 0), 0, new Vector2D(1, 1));
-        CollisionArea d = new CollisionArea(new Vector2D(2.2, 1), 270, new Vector2D(1, 2));
-        System.out.println(CollisionArea.areOverlapping(c.getVertex(), d.getVertex()));
-        for (Vector2D v : c.getVertex()) {
-            System.out.println(v);
-        }
-        for (Vector2D v : d.getVertex()) {
-            System.out.println(v);
+    JFrame frame;
+    InputManager input;
+    JLabel label1;
+    JLabel label2;
+
+    public static void main(String[] args) throws InterruptedException {
+        Test a = new Test();
+        a.run();
+    }
+
+    public Test() {
+        frame = new JFrame("AWTDemo");
+        frame.setSize(1000, 1000);
+        frame.setLocation(0, 0);
+        input = new InputManager();
+        frame.addKeyListener(input);
+        frame.setVisible(true);
+        label2 = new JLabel("good");
+        label2.setLocation(0, 0);
+        frame.add(label2);
+    }
+
+    public void run() throws InterruptedException {
+        Vehicle a = new Vehicle(100, 10, 10, 10);
+        while (true) {
+            Thread.sleep(5);
+            System.out.println(a.getLocation());
+
+            int count = 0;
+            for (boolean b : input.getPressedKey()) {
+                if (b) count += 1;
+            }
+            a.setCurrentState(count);
+            switch (count) {
+                case 0, 1, 2:
+                    a.setCurrentState(count);
+                    break;
+                case 3:
+                    a.setRotation(a.getRotation() + 1.0f);
+                    break;
+                case 4:
+                    a.setRotation(a.getRotation() - 1.0f);
+                    break;
+            }
+            System.out.println(a.getCurrentState());
+            a.tick(0.005);
+            label2.setLocation((int) a.getLocation().x, (int) a.getLocation().y);
         }
     }
 }

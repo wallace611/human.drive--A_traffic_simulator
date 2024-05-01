@@ -118,4 +118,12 @@ public class Vector2D {
         return this.x * others.x + this.y * others.y;
     }
 
+    public static Vector2D polarToCartesian(double r, double theta) {
+        return new Vector2D(r * cos(theta), r * sin(theta));
+    }
+
+    public static Vector2D dPolarToCartesian(double r, double dTheta) {
+        dTheta = toRadians(dTheta);
+        return new Vector2D(r * cos(dTheta), r * sin(dTheta));
+    }
 }
