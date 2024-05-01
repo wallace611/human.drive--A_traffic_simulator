@@ -5,15 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7ec58115-9cd6-4f8f-9386-46447ab19eb4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Objects/World.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/com/HDEngine/Utilities/InputManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2024_4_19__02_23__Changes_.xml" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Components/Navigator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Components/CollisionArea.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Components/CollisionArea.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Objects/Dynamic/Vehicle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Objects/Dynamic/Vehicle.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Objects/HDObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Objects/HDObject.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Test.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Test.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Utilities/Vector2D.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Utilities/Vector2D.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -133,6 +128,9 @@
       <workItem from="1714457017804" duration="6438000" />
       <workItem from="1714489481740" duration="6545000" />
       <workItem from="1714534618291" duration="3721000" />
+      <workItem from="1714541147389" duration="352000" />
+      <workItem from="1714543875197" duration="3827000" />
+      <workItem from="1714549886229" duration="2492000" />
     </task>
     <servers />
   </component>

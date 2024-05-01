@@ -5,27 +5,37 @@ import com.HDEngine.Simulator.Objects.HDObject;
 import com.HDEngine.Utilities.Vector2D;
 
 public class Vehicle extends HDObject {
-    private enum State {
-        IDLE, ACCELERATE, BREAK;
+    protected enum ForwardState {
+        IDLE, ACCELERATE, BREAK
+    }
+    protected enum TurningState {
+        IDLE, LEFT, RIGHT
     }
 
-    private double currentSpeed;
-    private final double maxSpeed;
-    private final double acceleration;
-    private final double deceleration;
-    private final double reactionDelay;
+    protected double currentSpeed; // x meters per second
+    protected final double maxSpeed;
+    protected final double maxTurningRate; // x degrees per second
+    protected final double acceleration; // x meters per second^2
+    protected final double deceleration;
+    protected final int reactionDelay;
+    protected Vector2D targetLocation;
 
-    private CollisionArea collision;
+    protected CollisionArea collision;
 
-    State currentState;
+    protected ForwardState currentForwardState;
+    protected TurningState currentTurningState;
 
-    public Vehicle(double maxSpeed, double acceleration, double deceleration, double reactionDelay) {
+    public Vehicle(double maxSpeed, double maxTurningRate, double acceleration, double deceleration, int reactionDelay) {
         this.currentSpeed = 0.0f;
         this.maxSpeed = maxSpeed;
+        this.maxTurningRate = maxTurningRate;
         this.acceleration = acceleration;
         this.deceleration = deceleration;
         this.reactionDelay = reactionDelay;
-        currentState = State.ACCELERATE;
+        collision = new CollisionArea(new Vector2D(), 0.0f, new Vector2D(5, 5));
+        targetLocation = null;
+        currentForwardState = ForwardState.ACCELERATE;
+        currentTurningState = TurningState.IDLE;
     }
 
     @Override
@@ -36,7 +46,12 @@ public class Vehicle extends HDObject {
     @Override
     public void tick(double deltaTime) {
         super.tick(deltaTime);
-        switch (currentState) {
+
+        move(deltaTime);
+    }
+
+    private void move(double deltaTime) {
+        switch (currentForwardState) {
             case ACCELERATE:
                 currentSpeed += acceleration * deltaTime;
                 if (currentSpeed > maxSpeed) {
@@ -52,12 +67,26 @@ public class Vehicle extends HDObject {
                 break;
 
             case IDLE:
-
                 break;
         }
-        location.addOn(Vector2D.dPolarToCartesian(currentSpeed * deltaTime, (rotation)));
+        switch (currentTurningState) {
+            case LEFT:
+                rotation -= maxTurningRate * deltaTime;
+                break;
+
+            case RIGHT:
+                rotation += maxTurningRate * deltaTime;
+                break;
+
+            case IDLE:
+                break;
+        }
+        location.addOn(Vector2D.dPolarToCartesian(currentSpeed * deltaTime, rotation));
     }
 
+    private void setActions() {
+
+    }
 
     public double getCurrentSpeed() {
         return currentSpeed;
@@ -83,26 +112,45 @@ public class Vehicle extends HDObject {
         return collision;
     }
 
-    public String getCurrentState() {
-        return switch (currentState) {
+    public Vector2D getTargetLocation() {
+        return targetLocation;
+    }
+
+    public void setTargetLocation(Vector2D targetLocation) {
+        this.targetLocation = targetLocation;
+    }
+
+    public String getCurrentForwardState() {
+        return switch (currentForwardState) {
             case IDLE -> "IDLE";
             case ACCELERATE -> "ACCELERATE";
             case BREAK -> "BREAK";
         };
     }
 
-    public void setCurrentState(int state) {
-        switch (state) {
-            case 0:
-                currentState = State.IDLE;
-                break;
+    public void setCurrentForwardState(int state) {
+        currentForwardState = switch (state) {
+            case 0 -> ForwardState.IDLE;
+            case 1 -> ForwardState.ACCELERATE;
+            case 2 -> ForwardState.BREAK;
+            default -> throw new IllegalStateException("Unexpected value: " + state);
+        };
+    }
 
-            case 1:
-                currentState = State.ACCELERATE;
-                break;
+    public String getCurrentTurningState() {
+        return switch (currentTurningState) {
+            case IDLE -> "IDLE";
+            case LEFT -> "LEFT";
+            case RIGHT -> "RIGHT";
+        };
+    }
 
-            case 2:
-                currentState = State.BREAK;
-        }
+    public void setCurrentTurningState(int state) {
+        this.currentTurningState = switch (state) {
+            case 0 -> TurningState.IDLE;
+            case 1 -> TurningState.LEFT;
+            case 2 -> TurningState.RIGHT;
+            default -> throw new IllegalStateException("Unexpected value: " + state);
+        };
     }
 }
