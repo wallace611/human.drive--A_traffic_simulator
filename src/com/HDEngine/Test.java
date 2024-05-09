@@ -1,5 +1,4 @@
 package com.HDEngine;
-import com.HDEngine.*;
 import com.HDEngine.Utilities.Vector2D;
 
 public class Test {
