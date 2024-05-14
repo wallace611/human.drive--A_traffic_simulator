@@ -1,115 +1,163 @@
 package com.HDEngine.Editor.Object.Road;
 
-import java.util.Arrays;
+import java.util.Scanner;
 
 public class EditorRoadChunk 
 {
-    private final byte intersection;//using bit refence to record where is the road going
-    private final double speed_limit;
-    private final int ID;//to seperate differe road chunk
-    private int[] weights =  new int[8];//recording the weight of different road
+    private byte intersection;//using bit refence to record where is the road going
+    private boolean traffic_light_flag;//have or dont have traffic light
+    private double traffic_light_timer;//timer of traffic light(this part should follow group, still working on it)
+    private byte traffic_light_position;//where is the traffic light
+    private int traffic_light_group;// the group
+    private double speed_limit;//the speed limit (if = -1 then there is no speed limit on this chunk)
+    private int ID_X;//to seperate differe road chunk
+    private int ID_Y;
+    private boolean start_flag;//is this the start point
+    private double weights;//recording the weight of different road
     private int[] connection = new int[8];//to record where is the road going (if data==null -> no)(if data == someone's ID  ==  the road is connected)(1 is on the right hand side, clockwise)
-    
+    Scanner input = new Scanner(System.in);
 
-    public EditorRoadChunk(byte intersection,int[] weight, int ID , double speed_limit)
+    public void getData()
     {
-        this.intersection = intersection;
-        this.weights = Arrays.copyOf(weight,weight.length);
-        this.ID = ID;
-        this.speed_limit = speed_limit;
-    }
-
-    public int getID()
-    {
-        return ID;
-    }
-
-    public double getSpeedLimit()
-    {
-        return speed_limit;
-    }
-
-    public byte getIntersection()
-    {
-        return intersection;
-    }
-
-    public int[] getWeight()
-    {
-        return weights;
-    }
-
-    public void connectionRequest(EditorRoadChunk targetChunk, int fasing,int weight)
-    {
-        if(connectionCheck(targetChunk, fasing))
+        setIntersection();
+        setTraffic_light();
+        setSpeedLimit();
+        setID();
+        setStartPoint();
+        setWeight();
+        for(int i = 0 ; i < 8 ;  i++)
         {
-            connection[fasing] = targetChunk.getID();
-            weights[fasing] = weight;
+            connection[i] = 0;
         }
     }
 
-    private boolean connectionCheck(EditorRoadChunk targetChunk, int fasing)//check is the connection between check is legal (fasing is the fasing of the original chunk)
-    {// 1<-->5    2<-->6    3<-->7    4<-->8    (the road have to be open on both side)
-        int intersectionChecker = 1 << fasing;
-        if( (intersection&intersectionChecker) !=0 )
-        {
-            switch (fasing) 
+    public void setIntersection() {
+        int[] directions = {1, 3, 5, 7}; // Specific directions to handle
+        for (int i = 0; i < directions.length; i++) {
+            int input = this.input.nextInt(); // Read user input
+            if (input == 1) {
+                // Set the bit corresponding to the direction
+                this.intersection |= (1 << (2 * i)); // Shift bit to positions 0, 2, 4, and 6
+            } else 
             {
-                case 1:
-                    intersectionChecker = 1 << 4;//1+4=5th bit
-                    if((targetChunk.getIntersection() & intersectionChecker) != 0)
-                        return true;
-                    else
-                        return false;
-
-                case 2:
-                    intersectionChecker = 1 << 5;//1+5=6th bit
-                    if((targetChunk.getIntersection() & intersectionChecker) != 0)
-                        return true;
-                    else
-                        return false;
-                case 3:
-                    intersectionChecker = 1 << 6;//1+6=7th bit
-                    if((targetChunk.getIntersection() & intersectionChecker) != 0)
-                        return true;
-                    else
-                        return false;
-
-                case 4:
-                    intersectionChecker = 1 << 7;//1+7=8th bit
-                    if((targetChunk.getIntersection() & intersectionChecker) != 0)
-                        return true;
-                    else
-                        return false;
-
-                case 5:
-                    intersectionChecker = 1; // at first bit
-                    if((targetChunk.getIntersection() & intersectionChecker) != 0)
-                        return true;
-                    else
-                        return false;
-
-                case 6:
-                    intersectionChecker = 1 << 1;//1+1=2nd bit
-                    if((targetChunk.getIntersection() & intersectionChecker) != 0)
-                        return true;
-                    else
-                        return false;
-
-                case 7:
-                    intersectionChecker = 1 << 2;//1+2=3rd bit
-                    if((targetChunk.getIntersection() & intersectionChecker) != 0)
-                        return true;
-                    else
-                        return false;
-
-                case 8:
-                    intersectionChecker = 1 << 3;//1+3=4th bit
-                    if((targetChunk.getIntersection() & intersectionChecker) != 0)
-                        return true;
-                    else
-                        return false;
+                // Optionally clear the bit if you want to reset it
+                this.intersection &= ~(1 << (2 * i));
             }
+        }
+    }
+    
+    public void setTraffic_light()//1 = have traffic light 
+    {
+        int flag = input.nextInt();
+        if(flag == 1)
+        {
+            this.traffic_light_flag = true;
+            this.traffic_light_timer = this.input.nextInt();
+        }
+        else
+            return;
+    }
+
+    public void setTrafficLightGroup(){// set traffic light group, the record of group will be in the main function
+        this.traffic_light_group=this.input.nextInt();
+    }
+
+    public void setTrafficLightPosition(int facing)//    **todo**  still thinking how to record**
+    {
+
+    }
+
+    public void setSpeedLimit(){
+        double limit = input.nextDouble();
+        if( limit > 0)
+            this.speed_limit = limit;
+        else
+            this.speed_limit = -1;//-1 = didn't set limit;
+    }
+
+    public void setID(){
+        this.ID_X = input.nextInt();
+        this.ID_Y = input.nextInt();
+    }
+
+    public void setStartPoint()
+    {
+        int ref = this.input.nextInt();
+        if(ref == 1 )
+            this.start_flag = true;
+        else
+            this.start_flag = false;
+    }
+
+    public void setWeight(){
+        this.weights = this.input.nextDouble();
+    }
+    
+    public void setConnection(int facing){
+        this.connection[facing] = 1;
+    }
+
+    public byte getIntersection(){
+        return intersection;
+    }
+
+    public boolean haveTrafficLight(){
+        return traffic_light_flag;
+    }
+
+    public double getTrafficLightTimer()
+    {
+        if(haveTrafficLight())
+        {
+            return traffic_light_timer;
+        }
+        return -1;
+    }
+
+    public byte getTrafficLightPosition(){
+        return traffic_light_position;
+    }
+
+    public int getTrafficLightGroup()
+    {
+        if(haveTrafficLight())
+        {
+            return traffic_light_group;
+        }
+        return -1;
+    }
+
+    public double getSpeedLimit(){
+        return speed_limit;
+    }
+
+    public int getIDX(){
+        return ID_X;
+    }
+
+    public int getIDY(){
+        return ID_Y;
+    }
+
+    public boolean startCheck(){
+        return start_flag;
+    }
+
+    public double getWeight(){
+        return weights;
+    }
+
+    public int[] getConnection(){
+        return connection;
+    }
+
+    public boolean outOfMap(EditorRoadChunk[][] map)//if the target location is out of the current map size ,return true to editor
+    {
+        int lenthOfArray = map.length;
+        int widthOfArray = map[0].length;
+        if(ID_X > lenthOfArray || ID_Y > widthOfArray)
+        {
+            return true;
         }
         return false;
     }
