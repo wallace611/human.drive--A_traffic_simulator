@@ -14,16 +14,16 @@ public class EditorRoadChunk
     private int ID_Y;
     private boolean start_flag;//is this the start point
     private double weights;//recording the weight of different road
-    private int[] connection = new int[8];//to record where is the road going (if data==null -> no)(if data == someone's ID  ==  the road is connected)(1 is on the right hand side, clockwise)
+    private int[] connection = new int[8];//to record where is the road going (if data==0 -> no)(if data == 1  ==  the road is connected)(1 is on the right hand side, clockwise)
     Scanner input = new Scanner(System.in);
 
     public void getData()
     {
-        setIntersection();
-        setTraffic_light();
-        setSpeedLimit();
         setID();
         setStartPoint();
+        setSpeedLimit();
+        setIntersection();
+        setTraffic_light();
         setWeight();
         for(int i = 0 ; i < 8 ;  i++)
         {
@@ -46,20 +46,20 @@ public class EditorRoadChunk
         }
     }
     
-    public void setTraffic_light()//1 = have traffic light 
+    public void setTraffic_light()//1 = have traffic light , set whick group its in
     {
         int flag = input.nextInt();
         if(flag == 1)
         {
             this.traffic_light_flag = true;
-            this.traffic_light_timer = this.input.nextInt();
+            this.traffic_light_group = input.nextInt();
         }
         else
             return;
     }
 
-    public void setTrafficLightGroup(){// set traffic light group, the record of group will be in the main function
-        this.traffic_light_group=this.input.nextInt();
+    public void setTrafficLightTimer(double timer){// set traffic light group, the record of group will be in the main function
+        this.traffic_light_timer = timer;
     }
 
     public void setTrafficLightPosition(int facing)//    **todo**  still thinking how to record**
