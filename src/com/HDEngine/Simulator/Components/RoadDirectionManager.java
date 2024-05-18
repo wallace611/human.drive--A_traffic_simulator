@@ -29,10 +29,7 @@ public class RoadDirectionManager {
     private int currentRoadCount;
 
     public RoadDirectionManager(byte dir) {
-        if (dir == 0)
-            throw new IllegalArgumentException("the param \"dir\" of RoadDirectionManager can't be 0");
         roadDirection = dir;
-
         // count how many 1s (connected roads) in dir
         int count = 0;
         while (dir != 0) {
@@ -54,10 +51,12 @@ public class RoadDirectionManager {
     // access the next road randomly
     public RoadChunk accessRoad() {
         if (!isConstructed()) throw new RuntimeException("the road chunk hasn't been constructed");
+        if (roadDirection == 0) throw new RuntimeException("finish!");
         float sumWeight = 0;
         for (float w : roadWeight) {
             sumWeight += w;
         }
+        if (sumWeight == 0.0f) sumWeight = 1.0f;
 
         float[] cumulativeSum = new float[roadWeight.length];
         cumulativeSum[0] = roadWeight[0];
@@ -74,8 +73,6 @@ public class RoadDirectionManager {
         }
         return roadRef[start];
     }
-
-
 
     public boolean isConstructed() {
         return currentRoadCount == roadRef.length;

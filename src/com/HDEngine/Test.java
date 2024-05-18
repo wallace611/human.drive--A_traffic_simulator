@@ -1,52 +1,29 @@
 package com.HDEngine;
 
-import com.HDEngine.Simulator.Object.Dynamic.*;
+import com.HDEngine.Simulator.Objects.Dynamic.*;
+import com.HDEngine.Simulator.Objects.Static.RoadChunk;
+import com.HDEngine.Simulator.Objects.World;
 import com.HDEngine.Utilities.*;
 
-import javax.swing.*;
-
 public class Test {
-    JFrame frame;
-    InputManager input;
-    JLabel label1;
-    JLabel label2;
-
     public static void main(String[] args) throws InterruptedException {
-        System.out.println("gooood");
-        //Test a = new Test();
-        //a.run();
+        World w = new World(10, 10);
+        RoadChunk[][] r = w.getChunks();
+        r[0][5] = new RoadChunk((byte) 0, new RoadChunk[0], new float[0]);
+        r[0][5].setLocation(new Vector2D(0, 10));
+        r[1][5] = new RoadChunk((byte) 0b001, new RoadChunk[]{r[0][5]}, new float[]{1.0f});
+        r[1][5].setLocation(new Vector2D(10, 50));
+        r[2][5] = new RoadChunk((byte) 0b001, new RoadChunk[]{r[1][5]}, new float[]{1.0f});
+        r[2][5].setLocation(new Vector2D(20, 50));
+        w.begin();
+        Vehicle v = new Vehicle(1.0f);
+        w.addVehicle(2, 5, v);
+        while (true) {
+            Thread.sleep(50);
+            w.tick(0.5);
+            System.out.println(v.getLocation());
+        }
     }
 
-    // public Test() {
-    //     frame = new JFrame("AWTDemo");
-    //     frame.setSize(600, 400);
-    //     frame.setLocation(0, 0);
-    //     input = new InputManager();
-    //     frame.addKeyListener(input);
-    //     frame.setVisible(true);
-    //     label2 = new JLabel("good");
-    //     label2.setLocation(0, 0);
-    //     frame.add(label2);
-    // }
 
-    // public void run() throws InterruptedException {
-    //     Vehicle a = new Vehicle(100, 30, 10, 10, 10);
-    //     while (true) {
-    //         Thread.sleep(5);
-    //         System.out.println(a.getLocation());
-
-    //         if (input.getPressedKey()['W']) a.setCurrentForwardState(1);
-    //         else if (input.getPressedKey()['S']) a.setCurrentForwardState(2);
-    //         else a.setCurrentForwardState(0);
-
-    //         if (input.getPressedKey()['A']) a.setCurrentTurningState(1);
-    //         else if (input.getPressedKey()['D']) a.setCurrentTurningState(2);
-    //         else a.setCurrentTurningState(0);
-
-    //         System.out.println(a.getCurrentForwardState());
-    //         System.out.println(a.getCurrentTurningState());
-    //         a.tick(0.005);
-    //         label2.setLocation((int) a.getLocation().x, (int) a.getLocation().y);
-    //     }
-    // }
 }

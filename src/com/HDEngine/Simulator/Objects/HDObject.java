@@ -19,6 +19,10 @@ public class HDObject {
 
     }
 
+    public void kill() {
+
+    }
+
     public Vector2D getLocation() {
         return location;
     }
