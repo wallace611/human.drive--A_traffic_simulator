@@ -1,5 +1,3 @@
-package com.HDEngine.UI;
-
 import javax.swing.*;
 import java.awt.*;
 

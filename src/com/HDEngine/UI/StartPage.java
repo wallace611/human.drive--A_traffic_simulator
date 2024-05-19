@@ -1,5 +1,3 @@
-package com.HDEngine.UI;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -11,7 +9,7 @@ public class StartPage extends JFrame implements ActionListener{
     
     Image backgroundimg;
     JPanel imagePanel = null;
-    JButton startbtn = new JButton("開始新模擬");
+    JButton startbtn = new JButton("開始編輯");
     JButton archivebtn = new JButton("先前存檔");
     JButton instructionbtn = new JButton("使用說明");
     JButton quitbtn = new JButton("離開");
@@ -44,7 +42,7 @@ public class StartPage extends JFrame implements ActionListener{
         JPanel backgroundPanel = new JPanel();
         backgroundPanel.setPreferredSize(new Dimension(getWidth(), getHeight()));
         backgroundPanel.setOpaque(false);
-        backgroundPanel.setBackground(Color.PINK);
+        //backgroundPanel.setBackground(Color.PINK);
         add(backgroundPanel);
         
         backgroundPanel.setLayout(new BorderLayout());
