@@ -16,13 +16,6 @@ public class EditorTest {
 
         FileManager fileManager = editor.exportData();
         fileManager.saveToFile("D:\\coding\\java\\Project\\human.drive--A_traffic_simulator\\src\\com\\HDEngine\\Utilities\\SavedFile\\editor_map.obj");
-
-        /*FileManager loadedFileManager = FileManager.loadFromFile("/com/HDEngine/Utilities/SaveFile/editor_map.obj");
-        if (loadedFileManager != null) 
-        {
-            editor.importData(loadedFileManager);
-            System.out.println("Map loaded!!!!!!");
-        }*/
         input.close();
     }
 }

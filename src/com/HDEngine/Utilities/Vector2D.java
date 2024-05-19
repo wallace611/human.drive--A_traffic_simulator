@@ -47,6 +47,7 @@ public class Vector2D {
     }
 
     public Vector2D normalize() {
+        if (getMagnitude() == 0.0f) throw new RuntimeException("0 vector can not be normalized");
         return new Vector2D(x / getMagnitude(), y / getMagnitude());
     }
 
@@ -125,4 +126,6 @@ public class Vector2D {
         dTheta = toRadians(dTheta);
         return new Vector2D(r * cos(dTheta), r * sin(dTheta));
     }
+
+
 }

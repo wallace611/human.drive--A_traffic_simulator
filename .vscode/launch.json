@@ -6,6 +6,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "com.HDEngine.UI.Main",
+            "projectName": "human.drive--A_traffic_simulator_51d4a7c0"
+        },
+        {
+            "type": "java",
+            "name": "StartPage",
+            "request": "launch",
+            "mainClass": "com.HDEngine.UI.StartPage",
+            "projectName": "human.drive--A_traffic_simulator_51d4a7c0"
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"
