@@ -22,8 +22,7 @@ public class Vector2D {
         if (v != null) {
             x = v.x;
             y = v.y;
-        }
-        else {
+        } else {
             throw new NullPointerException();
         }
     }
