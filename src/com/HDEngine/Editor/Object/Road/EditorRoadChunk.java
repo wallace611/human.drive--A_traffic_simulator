@@ -1,29 +1,36 @@
 package com.HDEngine.Editor.Object.Road;
 
 import java.util.Scanner;
+import java.io.*;
 
-public class EditorRoadChunk 
+public class EditorRoadChunk implements Serializable
 {
     private byte intersection;//using bit refence to record where is the road going
-    private boolean traffic_light_flag;//have or dont have traffic light
-    private double traffic_light_timer;//timer of traffic light(this part should follow group, still working on it)
-    private byte traffic_light_position;//where is the traffic light
-    private int traffic_light_group;// the group
-    private double speed_limit;//the speed limit (if = -1 then there is no speed limit on this chunk)
-    private int ID_X;//to seperate differe road chunk
-    private int ID_Y;
-    private boolean start_flag;//is this the start point
+    private boolean trafficLightFlag;//have or dont have traffic light
+    private double trafficLightTimer;//timer of traffic light(this part should follow group, still working on it)
+    private byte trafficLightPosition;//where is the traffic light
+    private int trafficLightGroup;// the group
+    private double speedLimit;//the speed limit (if = -1 then there is no speed limit on this chunk)
+    private int idX;//to seperate differe road chunk
+    private int idY;
+    private boolean startFlag;//is this the start point
     private double weights;//recording the weight of different road
     private int[] connection = new int[8];//to record where is the road going (if data==0 -> no)(if data == 1  ==  the road is connected)(1 is on the right hand side, clockwise)
-    Scanner input = new Scanner(System.in);
+    transient Scanner input = new Scanner(System.in);
 
     public void getData()
     {
+        System.out.print("ID:");
         setID();
+        System.out.print("Start:");
         setStartPoint();
+        System.out.print("Speedlimit:");
         setSpeedLimit();
+        System.out.print("intersection:");
         setIntersection();
-        setTraffic_light();
+        System.out.print("TrafficLight:");
+        setTrafficLight();
+        System.out.print("Weight:");
         setWeight();
         for(int i = 0 ; i < 8 ;  i++)
         {
@@ -46,47 +53,42 @@ public class EditorRoadChunk
         }
     }
     
-    public void setTraffic_light()//1 = have traffic light , set whick group its in
+    public void setTrafficLight()//1 = have traffic light , set whick group its in
     {
         int flag = input.nextInt();
         if(flag == 1)
         {
-            this.traffic_light_flag = true;
-            this.traffic_light_group = input.nextInt();
+            this.trafficLightFlag = true;
+            this.trafficLightGroup = input.nextInt();
         }
         else
             return;
     }
 
     public void setTrafficLightTimer(double timer){// set traffic light group, the record of group will be in the main function
-        this.traffic_light_timer = timer;
-    }
-
-    public void setTrafficLightPosition(int facing)//    **todo**  still thinking how to record**
-    {
-
+        this.trafficLightTimer = timer;
     }
 
     public void setSpeedLimit(){
         double limit = input.nextDouble();
         if( limit > 0)
-            this.speed_limit = limit;
+            this.speedLimit = limit;
         else
-            this.speed_limit = -1;//-1 = didn't set limit;
+            this.speedLimit = -1;//-1 = didn't set limit;
     }
 
     public void setID(){
-        this.ID_X = input.nextInt();
-        this.ID_Y = input.nextInt();
+        this.idX = input.nextInt();
+        this.idY = input.nextInt();
     }
 
     public void setStartPoint()
     {
         int ref = this.input.nextInt();
         if(ref == 1 )
-            this.start_flag = true;
+            this.startFlag = true;
         else
-            this.start_flag = false;
+            this.startFlag = false;
     }
 
     public void setWeight(){
@@ -102,45 +104,45 @@ public class EditorRoadChunk
     }
 
     public boolean haveTrafficLight(){
-        return traffic_light_flag;
+        return trafficLightFlag;
     }
 
     public double getTrafficLightTimer()
     {
         if(haveTrafficLight())
         {
-            return traffic_light_timer;
+            return trafficLightTimer;
         }
         return -1;
     }
 
     public byte getTrafficLightPosition(){
-        return traffic_light_position;
+        return trafficLightPosition;
     }
 
     public int getTrafficLightGroup()
     {
         if(haveTrafficLight())
         {
-            return traffic_light_group;
+            return trafficLightGroup;
         }
         return -1;
     }
 
     public double getSpeedLimit(){
-        return speed_limit;
+        return speedLimit;
     }
 
     public int getIDX(){
-        return ID_X;
+        return idX;
     }
 
     public int getIDY(){
-        return ID_Y;
+        return idY;
     }
 
     public boolean startCheck(){
-        return start_flag;
+        return startFlag;
     }
 
     public double getWeight(){
@@ -155,10 +157,16 @@ public class EditorRoadChunk
     {
         int lenthOfArray = map.length;
         int widthOfArray = map[0].length;
-        if(ID_X > lenthOfArray || ID_Y > widthOfArray)
+        if(idX > lenthOfArray || idY > widthOfArray)
         {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "intersection =" + intersection + " , ID = " + idX + "," + idY + " , start = " + startFlag + ", Weight = " + weights + ", Speed limit = " + speedLimit + " ,traffic light falg = " + trafficLightFlag;
     }
 }
