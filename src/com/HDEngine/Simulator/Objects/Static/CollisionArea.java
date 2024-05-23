@@ -1,17 +1,15 @@
-package com.HDEngine.Simulator.Components;
+package com.HDEngine.Simulator.Objects.Static;
 
+import com.HDEngine.Simulator.Objects.HDObject;
 import com.HDEngine.Utilities.Vector2D;
 
-public class CollisionArea {
-    // the center location in the world dimension
-    private Vector2D location;
-
-    private double rotation;
-
+public class CollisionArea extends HDObject {
     // half of width and height
     private Vector2D offset;
 
     public CollisionArea(Vector2D location, double rotation, Vector2D offset) {
+        super();
+
         this.location = new Vector2D(location);
         this.rotation = rotation;
         this.offset = new Vector2D(offset);
@@ -29,11 +27,11 @@ public class CollisionArea {
     }
 
     public boolean isOverlappingWith(CollisionArea others) {
-        Vector2D[] rect1 = this.getVertex(), rect2 = others.getVertex();
-        return areOverlapping(rect1, rect2);
+        return areOverlapping(this, others);
     }
 
-    public static boolean areOverlapping(Vector2D[] rect1, Vector2D[] rect2) {
+    public static boolean areOverlapping(CollisionArea ca1, CollisionArea ca2) {
+        Vector2D[] rect1 = ca1.getVertex(), rect2 = ca2.getVertex();
         Vector2D[] normals = getNormals(rect1, rect2);
 
         for (Vector2D normal : normals) {
@@ -75,11 +73,11 @@ public class CollisionArea {
     }
 
     public Vector2D getLocation() {
-        return location;
+        return new Vector2D(location);
     }
 
     public void setLocation(Vector2D location) {
-        this.location = location;
+        this.location = new Vector2D(location);
     }
 
     public double getRotation() {
@@ -91,10 +89,10 @@ public class CollisionArea {
     }
 
     public Vector2D getOffset() {
-        return offset;
+        return new Vector2D(offset);
     }
 
     public void setOffset(Vector2D offset) {
-        this.offset = offset;
+        this.offset = new Vector2D(offset);
     }
 }

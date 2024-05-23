@@ -1,14 +1,17 @@
-package com.HDEngine.Simulator.Objects;
+package com.HDEngine.Simulator.Objects.Static;
 
 import com.HDEngine.Simulator.Objects.Dynamic.Vehicle;
+import com.HDEngine.Simulator.Objects.HDObject;
 import com.HDEngine.Simulator.Objects.Static.RoadChunk;
 import com.HDEngine.Utilities.Vector2D;
 
 import java.util.ArrayList;
 
-public class World extends HDObject{
+public class World extends HDObject {
     private RoadChunk[][] chunks;
     private RoadChunk[] summonChunk;
+
+    // private ArrayList<Vehicle> children; from HDObject class, containing the cars which are heading here
 
     public World(int x, int y) {
         chunks = new RoadChunk[x][y];
@@ -46,8 +49,12 @@ public class World extends HDObject{
         }
     }
 
-    public void addVehicle(int x, int y, Vehicle car) {
+    public void spawnVehicle(int x, int y, Vehicle car) {
         chunks[x][y].spawnVehicle(car);
+    }
+
+    public void removeVehicle(int x, int y, Vehicle car) {
+        chunks[x][y].removeChild(car);
     }
 
     public RoadChunk[][] getChunks() {
