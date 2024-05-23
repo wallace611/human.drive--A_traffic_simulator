@@ -2,6 +2,7 @@ package com.HDEngine.Simulator.Objects.Dynamic;
 
 import com.HDEngine.Simulator.Components.CollisionArea;
 import com.HDEngine.Simulator.Objects.HDObject;
+import com.HDEngine.Simulator.Objects.Static.RoadChunk;
 import com.HDEngine.Utilities.Vector2D;
 
 public class Vehicle extends HDObject {

@@ -48,6 +48,7 @@ public class World extends HDObject{
 
     public void addVehicle(int x, int y, Vehicle car) {
         chunks[x][y].spawnVehicle(car);
+        children.add(car);
     }
 
     public RoadChunk[][] getChunks() {
