@@ -30,11 +30,11 @@ public class HDObject {
     }
 
     public Vector2D getLocation() {
-        return location;
+        return new Vector2D(location);
     }
 
     public void setLocation(Vector2D location) {
-        this.location = location;
+        this.location = new Vector2D(location);
     }
 
     public double getRotation() {
@@ -51,6 +51,10 @@ public class HDObject {
 
     public void setParent(HDObject parent) {
         this.parent = parent;
+    }
+
+    public ArrayList<HDObject> getChildren() {
+        return new ArrayList<HDObject>(children);
     }
 
     public void addChild(HDObject child) {

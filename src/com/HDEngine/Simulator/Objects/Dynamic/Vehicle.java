@@ -1,6 +1,6 @@
 package com.HDEngine.Simulator.Objects.Dynamic;
 
-import com.HDEngine.Simulator.Components.CollisionArea;
+import com.HDEngine.Simulator.Objects.Static.CollisionArea;
 import com.HDEngine.Simulator.Objects.HDObject;
 import com.HDEngine.Simulator.Objects.Static.RoadChunk;
 import com.HDEngine.Utilities.Vector2D;
@@ -14,7 +14,7 @@ public class Vehicle extends HDObject {
 
     public Vehicle(double speed) {
         this.speed = speed;
-        collision = new CollisionArea(new Vector2D(), 0.0f, new Vector2D(5, 5));
+        collision = new CollisionArea(new Vector2D(), 0.0f, new Vector2D(1, 1));
         targetLocation = null;
         arrived = false;
         killed = false;
@@ -65,7 +65,10 @@ public class Vehicle extends HDObject {
     }
 
     public CollisionArea getCollision() {
-        return collision;
+        return new CollisionArea(
+                collision.getLocation().add(location),
+                collision.getRotation() + rotation,
+                collision.getOffset());
     }
 
     public Vector2D getTargetLocation() {
