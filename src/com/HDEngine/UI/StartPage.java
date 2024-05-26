@@ -22,11 +22,11 @@ public class StartPage extends JFrame implements ActionListener{
         setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
         
         // logo
-        ImageIcon logo = new ImageIcon("photo/human.drive-logo.png");
+        ImageIcon logo = new ImageIcon("src/photo/human.drive-logo.png");
         setIconImage(logo.getImage());
 
         // setting window zise
-        ImageIcon backgroundImageIcon = new ImageIcon("photo/startpage.png");
+        ImageIcon backgroundImageIcon = new ImageIcon("src/photo/startpage.png");
         setSize(backgroundImageIcon.getIconWidth(), backgroundImageIcon.getIconHeight());
 
         // 创建 JLabel 以承载背景图片
@@ -146,6 +146,9 @@ public class StartPage extends JFrame implements ActionListener{
         if (e.getSource() == startbtn) {
             dispose(); // close the window
            NewSimulationPage NSPage = new NewSimulationPage();
+        }
+        else if(e.getSource() == quitbtn){
+            dispose();
         }
     }
 

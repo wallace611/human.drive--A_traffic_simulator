@@ -14,7 +14,7 @@ public class NewSimulationPage extends JFrame {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // logo
-        ImageIcon logo = new ImageIcon("photo/newsimulation-logo.png");
+        ImageIcon logo = new ImageIcon("human.drive--A_traffic_simulator/src/photo/newsimulation-logo.png");
         frame.setIconImage(logo.getImage());
 
         background.setSize(900, 600);
