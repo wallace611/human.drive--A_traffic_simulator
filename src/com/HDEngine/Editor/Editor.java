@@ -11,6 +11,10 @@ public class Editor implements Serializable
     private static final int EAST = 0;
     private static final int SOUTH = 6;
     private static final int WEST = 4;
+    private static final int NE = 1;
+    private static final int SE = 7;
+    private static final int SW = 5;
+    private static final int NW = 3;
     private EditorRoadChunk[][] map = new EditorRoadChunk[102][102];//if possible, keep the outer side of the array clear(eg. map[0][0] should always be null)
     private int[][] trafficLightGroup = new int[102][102];//if(is same group){[a][a] = [b][b]for road_a and road_b}
     private double[] trafficLightGroupTimer = new double[102];
@@ -88,34 +92,98 @@ public class Editor implements Serializable
         return map[ID_X][ID_Y];
     }
 
-    public void connectionAdd(EditorRoadChunk[][] map,EditorRoadChunk target)//change the connection in the road chunk
-    {
-        if(target.getConnection()[NORTH] == 0 && map[target.getIDX()][target.getIDY()+1] != null)//north of target
-        {
+    public void connectionAdd(EditorRoadChunk[][] map, EditorRoadChunk target) {
+        int x = target.getIDX();
+        int y = target.getIDY();
+        // Check and set connection for NORTH
+    if (y + 1 < map[0].length && map[x][y + 1] != null && (target.getIntersection() & (1 << (NORTH - 1))) != 0 && (map[x][y + 1].getIntersection() & (1 << (SOUTH - 1))) != 0) {
+        if (y < y + 1) {
             target.setConnection(NORTH);
-            map[target.getIDX()][target.getIDY()].setConnection(SOUTH);
-        }
-        if(target.getConnection()[EAST] == 0 && map[target.getIDX()+1][target.getIDY()] != null)//north of target
-        {
-            target.setConnection(EAST);
-            map[target.getIDX()][target.getIDY()].setConnection(WEST);
-        }
-        if(target.getConnection()[SOUTH] == 0 && map[target.getIDX()][target.getIDY()-1] != null)//north of target
-        {
-            target.setConnection(SOUTH);
-            map[target.getIDX()][target.getIDY()].setConnection(NORTH);
-        }
-        if(target.getConnection()[WEST] == 0 && map[target.getIDX()-1][target.getIDY()] != null)//north of target
-        {
-            target.setConnection(WEST);
-            map[target.getIDX()][target.getIDY()].setConnection(EAST);
+        } else {
+            map[x][y + 1].setConnection(SOUTH);
         }
     }
 
-    private boolean connectionJudge(EditorRoadChunk connectToChink,EditorRoadChunk target, int facing)//check is the connection between check is legal (fasing is the fasing of the original chunk)
-    {// 0<-->4   2<-->6    (the road have to be open on both side)
-        if((connectToChink == null)  || (connectToChink.getIntersection() & (1 << (facing-1))) != 0)
-        {
+    // Check and set connection for EAST
+    if (x + 1 < map.length && map[x + 1][y] != null && (target.getIntersection() & (1 << (EAST - 1))) != 0 && (map[x + 1][y].getIntersection() & (1 << (WEST - 1))) != 0) {
+        if (x < x + 1) {
+            target.setConnection(EAST);
+        } else {
+            map[x + 1][y].setConnection(WEST);
+        }
+    }
+
+    // Check and set connection for SOUTH
+    if (y - 1 >= 0 && map[x][y - 1] != null && (target.getIntersection() & (1 << (SOUTH - 1))) != 0 && (map[x][y - 1].getIntersection() & (1 << (NORTH - 1))) != 0) {
+        if (y > y - 1) {
+            target.setConnection(SOUTH);
+        } else {
+            map[x][y - 1].setConnection(NORTH);
+        }
+    }
+
+    // Check and set connection for WEST
+    if (x - 1 >= 0 && map[x - 1][y] != null && (target.getIntersection() & (1 << (WEST - 1))) != 0 && (map[x - 1][y].getIntersection() & (1 << (EAST - 1))) != 0) {
+        if (x > x - 1) {
+            target.setConnection(WEST);
+        } else {
+            map[x - 1][y].setConnection(EAST);
+        }
+    }
+
+    // Check and set connection for NORTH-EAST
+    if (x + 1 < map.length && y + 1 < map[0].length && map[x + 1][y + 1] != null) {
+        if ((map[x][y + 1] != null || map[x + 1][y] != null) && (target.getIntersection() & (1 << (NE - 1))) != 0 && (map[x + 1][y + 1].getIntersection() & (1 << (SW - 1))) != 0) {
+            if (x < x + 1 && y < y + 1) {
+                target.setConnection(NE);
+            } else {
+                map[x + 1][y + 1].setConnection(SW);
+            }
+        }
+    }
+
+    // Check and set connection for SOUTH-EAST
+    if (x + 1 < map.length && y - 1 >= 0 && map[x + 1][y - 1] != null) {
+        if ((map[x][y - 1] != null || map[x + 1][y] != null) && (target.getIntersection() & (1 << (SE - 1))) != 0 && (map[x + 1][y - 1].getIntersection() & (1 << (NW - 1))) != 0) {
+            if (x < x + 1 && y > y - 1) {
+                target.setConnection(SE);
+            } else {
+                map[x + 1][y - 1].setConnection(NW);
+            }
+        }
+    }
+
+    // Check and set connection for SOUTH-WEST
+    if (x - 1 >= 0 && y - 1 >= 0 && map[x - 1][y - 1] != null) {
+        if ((map[x][y - 1] != null || map[x - 1][y] != null) && (target.getIntersection() & (1 << (SW - 1))) != 0 && (map[x - 1][y - 1].getIntersection() & (1 << (NE - 1))) != 0) {
+            if (x > x - 1 && y > y - 1) {
+                target.setConnection(SW);
+            } else {
+                map[x - 1][y - 1].setConnection(NE);
+            }
+        }
+    }
+
+    // Check and set connection for NORTH-WEST
+    if (x - 1 >= 0 && y + 1 < map[0].length && map[x - 1][y + 1] != null) {
+        if ((map[x][y + 1] != null || map[x - 1][y] != null) && (target.getIntersection() & (1 << (NW - 1))) != 0 && (map[x - 1][y + 1].getIntersection() & (1 << (SE - 1))) != 0) {
+            if (x > x - 1 && y < y + 1) {
+                target.setConnection(NW);
+            } else {
+                map[x - 1][y + 1].setConnection(SE);
+            }
+        }
+    }
+        
+    }
+
+    public int whichGraph(EditorRoadChunk target)//for UI to know which picture should be used for the chunk
+    {
+        return target.connectionStatus();
+    }
+
+    private boolean connectionJudge(EditorRoadChunk connectToChunk, EditorRoadChunk target, int facing) {
+        if (connectToChunk != null && (connectToChunk.getIntersection() & (1 << (facing - 1))) != 0) {
             return true;
         }
         return false;
@@ -154,4 +222,5 @@ public class Editor implements Serializable
         this.trafficLightGroup = fileManager.getTrafficLightGroup();
         this.trafficLightGroupTimer = fileManager.getTrafficLightGroupTimer();
     }
+
 }

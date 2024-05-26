@@ -6,6 +6,34 @@
     "configurations": [
         {
             "type": "java",
+            "name": "EditorTest2",
+            "request": "launch",
+            "mainClass": "com.HDEngine.Editor.EditorTest2",
+            "projectName": "human.drive--A_traffic_simulator_cbf0fbf2"
+        },
+        {
+            "type": "java",
+            "name": "EditorTest",
+            "request": "launch",
+            "mainClass": "com.HDEngine.Editor.EditorTest",
+            "projectName": "human.drive--A_traffic_simulator_cbf0fbf2"
+        },
+        {
+            "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "com.HDEngine.UI.Main",
+            "projectName": "human.drive--A_traffic_simulator_cbf0fbf2"
+        },
+        {
+            "type": "java",
+            "name": "test",
+            "request": "launch",
+            "mainClass": "com.HDEngine.UI.test",
+            "projectName": "human.drive--A_traffic_simulator_cbf0fbf2"
+        },
+        {
+            "type": "java",
             "name": "Main",
             "request": "launch",
             "mainClass": "com.HDEngine.UI.Main",

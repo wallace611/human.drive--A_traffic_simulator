@@ -6,7 +6,6 @@ import com.HDEngine.Simulator.Objects.Static.RoadChunk;
 import com.HDEngine.Simulator.Objects.Static.World;
 import com.HDEngine.Utilities.*;
 
-
 public class Test {
     public static void main(String[] args) throws InterruptedException {
         CollisionArea c = new CollisionArea(new Vector2D(), 0.0, new Vector2D(2, 2));
@@ -21,7 +20,4 @@ public class Test {
         System.out.println(v.getCollision().getLocation() + "; " + v.getCollision().getOffset());
         System.out.println(CollisionArea.areOverlapping(r.getRoadArea(), v.getCollision()));
     }
-
-
-
 }

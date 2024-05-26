@@ -1,7 +1,7 @@
 package com.HDEngine.Editor.Object.Road;
 
-import java.util.Scanner;
 import java.io.*;
+import java.util.*;
 
 public class EditorRoadChunk implements Serializable
 {
@@ -14,24 +14,22 @@ public class EditorRoadChunk implements Serializable
     private int idX;//to seperate differe road chunk
     private int idY;
     private boolean startFlag;//is this the start point
-    private double weights;//recording the weight of different road
+    private double[] weights = new double[8];//recording the weight of different road
     private int[] connection = new int[8];//to record where is the road going (if data==0 -> no)(if data == 1  ==  the road is connected)(1 is on the right hand side, clockwise)
     transient Scanner input = new Scanner(System.in);
 
     public void getData()
     {
-        System.out.print("ID:");
+        System.out.print("\nID\n");
         setID();
-        System.out.print("Start:");
+        System.out.print("\nStart\n");
         setStartPoint();
-        System.out.print("Speedlimit:");
+        System.out.print("\nSpeedlimit");
         setSpeedLimit();
-        System.out.print("intersection:");
+        System.out.print("\nintersection");
         setIntersection();
-        System.out.print("TrafficLight:");
+        System.out.print("\nTrafficLight");
         setTrafficLight();
-        System.out.print("Weight:");
-        setWeight();
         for(int i = 0 ; i < 8 ;  i++)
         {
             connection[i] = 0;
@@ -39,30 +37,87 @@ public class EditorRoadChunk implements Serializable
     }
 
     public void setIntersection() {
-        int[] directions = {1, 3, 5, 7}; // Specific directions to handle
-        for (int i = 0; i < directions.length; i++) {
-            int input = this.input.nextInt(); // Read user input
-            if (input == 1) {
-                // Set the bit corresponding to the direction
-                this.intersection |= (1 << (2 * i)); // Shift bit to positions 0, 2, 4, and 6
-            } else 
-            {
-                // Optionally clear the bit if you want to reset it
-                this.intersection &= ~(1 << (2 * i));
+        boolean valid = false;
+        while(!valid)
+        {
+            for (int i = 0; i < 8; i++) {
+                switch (i) {
+                    case 0:
+                        System.out.print("Does East side have intersection (Please input True or False):");
+                    break;
+                
+                    case 1:
+                        System.out.print("Is switching lanes towards North-East allowed? (Please input True or False):");
+                    break;
+
+                    case 2:
+                        System.out.print("Does North side have intersection (Please input True or False):");
+                    break;
+
+                    case 3:
+                        System.out.print("Is switching lanes towards North-West allowed? (Please input True or False):");
+                    break;
+                    
+                    case 4:
+                        System.out.print("Does West side have intersection (Please input True or False):");
+                    break;
+
+                    case 5:
+                        System.out.print("Is switching lanes towards South-West allowed? (Please input True or False):");
+                    break;
+
+                    case 6:
+                        System.out.print("Does South side have intersection (Please input True or False):");
+                    break;
+
+                    case 7:
+                        System.out.print("Is switching lanes towards South-East allowed? (Please input True or False):");
+                    break;
+                }
+                try
+                {
+                    String input = this.input.next(); // Read user input
+                    input.toLowerCase();
+                    if (input == "true" || input == "t" || input == "yes" || input == "y") {
+                        // Set the bit corresponding to the direction
+                        this.intersection |= (1 << (2 * i)); // Shift bit to positions 0, 2, 4, and 6
+                    } else 
+                    {
+                        // Optionally clear the bit if you want to reset it
+                        this.intersection &= ~(1 << (2 * i));
+                    }
+                    if(i == 7)
+                        valid = true;
+                } catch(InputMismatchException e)
+                {
+                    System.out.println("Input was not a valid string!");
+                }
             }
         }
     }
     
     public void setTrafficLight()//1 = have traffic light , set whick group its in
     {
-        int flag = input.nextInt();
-        if(flag == 1)
+        boolean valid = false;
+        while (!valid) 
         {
-            this.trafficLightFlag = true;
-            this.trafficLightGroup = input.nextInt();
+            try
+            {
+                System.out.print("Is there a traffic light in this chunk(1 = true , other number = false)");
+                int flag = input.nextInt();
+                valid = true;
+                if(flag == 1)
+                {
+                    this.trafficLightFlag = true;
+                    this.trafficLightGroup = input.nextInt();
+                }
+                else
+                    return;
+            }catch(InputMismatchException e)
+            {
+                System.out.println("input tpye missmatch");
+            }
         }
-        else
-            return;
     }
 
     public void setTrafficLightTimer(double timer){// set traffic light group, the record of group will be in the main function
@@ -70,29 +125,68 @@ public class EditorRoadChunk implements Serializable
     }
 
     public void setSpeedLimit(){
-        double limit = input.nextDouble();
-        if( limit > 0)
-            this.speedLimit = limit;
-        else
-            this.speedLimit = -1;//-1 = didn't set limit;
+        boolean valid = false;
+        while (!valid)
+        {
+            try
+            {
+                System.out.println("please input speed limit for this chunk( input >0  = valid ,input <=0 = no speed limit)");
+                double limit = input.nextDouble();
+                valid = true;
+                if( limit > 0)
+                    this.speedLimit = limit;
+                else
+                    this.speedLimit = -1;//-1 = didn't set limit;
+            }catch(InputMismatchException e)
+            {
+                System.out.println("input tpye missmatch");
+            }
+        }
     }
 
     public void setID(){
-        this.idX = input.nextInt();
-        this.idY = input.nextInt();
+        boolean valid = false;
+        while (!valid)
+            {
+            try{
+                System.out.print("please input the coordinate of this chunk:");
+                this.idX = input.nextInt();
+                this.idY = input.nextInt();
+                valid = true;
+            }catch(InputMismatchException e)
+            {
+                input.nextLine();
+                System.out.println("input must be an integer");
+            }
+        }
     }
 
     public void setStartPoint()
     {
-        int ref = this.input.nextInt();
-        if(ref == 1 )
-            this.startFlag = true;
-        else
-            this.startFlag = false;
+        boolean valid = false;
+        while (!valid)
+        {
+            try {
+                System.out.print("Is this chunk the start point of the car (Please enter True or False): ");
+                String ref = this.input.next();
+                ref = ref.toLowerCase();
+                if (ref.equals("true") || ref.equals("t")) {
+                    this.startFlag = true;
+                } else if (ref.equals("false") || ref.equals("f")) {
+                    this.startFlag = false;
+                } else {
+                    throw new InputMismatchException();
+                }
+                valid = true;
+            } catch (InputMismatchException e) {
+                System.out.println("input type mismatch");
+                input.nextLine(); // Clear the invalid input from the scanner buffer
+            }
+        }
     }
 
-    public void setWeight(){
-        this.weights = this.input.nextDouble();
+    public void setWeight(double weight,int position){
+        this.weights[position] = weight; 
     }
     
     public void setConnection(int facing){
@@ -145,7 +239,7 @@ public class EditorRoadChunk implements Serializable
         return startFlag;
     }
 
-    public double getWeight(){
+    public double[] getWeight(){
         return weights;
     }
 
@@ -164,9 +258,49 @@ public class EditorRoadChunk implements Serializable
         return false;
     }
 
+    public int connectionStatus() {
+        boolean north = connection[2] == 1;
+        boolean south = connection[6] == 1;
+        boolean east = connection[0] == 1;
+        boolean west = connection[4] == 1;
+
+        if (north && !south && !east && !west) return 1;
+        if (!north && south && !east && !west) return 2;
+        if (!north && !south && east && !west) return 3;
+        if (!north && !south && !east && west) return 4;
+
+        if (north && east) return 5;
+        if (north && south) return 6;
+        if (north && west) return 7;
+        if (south && east) return 8;
+        if (south && west) return 9;
+        if (east && west) return 10;
+
+        if (north && east && south) return 11;
+        if (north && east && west) return 12;
+        if (east && south && west) return 13;
+        if (north && south && east && west) return 14;
+
+        return -1; // If no connection matches
+    }
+
     @Override
     public String toString()
     {
-        return "intersection =" + intersection + " , ID = " + idX + "," + idY + " , start = " + startFlag + ", Weight = " + weights + ", Speed limit = " + speedLimit + " ,traffic light falg = " + trafficLightFlag;
+        return "intersection =" + intersection + " , ID = " + idX + "," + idY + " , start = " + startFlag +  ", Speed limit = " + speedLimit + " ,traffic light falg = " + trafficLightFlag;
     }
+
+    public void setWeight() 
+    {
+        double weight = 1.0; 
+        for (int i = 0; i < 8; i++) 
+        {
+            if (connection[i] == 1) 
+            {
+                weight = input.nextDouble();
+                this.weights[i] =weight;
+            }
+        }
+    }
+
 }
