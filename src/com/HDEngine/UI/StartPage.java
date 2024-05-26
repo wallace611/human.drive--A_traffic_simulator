@@ -146,6 +146,9 @@ public class StartPage extends JFrame implements ActionListener{
             dispose(); // close the window
            NewSimulationPage NSPage = new NewSimulationPage();
         }
+        else if(e.getSource() == quitbtn){
+            dispose();
+        }
     }
 
 }
