@@ -4,19 +4,21 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.border.*;
 
 public class StartPage extends JFrame implements ActionListener{  
 
-    
     Image backgroundimg;
     JPanel imagePanel = null;
     JButton startbtn = new JButton("開始編輯");
     JButton archivebtn = new JButton("先前存檔");
     JButton instructionbtn = new JButton("使用說明");
     JButton quitbtn = new JButton("離開");
+    EditPage NEditPage;
+    InstructionPage NInstructionPage;
+    ProgressPage NProgressPage;
 
     StartPage() {
+        NProgressPage = new ProgressPage();
         setTitle("Human.Drive");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
@@ -29,11 +31,11 @@ public class StartPage extends JFrame implements ActionListener{
         ImageIcon backgroundImageIcon = new ImageIcon("src/photo/startpage.png");
         setSize(backgroundImageIcon.getIconWidth(), backgroundImageIcon.getIconHeight());
 
-        // 创建 JLabel 以承载背景图片
+        // Create a JLabel to host the background image
         JLabel backgroundLabel = new JLabel();
         backgroundLabel.setIcon(backgroundImageIcon);
 
-        // 设置 JLabel 的大小和位置，以填充整个 JFrame
+        // Set the size and position of the JLabel to fill the entire JFrame
         backgroundLabel.setBounds(0, 0, backgroundImageIcon.getIconWidth(), backgroundImageIcon.getIconHeight());
 
         imagePanel = (JPanel) getContentPane();
@@ -84,15 +86,11 @@ public class StartPage extends JFrame implements ActionListener{
         transparency.add(HumandotDrive, BorderLayout.CENTER);
 
         Font font1 = new Font("微軟正黑體", Font.BOLD, 25); // create font
-        Border roundedBorder = new RoundBorder(15); // create a rounded border
         areaofbtn.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
         // add buttons
-        Border customizedbtn = new RoundBorder(15);//custom rounded border
-    
         startbtn.setFocusable(false);
         startbtn.setPreferredSize(new Dimension(330, 60));
-        startbtn.setBorder(customizedbtn);
         startbtn.setBackground(Color.DARK_GRAY);
         startbtn.setForeground(Color.WHITE);
         startbtn.setFocusPainted(false); // remove stroke effect from button text
@@ -102,7 +100,6 @@ public class StartPage extends JFrame implements ActionListener{
 
         archivebtn.setFocusable(false);
         archivebtn.setPreferredSize(new Dimension(330, 60));
-        archivebtn.setBorder(customizedbtn);
         archivebtn.setBackground(Color.DARK_GRAY);
         archivebtn.setForeground(Color.WHITE);
         archivebtn.setFocusPainted(false); // remove stroke effect from button text
@@ -111,21 +108,21 @@ public class StartPage extends JFrame implements ActionListener{
 
         instructionbtn.setFocusable(false);
         instructionbtn.setPreferredSize(new Dimension(330, 60));
-        instructionbtn.setBorder(customizedbtn);
         instructionbtn.setBackground(Color.DARK_GRAY);
         instructionbtn.setForeground(Color.WHITE);
         instructionbtn.setFocusPainted(false); // remove stroke effect from button text
         instructionbtn.setFont(font1);
         areaofbtn.add(instructionbtn);
+        instructionbtn.addActionListener(this);
 
         quitbtn.setFocusable(false);
         quitbtn.setPreferredSize(new Dimension(330, 60));
-        quitbtn.setBorder(customizedbtn);
         quitbtn.setBackground(Color.DARK_GRAY);
         quitbtn.setForeground(Color.WHITE);
         quitbtn.setFocusPainted(false); // remove stroke effect from button text
         quitbtn.setFont(font1);
         areaofbtn.add(quitbtn);
+        quitbtn.addActionListener(this);
 
         // center the window
         setLocationRelativeTo(null);
@@ -144,34 +141,18 @@ public class StartPage extends JFrame implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == startbtn) {
-            dispose(); // close the window
-           NewSimulationPage NSPage = new NewSimulationPage();
+            dispose();
+            NEditPage = new EditPage();
+        }
+        else if(e.getSource() == instructionbtn){
+            
+            NInstructionPage = new InstructionPage();
+
         }
         else if(e.getSource() == quitbtn){
-            dispose();
+            
+            System.exit(0);
         }
-    }
-
-}
-
-// custom rounded border class
-class RoundBorder extends AbstractBorder {
-    private int radius;
-
-    public RoundBorder(int radius) {
-        this.radius = radius;
-    }
-
-    @Override
-    public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-        super.paintBorder(c, g, x, y, width, height);
-        Graphics2D g2d = (Graphics2D) g.create();
-
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2d.setColor(Color.BLACK); // setting border color
-        g2d.drawRoundRect(x, y, width - 1, height - 1, radius, radius);
-
-        g2d.dispose();
     }
 
 }

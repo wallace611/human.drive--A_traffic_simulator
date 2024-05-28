@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class test{
+public class test {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Draggable JButton Example");
@@ -29,12 +29,17 @@ public class test{
             frame.add(middlePanel);
             frame.add(bottomPanel);
 
+            // 创建一个容器来存放拖曳的按钮
+            JPanel dragPanel = new JPanel(null);
+            dragPanel.setBounds(0, 0, frame.getWidth(), frame.getHeight());
+            frame.add(dragPanel);
+
             JButton button = new JButton("Drag Me");
             button.setBounds(150, 50, 100, 30);
             button.setBackground(Color.LIGHT_GRAY);
             button.setFocusPainted(false);
             
-            GhostDragListener ghostDragListener = new GhostDragListener(button, frame, bottomPanel);
+            GhostDragListener ghostDragListener = new GhostDragListener(button, dragPanel, bottomPanel);
             button.addMouseListener(ghostDragListener);
             button.addMouseMotionListener(ghostDragListener);
 
@@ -45,22 +50,20 @@ public class test{
 
     static class GhostDragListener extends MouseAdapter {
         private final JComponent component;
-        private final JFrame frame;
+        private final JPanel dragPanel;
         private final JPanel bottomPanel;
         private Point initialClick;
         private JWindow ghostWindow;
-        private Point initialLocation;
 
-        public GhostDragListener(JComponent component, JFrame frame, JPanel bottomPanel) {
+        public GhostDragListener(JComponent component, JPanel dragPanel, JPanel bottomPanel) {
             this.component = component;
-            this.frame = frame;
+            this.dragPanel = dragPanel;
             this.bottomPanel = bottomPanel;
         }
 
         @Override
         public void mousePressed(MouseEvent e) {
             initialClick = e.getPoint();
-            initialLocation = component.getLocation();
 
             // 创建一个半透明的 JWindow 作为拖动的影子
             ghostWindow = new JWindow();
@@ -94,36 +97,27 @@ public class test{
 
         @Override
         public void mouseReleased(MouseEvent e) {
-            // 计算新的位置
-            int xMoved = e.getXOnScreen() - initialClick.x;
-            int yMoved = e.getYOnScreen() - initialClick.y;
-            Point newLocation = new Point(xMoved, yMoved);
+            // 获取拖曳结束后的位置
+            Point screenPoint = e.getLocationOnScreen();
+            Point containerPoint = SwingUtilities.convertPointFromScreen(screenPoint, dragPanel);
 
-            // 获取父容器的位置
-            Point parentLocation = component.getParent().getLocationOnScreen();
-            int newX = newLocation.x - parentLocation.x;
-            int newY = newLocation.y - parentLocation.y;
+            // 检查按钮的位置是否在底部面板的区域内
+            if (bottomPanel.contains(containerPoint)) {
+                // 在拖曳结束后创建新的按钮并添加到 dragPanel 中
+                JButton newButton = new JButton("Drag Me");
+                newButton.setBounds(containerPoint.x, containerPoint.y, component.getWidth(), component.getHeight());
+                newButton.setBackground(Color.LIGHT_GRAY);
+                newButton.setFocusPainted(false);
+                
+                GhostDragListener newGhostDragListener = new GhostDragListener(newButton, dragPanel, bottomPanel);
+                newButton.addMouseListener(newGhostDragListener);
+                newButton.addMouseMotionListener(newGhostDragListener);
 
-            // 计算按钮的新的边界
-            Rectangle buttonBounds = new Rectangle(newX, newY, component.getWidth(), component.getHeight());
-
-            // 获取 bottomPanel 的边界
-            Rectangle bottomBounds = bottomPanel.getBounds();
-            Point bottomPanelLocation = bottomPanel.getLocationOnScreen();
-            bottomBounds.setLocation(bottomPanelLocation);
-
-            // 检查按钮的所有边界是否在 bottomPanel 内
-            if (bottomBounds.contains(newX, newY) &&
-                bottomBounds.contains(newX + component.getWidth(), newY) &&
-                bottomBounds.contains(newX, newY + component.getHeight()) &&
-                bottomBounds.contains(newX + component.getWidth(), newY + component.getHeight())) {
-                // 移动按钮到新的位置
-                component.setLocation(newX, newY);
-            } else {
-                // 恢复按钮到初始位置
-                component.setLocation(initialLocation);
+                dragPanel.add(newButton);
+                dragPanel.repaint(); // 重新绘制以显示新的按钮
             }
-            ghostWindow.dispose();
+
+            ghostWindow.dispose(); // 关闭拖动的影子窗口
         }
     }
 }

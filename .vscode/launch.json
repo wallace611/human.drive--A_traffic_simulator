@@ -6,6 +6,48 @@
     "configurations": [
         {
             "type": "java",
+            "name": "ProgressPage",
+            "request": "launch",
+            "mainClass": "com.HDEngine.UI.ProgressPage",
+            "projectName": "human.drive--A_traffic_simulator_51d4a7c0"
+        },
+        {
+            "type": "java",
+            "name": "Test",
+            "request": "launch",
+            "mainClass": "com.HDEngine.UI.Test",
+            "projectName": "human.drive--A_traffic_simulator_51d4a7c0"
+        },
+        {
+            "type": "java",
+            "name": "InstructionPage",
+            "request": "launch",
+            "mainClass": "com.HDEngine.UI.InstructionPage",
+            "projectName": "human.drive--A_traffic_simulator_51d4a7c0"
+        },
+        {
+            "type": "java",
+            "name": "EditPage",
+            "request": "launch",
+            "mainClass": "com.HDEngine.UI.EditPage",
+            "projectName": "human.drive--A_traffic_simulator_51d4a7c0"
+        },
+        {
+            "type": "java",
+            "name": "test",
+            "request": "launch",
+            "mainClass": "com.HDEngine.UI.test",
+            "projectName": "human.drive--A_traffic_simulator_51d4a7c0"
+        },
+        {
+            "type": "java",
+            "name": "NewSimulationPage",
+            "request": "launch",
+            "mainClass": "com.HDEngine.UI.NewSimulationPage",
+            "projectName": "human.drive--A_traffic_simulator_51d4a7c0"
+        },
+        {
+            "type": "java",
             "name": "Main",
             "request": "launch",
             "mainClass": "com.HDEngine.UI.Main",
