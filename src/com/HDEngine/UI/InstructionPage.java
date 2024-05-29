@@ -13,7 +13,6 @@ public class InstructionPage extends JFrame{
     
     JFrame frame = new JFrame();
     JPanel background = new JPanel(new BorderLayout());
-    JRadioButton
     InstructionPage() {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 300);

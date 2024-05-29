@@ -9,44 +9,43 @@ import java.util.ArrayList;
 
 public class RoadChunk extends HDObject {
     private final RoadDirectionManager roadDir;
-    private CollisionArea roadArea;
+    private final CollisionArea roadArea;
 
     // private ArrayList<Vehicle> children; from HDObject class, containing the cars which are heading here
 
-    private ArrayList<Vehicle> removeList;
+    public RoadChunk() {
+        this((byte) 0, new RoadChunk[0], new float[0]);
+    }
 
     public RoadChunk(byte dirs, RoadChunk[] connectRoad, float[] roadWeight) {
+        super();
         if (connectRoad.length != roadWeight.length) throw new RuntimeException("");
         roadDir = new RoadDirectionManager(dirs);
         for (int i = 0; i < connectRoad.length; i++) {
             roadDir.addRoadRef(connectRoad[i], roadWeight[i]);
         }
-        roadArea = new CollisionArea(new Vector2D(0, 0), 0.0f, new Vector2D(10, 10));
+        roadArea = new CollisionArea(new Vector2D(0, 0), 0.0f, new Vector2D(100, 100));
         roadArea.setParent(this);
 
-        removeList = new ArrayList<>();
     }
 
     @Override
     public void tick(double deltaTime) {
         super.tick(deltaTime);
-
         for (HDObject object : children) {
-            if (object instanceof Vehicle) {
-                Vehicle c = (Vehicle) object;
+            if (object instanceof Vehicle c) {
                 c.tick(deltaTime);
                 if (c.isArrived()) {
                     carArrived(c);
                 }
-                if (c.isKilled()) {
-                    removeList.add(c);
-                }
             }
         }
-        for (Vehicle c : removeList) {
-            children.remove(c);
+        for (HDObject object : childRemoveList) {
+            if (object instanceof Vehicle c) {
+                children.remove(c);
+            }
         }
-        removeList.clear();
+        childRemoveList.clear();
     }
 
     public void spawnVehicle(Vehicle car) {
@@ -58,12 +57,11 @@ public class RoadChunk extends HDObject {
         try {
             RoadChunk newTarget = roadDir.accessRoad();
             newTarget.addChild(car);
-            setParent(newTarget);
-            removeList.add(car);
+            childRemoveList.add(car);
             car.setTargetLocation(newTarget.getLocation());
         } catch (Exception e) {
-            removeList.add(car);
             car.kill();
+            childRemoveList.add(car);
         }
 
     }
@@ -73,5 +71,9 @@ public class RoadChunk extends HDObject {
                 roadArea.getLocation().add(location),
                 0,
                 roadArea.getOffset());
+    }
+
+    public CollisionArea getRoadAreaRef() {
+        return roadArea;
     }
 }
