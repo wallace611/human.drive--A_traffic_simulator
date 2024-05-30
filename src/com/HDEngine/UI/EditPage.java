@@ -5,6 +5,8 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.border.*;
 
+import com.HDEngine.Editor.Editor;
+
 public class EditPage extends JFrame implements ActionListener {
 
     JFrame frame = new JFrame();
@@ -19,9 +21,13 @@ public class EditPage extends JFrame implements ActionListener {
     JPanel attributePanel = new JPanel(); // Moved this line to be an instance variable
     MouseEventHandler handler;
 
+    private Editor editor;  //要有editor的實例才能操作editor by.昌
+
     EditPage() {
         frame.setTitle("Human.Drive - Start a new simulation");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        editor = new Editor();//初始化 by.昌
 
         // logo
         ImageIcon logo = new ImageIcon("src/photo/newsimulation-logo.png");
@@ -175,12 +181,27 @@ public class EditPage extends JFrame implements ActionListener {
     private void updateAttributePanel(String string, String buttonId) {
         attributePanel.removeAll(); // Clear existing components
 
-        ////在這邊的panel改紅綠燈或道路需要的參數名稱(jlabel)，可能設判斷每個i要加甚麼jlabel?
+        //在這邊的panel改紅綠燈或道路需要的參數名稱(jlabel)，可能設判斷每個i要加甚麼jlabel?
+
+        //reply: 之後我們討論一下哪個參數要訂多少 可以考慮用static final來用文字化的描述 by.昌
         for (int i = 1; i <= 5; i++) {
             JPanel linePanel = new JPanel();
             linePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
             JLabel label = new JLabel("Parameter " + i + " for No." + buttonId + ": ");
             JTextField textField = new JTextField(10);
+            int parameterIndex = i; // 記錄當前參數索引
+
+            // 新增 FocusListener  如果使用者點離開parameter就會觸發 by.昌
+            textField.addFocusListener(new FocusAdapter() 
+            {
+                @Override
+                public void focusLost(FocusEvent e) {
+                    System.out.println("focusLost");
+                    String newValue = textField.getText();
+                    updateEditorParameter(buttonId, parameterIndex, newValue);
+                }
+            });//匿名內部類的使用方式 酷東西
+
             linePanel.add(label);
             linePanel.add(textField);
             attributePanel.add(linePanel);
@@ -239,7 +260,7 @@ public class EditPage extends JFrame implements ActionListener {
             ghostWindow.setLocation(newLocation);
         }
         
-        //在這邊擷取updateAttributePanel的jtextfield然後丟到Dditor就行
+        //在這邊擷取updateAttributePanel的jtextfield然後丟到Editor就行
         @Override
         public void mouseReleased(MouseEvent e) {
             Point releasePoint = ghostWindow.getLocation();
@@ -252,6 +273,17 @@ public class EditPage extends JFrame implements ActionListener {
             }
             
             ghostWindow.dispose(); // Dispose the drag image window
+        }
+    }
+
+    //new function by.昌
+    private void updateEditorParameter(String buttonId, int parameterIndex, String newValue) {
+        if (buttonId.startsWith("r")) {//r = road
+            // 處理道路參數
+            editor.updateRoadParameter(buttonId, parameterIndex, newValue);
+        } else if (buttonId.startsWith("t")) { //  t = traffic light 
+            // 處理紅綠燈參數
+            editor.updateTrafficLightParameter(buttonId, parameterIndex, newValue);
         }
     }
 }
