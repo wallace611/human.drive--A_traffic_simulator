@@ -6,31 +6,52 @@
     "configurations": [
         {
             "type": "java",
-            "name": "EditorTest2",
+            "name": "SimulationPage",
             "request": "launch",
-            "mainClass": "com.HDEngine.Editor.EditorTest2",
-            "projectName": "human.drive--A_traffic_simulator_cbf0fbf2"
+            "mainClass": "com.HDEngine.UI.SimulationPage",
+            "projectName": "human.drive--A_traffic_simulator_51d4a7c0"
         },
         {
             "type": "java",
-            "name": "EditorTest",
+            "name": "ProgressPage",
             "request": "launch",
-            "mainClass": "com.HDEngine.Editor.EditorTest",
-            "projectName": "human.drive--A_traffic_simulator_cbf0fbf2"
+            "mainClass": "com.HDEngine.UI.ProgressPage",
+            "projectName": "human.drive--A_traffic_simulator_51d4a7c0"
         },
         {
             "type": "java",
-            "name": "Main",
+            "name": "Test",
             "request": "launch",
-            "mainClass": "com.HDEngine.UI.Main",
-            "projectName": "human.drive--A_traffic_simulator_cbf0fbf2"
+            "mainClass": "com.HDEngine.UI.Test",
+            "projectName": "human.drive--A_traffic_simulator_51d4a7c0"
+        },
+        {
+            "type": "java",
+            "name": "InstructionPage",
+            "request": "launch",
+            "mainClass": "com.HDEngine.UI.InstructionPage",
+            "projectName": "human.drive--A_traffic_simulator_51d4a7c0"
+        },
+        {
+            "type": "java",
+            "name": "EditPage",
+            "request": "launch",
+            "mainClass": "com.HDEngine.UI.EditPage",
+            "projectName": "human.drive--A_traffic_simulator_51d4a7c0"
         },
         {
             "type": "java",
             "name": "test",
             "request": "launch",
             "mainClass": "com.HDEngine.UI.test",
-            "projectName": "human.drive--A_traffic_simulator_cbf0fbf2"
+            "projectName": "human.drive--A_traffic_simulator_51d4a7c0"
+        },
+        {
+            "type": "java",
+            "name": "NewSimulationPage",
+            "request": "launch",
+            "mainClass": "com.HDEngine.UI.NewSimulationPage",
+            "projectName": "human.drive--A_traffic_simulator_51d4a7c0"
         },
         {
             "type": "java",

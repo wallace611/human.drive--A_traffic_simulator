@@ -1,4 +1,4 @@
-package com.HDEngine.Utilities.Render;
+package com.HDEngine.Simulator.Render;
 
 import com.HDEngine.Simulator.Objects.Dynamic.Vehicle;
 import com.HDEngine.Simulator.Objects.HDObject;
@@ -25,6 +25,7 @@ public class RenderWindow extends PApplet {
         camRot = 0.0f;
         camScale = 1.0f;
         renderCollisionArea = true;
+        System.out.println("sdf");
     }
 
     @Override
