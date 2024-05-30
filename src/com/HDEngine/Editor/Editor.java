@@ -304,4 +304,35 @@ public class Editor implements Serializable
         return path + "\\" + fileName+".obj";
     }
 
+
+    public void updateRoadParameter(String buttonId, int parameterIndex, String newValue) {
+        int chunkGroup = Integer.parseInt(buttonId.replace("roadButton", ""));
+        EditorRoadChunk roadChunk = findRoadChunkById(chunkGroup);
+        if (roadChunk != null) {
+            switch (parameterIndex) {
+                case 1:
+                    break;
+                // 根據需要添加更多參數的更新邏輯
+            }
+        }
+    }
+    
+    public void updateTrafficLightParameter(String buttonId, int parameterIndex, String newValue) {
+        int id = Integer.parseInt(buttonId.replace("trafficlightButton", ""));
+        EditorRoadChunk roadChunk = findRoadChunkById(id);
+        if (roadChunk != null) {
+            switch (parameterIndex) {
+                case 1:
+                    roadChunk.setTrafficLightTimer(Double.parseDouble(newValue));
+                    break;
+                // 根據需要添加更多參數的更新邏輯
+            }
+        }
+    }
+    
+    private EditorRoadChunk findRoadChunkById(int chunkGroup) {
+        //TODO
+        
+        return null;
+    }
 }
