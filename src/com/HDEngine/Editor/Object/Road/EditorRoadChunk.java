@@ -5,7 +5,7 @@ import java.util.*;
 
 public class EditorRoadChunk implements Serializable
 {
-    private byte intersection;//using bit refence to record where is the road going
+    private int[] intersection = new int[8];//using bit refence to record where is the road going
     private boolean trafficLightFlag;//have or dont have traffic light
     private double trafficLightTimer;//timer of traffic light(this part should follow group, still working on it)
     private byte trafficLightPosition;//where is the traffic light
@@ -78,18 +78,19 @@ public class EditorRoadChunk implements Serializable
                 {
                     String input = this.input.next(); // Read user input
                     input.toLowerCase();
-                    if (input == "true" || input == "t" || input == "yes" || input == "y") {
+                    if (input.equals("true")  || input.equals("t")) {
                         // Set the bit corresponding to the direction
-                        this.intersection |= (1 << (2 * i)); // Shift bit to positions 0, 2, 4, and 6
+                        this.intersection[i] = 1; // Shift bit to positions 0, 2, 4, and 6
                     } else 
                     {
                         // Optionally clear the bit if you want to reset it
-                        this.intersection &= ~(1 << (2 * i));
+                        this.intersection[i] = 0;;
                     }
                     if(i == 7)
                         valid = true;
                 } catch(InputMismatchException e)
                 {
+                    input.nextLine();
                     System.out.println("Input was not a valid string!");
                 }
             }
@@ -115,6 +116,7 @@ public class EditorRoadChunk implements Serializable
                     return;
             }catch(InputMismatchException e)
             {
+                input.nextLine();
                 System.out.println("input tpye missmatch");
             }
         }
@@ -139,6 +141,7 @@ public class EditorRoadChunk implements Serializable
                     this.speedLimit = -1;//-1 = didn't set limit;
             }catch(InputMismatchException e)
             {
+                input.nextLine();
                 System.out.println("input tpye missmatch");
             }
         }
@@ -186,14 +189,25 @@ public class EditorRoadChunk implements Serializable
     }
 
     public void setWeight(double weight,int position){
-        this.weights[position] = weight; 
+        boolean valid = false;
+        while(!valid)
+        {
+            try 
+            {
+                this.weights[position] = weight;
+                valid = true;
+            } catch (Exception e) {
+                
+            }
+            
+        }
     }
     
     public void setConnection(int facing){
         this.connection[facing] = 1;
     }
 
-    public byte getIntersection(){
+    public int[] getIntersection(){
         return intersection;
     }
 
@@ -287,7 +301,7 @@ public class EditorRoadChunk implements Serializable
     @Override
     public String toString()
     {
-        return "intersection =" + intersection + " , ID = " + idX + "," + idY + " , start = " + startFlag +  ", Speed limit = " + speedLimit + " ,traffic light falg = " + trafficLightFlag;
+        return "intersection =" + intersection + " , ID = " + idX + "," + idY + " , start = " + startFlag +  ", Speed limit = " + speedLimit + " ,traffic light falg = " + trafficLightFlag + " ,connection:" + connectionStatus();
     }
 
     public void setWeight() 

@@ -47,7 +47,10 @@ public class Editor implements Serializable
         if(newRoadChunk.outOfMap(map))//the ID is out of map
             expandMap(map,newRoadChunk);
         else
+        {
             map[newRoadChunk.getIDX()][newRoadChunk.getIDY()] = newRoadChunk;
+            connectionAdd(map, newRoadChunk);
+        }
         if(newRoadChunk.haveTrafficLight())//there is a traffic light in this chunk
         {
             int group = newRoadChunk.getTrafficLightGroup();//which group is the traffic light in
@@ -96,7 +99,7 @@ public class Editor implements Serializable
         int x = target.getIDX();
         int y = target.getIDY();
         // Check and set connection for NORTH
-    if (y + 1 < map[0].length && map[x][y + 1] != null && (target.getIntersection() & (1 << (NORTH - 1))) != 0 && (map[x][y + 1].getIntersection() & (1 << (SOUTH - 1))) != 0) {
+    if (y + 1 < map[0].length && map[x][y + 1] != null && (target.getIntersection()[NORTH] != 0) && (map[x][y + 1].getIntersection()[SOUTH] != 0)) {
         if (y < y + 1) {
             target.setConnection(NORTH);
         } else {
@@ -105,7 +108,7 @@ public class Editor implements Serializable
     }
 
     // Check and set connection for EAST
-    if (x + 1 < map.length && map[x + 1][y] != null && (target.getIntersection() & (1 << (EAST - 1))) != 0 && (map[x + 1][y].getIntersection() & (1 << (WEST - 1))) != 0) {
+    if (x + 1 < map.length && map[x + 1][y] != null && (target.getIntersection()[EAST]) != 0 && (map[x + 1][y].getIntersection()[WEST]) != 0) {
         if (x < x + 1) {
             target.setConnection(EAST);
         } else {
@@ -114,7 +117,7 @@ public class Editor implements Serializable
     }
 
     // Check and set connection for SOUTH
-    if (y - 1 >= 0 && map[x][y - 1] != null && (target.getIntersection() & (1 << (SOUTH - 1))) != 0 && (map[x][y - 1].getIntersection() & (1 << (NORTH - 1))) != 0) {
+    if (y - 1 >= 0 && map[x][y - 1] != null && (target.getIntersection()[SOUTH]) != 0 && (map[x][y - 1].getIntersection()[NORTH]) != 0) {
         if (y > y - 1) {
             target.setConnection(SOUTH);
         } else {
@@ -123,7 +126,7 @@ public class Editor implements Serializable
     }
 
     // Check and set connection for WEST
-    if (x - 1 >= 0 && map[x - 1][y] != null && (target.getIntersection() & (1 << (WEST - 1))) != 0 && (map[x - 1][y].getIntersection() & (1 << (EAST - 1))) != 0) {
+    if (x - 1 >= 0 && map[x - 1][y] != null && (target.getIntersection()[WEST]) != 0 && (map[x - 1][y].getIntersection()[EAST]) != 0) {
         if (x > x - 1) {
             target.setConnection(WEST);
         } else {
@@ -133,7 +136,7 @@ public class Editor implements Serializable
 
     // Check and set connection for NORTH-EAST
     if (x + 1 < map.length && y + 1 < map[0].length && map[x + 1][y + 1] != null) {
-        if ((map[x][y + 1] != null || map[x + 1][y] != null) && (target.getIntersection() & (1 << (NE - 1))) != 0 && (map[x + 1][y + 1].getIntersection() & (1 << (SW - 1))) != 0) {
+        if ((map[x][y + 1] != null || map[x + 1][y] != null) && (target.getIntersection()[NE]) != 0 && (map[x + 1][y + 1].getIntersection()[SW]) != 0) {
             if (x < x + 1 && y < y + 1) {
                 target.setConnection(NE);
             } else {
@@ -144,7 +147,7 @@ public class Editor implements Serializable
 
     // Check and set connection for SOUTH-EAST
     if (x + 1 < map.length && y - 1 >= 0 && map[x + 1][y - 1] != null) {
-        if ((map[x][y - 1] != null || map[x + 1][y] != null) && (target.getIntersection() & (1 << (SE - 1))) != 0 && (map[x + 1][y - 1].getIntersection() & (1 << (NW - 1))) != 0) {
+        if ((map[x][y - 1] != null || map[x + 1][y] != null) && (target.getIntersection()[SE]) != 0 && (map[x + 1][y - 1].getIntersection()[NW]) != 0) {
             if (x < x + 1 && y > y - 1) {
                 target.setConnection(SE);
             } else {
@@ -155,7 +158,7 @@ public class Editor implements Serializable
 
     // Check and set connection for SOUTH-WEST
     if (x - 1 >= 0 && y - 1 >= 0 && map[x - 1][y - 1] != null) {
-        if ((map[x][y - 1] != null || map[x - 1][y] != null) && (target.getIntersection() & (1 << (SW - 1))) != 0 && (map[x - 1][y - 1].getIntersection() & (1 << (NE - 1))) != 0) {
+        if ((map[x][y - 1] != null || map[x - 1][y] != null) && (target.getIntersection()[SW]) != 0 && (map[x - 1][y - 1].getIntersection()[NE]) != 0) {
             if (x > x - 1 && y > y - 1) {
                 target.setConnection(SW);
             } else {
@@ -166,7 +169,7 @@ public class Editor implements Serializable
 
     // Check and set connection for NORTH-WEST
     if (x - 1 >= 0 && y + 1 < map[0].length && map[x - 1][y + 1] != null) {
-        if ((map[x][y + 1] != null || map[x - 1][y] != null) && (target.getIntersection() & (1 << (NW - 1))) != 0 && (map[x - 1][y + 1].getIntersection() & (1 << (SE - 1))) != 0) {
+        if ((map[x][y + 1] != null || map[x - 1][y] != null) && (target.getIntersection()[NW]) != 0 && (map[x - 1][y + 1].getIntersection()[SE]) != 0) {
             if (x > x - 1 && y < y + 1) {
                 target.setConnection(NW);
             } else {
@@ -183,7 +186,7 @@ public class Editor implements Serializable
     }
 
     private boolean connectionJudge(EditorRoadChunk connectToChunk, EditorRoadChunk target, int facing) {
-        if (connectToChunk != null && (connectToChunk.getIntersection() & (1 << (facing - 1))) != 0) {
+        if (connectToChunk != null && (connectToChunk.getIntersection()[facing]) != 0) {
             return true;
         }
         return false;
@@ -221,6 +224,16 @@ public class Editor implements Serializable
         this.map = fileManager.getMap();
         this.trafficLightGroup = fileManager.getTrafficLightGroup();
         this.trafficLightGroupTimer = fileManager.getTrafficLightGroupTimer();
+    }
+
+    public String assignPath(Scanner input) {
+        System.out.print("\nEnter the file path where you want to save the data:");
+        String path = input.nextLine();
+
+        System.out.print("\nEnter the file name:");
+        String fileName = input.nextLine();
+
+        return path + "\\" + fileName+".obj";
     }
 
 }
