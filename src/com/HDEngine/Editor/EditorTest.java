@@ -1,6 +1,6 @@
 package com.HDEngine.Editor;
 
-import com.HDEngine.Utilities.FileManager;
+import com.HDEngine.Utilities.FileManageTools.FileManager;
 import java.util.Scanner;
 
 public class EditorTest {
@@ -18,7 +18,7 @@ public class EditorTest {
         }
         //System.out.println(editor.getChunk(ID_X, ID_Y));
         FileManager fileManager = editor.exportData();
-        fileManager.saveToFile("D:\\coding\\java\\Project\\human.drive--A_traffic_simulator\\src\\com\\HDEngine\\Utilities\\SavedFile\\editor_map.obj");
+        fileManager.saveToFile("src/SavedFile/editor_map.obj");
         input.close();
     }
 }

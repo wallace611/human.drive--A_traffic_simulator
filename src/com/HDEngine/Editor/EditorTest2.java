@@ -1,6 +1,6 @@
 package com.HDEngine.Editor;
 
-import com.HDEngine.Utilities.FileManager;
+import com.HDEngine.Utilities.FileManageTools.FileManager;
 import java.util.Scanner;
 
 public class EditorTest2 {
@@ -10,7 +10,7 @@ public class EditorTest2 {
         int ID_X = 0, ID_Y = 0, runset=0;
         runset = input.nextInt();
         Editor editor = new Editor();
-        FileManager loadedFileManager = FileManager.loadFromFile("D:\\coding\\java\\Project\\human.drive--A_traffic_simulator\\src\\com\\HDEngine\\Utilities\\SavedFile\\editor_map.obj");
+        FileManager loadedFileManager = FileManager.loadFromFile("src/com/HDEngine/Utilities/SavedFile/editor_map.obj");
         if (loadedFileManager != null) 
         {
             editor.importData(loadedFileManager);

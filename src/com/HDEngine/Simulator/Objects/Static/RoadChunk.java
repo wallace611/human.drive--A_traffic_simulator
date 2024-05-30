@@ -5,8 +5,6 @@ import com.HDEngine.Simulator.Objects.HDObject;
 import com.HDEngine.Simulator.Components.RoadDirectionManager;
 import com.HDEngine.Utilities.Vector2D;
 
-import java.util.ArrayList;
-
 public class RoadChunk extends HDObject {
     private final RoadDirectionManager roadDir;
     private final CollisionArea roadArea;
@@ -50,15 +48,20 @@ public class RoadChunk extends HDObject {
 
     public void spawnVehicle(Vehicle car) {
         carArrived(car);
-        car.setLocation(location);
+        car.setGlobalLocation(getGlobalLocation());
     }
 
     public void carArrived(Vehicle car) {
+        System.out.println("Arrived!");
         try {
+            Vector2D locTmp = car.getGlobalLocation();
             RoadChunk newTarget = roadDir.accessRoad();
             newTarget.addChild(car);
             childRemoveList.add(car);
-            car.setTargetLocation(newTarget.getLocation());
+            car.setTargetLocation(newTarget.getGlobalLocation());
+            car.setGlobalLocation(locTmp);
+            System.out.println(newTarget.getGlobalLocation());
+            System.out.println(car.getGlobalLocation());
         } catch (Exception e) {
             car.kill();
             childRemoveList.add(car);
@@ -67,13 +70,6 @@ public class RoadChunk extends HDObject {
     }
 
     public CollisionArea getRoadArea() {
-        return new CollisionArea(
-                roadArea.getLocation().add(location),
-                0,
-                roadArea.getOffset());
-    }
-
-    public CollisionArea getRoadAreaRef() {
         return roadArea;
     }
 }

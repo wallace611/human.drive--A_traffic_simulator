@@ -9,15 +9,14 @@ public class Vehicle extends HDObject {
     protected boolean arrived;
     protected double speed; // x meters per second
     protected Vector2D targetLocation;
-    protected boolean killed;
     protected CollisionArea collision;
     protected CollisionArea frontCollision;
 
     public Vehicle(double speed) {
         this.speed = speed;
-        collision = new CollisionArea(new Vector2D(), 0.0f, new Vector2D(50, 25));
+        collision = new CollisionArea(new Vector2D(0, 0), 0.0f, new Vector2D(50, 25));
         collision.setParent(this);
-        frontCollision = new CollisionArea(new Vector2D(10, 0), 90f, new Vector2D(25, 50));
+        frontCollision = new CollisionArea(new Vector2D(50, 0), 0.0f, new Vector2D(10, 10));
         frontCollision.setParent(this);
         targetLocation = null;
         arrived = false;
@@ -37,17 +36,33 @@ public class Vehicle extends HDObject {
     }
 
     private void move(double deltaTime) {
-        Vector2D moveDir = targetLocation.sub(location);
-        try {
-            Vector2D moveSpd = moveDir.normalize().multiply(deltaTime * speed);
-            if (moveDir.getMagnitude() < moveSpd.getMagnitude()) {
-                arrived = true;
-            } else {
-                rotation = toDegrees(atan2(moveSpd.y, moveSpd.x));
-                location.addOn(moveSpd);
-            }
-        } catch (Exception e) {
+        if (targetLocation == null) {
             arrived = true;
+            return;
+        }
+
+        Vector2D currentLocation = getGlobalLocation();
+        Vector2D moveDir = targetLocation.sub(currentLocation);
+        double distanceToTarget = moveDir.getMagnitude();
+
+        if (distanceToTarget == 0) {
+            arrived = true;
+            return;
+        }
+
+        Vector2D moveSpd = moveDir.normalize().multiply(deltaTime * speed);
+        double moveDistance = moveSpd.getMagnitude();
+
+        if (distanceToTarget <= moveDistance) {
+            // 如果即将移动的距离大于或等于到目标的距离，认为已到达
+            setGlobalLocation(targetLocation); // 直接设置位置为目标位置
+            arrived = true;
+        } else {
+            // 更新位置和旋转
+            rotation = toDegrees(atan2(moveDir.y, moveDir.x));
+            Vector2D newLocation = currentLocation.add(moveSpd);
+            setGlobalLocation(newLocation); // 更新全局位置
+            arrived = false;
         }
     }
 
@@ -57,7 +72,6 @@ public class Vehicle extends HDObject {
         if (parent != null) {
             parent.removeChildRecursively(this);
         }
-        killed = true;
     }
 
     public boolean isKilled() {
@@ -69,27 +83,15 @@ public class Vehicle extends HDObject {
     }
 
     public CollisionArea getCollision() {
-        return new CollisionArea(
-                collision.getLocation().add(location),
-                collision.getRotation() + rotation,
-                collision.getOffset()
-        );
-    }
-
-    public CollisionArea getCollisionRef() {
         return collision;
     }
 
     public CollisionArea getFrontCollision() {
-        return new CollisionArea(
-                frontCollision.getLocation().add(location),
-                frontCollision.getRotation() + rotation,
-                frontCollision.getOffset()
-        );
+        return frontCollision;
     }
 
-    public CollisionArea getFrontCollisionRef() {
-        return frontCollision;
+    public void collide(Vehicle target) {
+
     }
 
     public Vector2D getTargetLocation() {

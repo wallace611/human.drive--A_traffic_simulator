@@ -1,20 +1,22 @@
-package com.HDEngine.Simulator.Render;
+package com.HDEngine.Utilities.Render;
 
 import com.HDEngine.Simulator.Objects.Dynamic.Vehicle;
 import com.HDEngine.Simulator.Objects.HDObject;
 import com.HDEngine.Simulator.Objects.Static.CollisionArea;
+import com.HDEngine.Simulator.Objects.Static.RoadChunk;
 import com.HDEngine.Utilities.Vector2D;
 import processing.core.PApplet;
+
 import static java.lang.Math.*;
 import javax.swing.*;
 import java.util.ArrayList;
-import java.util.Collection;
 
 public class RenderWindow extends PApplet {
     private ArrayList<HDObject> objToRender;
     private Vector2D camLoc;
     private float camRot;
     private float camScale;
+    private boolean renderCollisionArea;
 
     public RenderWindow(ArrayList<HDObject> renderListRef) {
         super();
@@ -22,6 +24,7 @@ public class RenderWindow extends PApplet {
         camLoc = new Vector2D();
         camRot = 0.0f;
         camScale = 1.0f;
+        renderCollisionArea = true;
     }
 
     @Override
@@ -47,37 +50,75 @@ public class RenderWindow extends PApplet {
         scale(camScale);
         rotate(camRot);
         translate((float) camLoc.x, (float) camLoc.y);
-        // 平移回摄像机位置的相反方向
         translate(-centerX, -centerY);
 
 
         HDObject[] tmp = new ArrayList<>(objToRender).toArray(new HDObject[0]);
         for (HDObject object : tmp) {
+            if (object.isKilled()) continue;
             pushMatrix();
-            if (object instanceof CollisionArea ca) {
-                float x = (float) ((float) object.getParent().getLocation().x + object.getLocation().x);
-                float y = (float) ((float) object.getParent().getLocation().y + object.getLocation().y);
-                float r = radians((float) (object.getParent().getRotation() + object.getRotation()));
-                float w = (float) ca.getOffset().x;
-                float h = (float) ca.getOffset().y;
 
-                translate(x, y);
-                rotate(r);
-                rect(-w / 2, -h / 2, w, h);
-            } else {
-                float x = (float) object.getLocation().x;
-                float y = (float) object.getLocation().y;
-                float r = radians((float) object.getRotation());
-                float s = (float) object.getScale();
+
+            float x = (float) object.getGlobalLocation().x;
+            float y = (float) object.getGlobalLocation().y;
+            float r = radians((float) object.getGlobalRotation());
+            float s = (float) object.getGlobalScale();
+
+            translate(x, y);
+            rotate(r);
+            scale(s);
+            if (object.getSprite() != null && object.getSprite().getImage() != null) {
                 float w = object.getSprite().width;
                 float h = object.getSprite().height;
-
-                translate(x, y);
-                rotate(r);
-                scale(s);
                 image(object.getSprite(), -w / 2, -h / 2);
             }
+
             popMatrix();
+            if (renderCollisionArea) {
+                pushMatrix();
+
+                CollisionArea ca = null;
+                if (object instanceof RoadChunk rc) {
+                    ca = rc.getRoadArea();
+                } else if (object instanceof Vehicle v) {
+                    ca = v.getCollision();
+                }
+                if (ca != null) {
+                    x = (float) ca.getGlobalLocation().x;
+                    y = (float) ca.getGlobalLocation().y;
+                    r = radians((float) ca.getGlobalRotation());
+                    s = (float) ca.getGlobalScale();
+                    float w = (float) ca.getOffset().x;
+                    float h = (float) ca.getOffset().y;
+
+                    translate(x, y);
+                    rotate(r);
+                    scale(s);
+                    fill(173, 216, 230, 128);
+                    rect(-w / 2, -h / 2, w, h);
+                }
+
+                popMatrix();
+                if (object instanceof Vehicle v) {
+                    ca = v.getFrontCollision();
+                }
+                pushMatrix();
+                if (ca != null) {
+                    x = (float) ca.getGlobalLocation().x;
+                    y = (float) ca.getGlobalLocation().y;
+                    r = radians((float) ca.getGlobalRotation());
+                    s = (float) ca.getGlobalScale();
+                    float w = (float) ca.getOffset().x;
+                    float h = (float) ca.getOffset().y;
+
+                    translate(x, y);
+                    rotate(r);
+                    scale(s);
+                    fill(173, 216, 230, 128);
+                    rect(-w / 2, -h / 2, w, h);
+                }
+                popMatrix();
+            }
         }
     }
 

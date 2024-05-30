@@ -1,15 +1,9 @@
 package com.HDEngine.Simulator;
 
-import com.HDEngine.Simulator.Objects.Static.World;
+import com.HDEngine.Utilities.FileManageTools.FileManager;
 
 public class Simulator {
-    World simulateWorld;
-
-    public Simulator() {
-
-    }
-    public static void main(String[] args) throws InterruptedException {
-
-
+    public static void main(String[] args) {
+        FileManager file = FileManager.loadFromFile("src/com/HDEngine/Utilities/SavedFile/editor_map.obj");
     }
 }

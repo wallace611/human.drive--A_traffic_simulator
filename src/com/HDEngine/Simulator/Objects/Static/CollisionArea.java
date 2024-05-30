@@ -18,11 +18,17 @@ public class CollisionArea extends HDObject {
     // return 4 vertex of the collision shape
     public Vector2D[] getVertex() {
         Vector2D[] vertices = new Vector2D[4];
-        double rot = rotation;
-        vertices[0] = location.add(offset.rotateDeg(rot));
-        vertices[1] = location.add((new Vector2D(-offset.x, offset.y)).rotateDeg(rot));
-        vertices[2] = location.sub(offset.rotateDeg(rot));
-        vertices[3] = location.add((new Vector2D(offset.x, -offset.y)).rotateDeg(rot));
+        double globalRotation = getGlobalRotation();
+        double globalScale = getGlobalScale();
+        Vector2D globalLocation = getGlobalLocation();
+
+        // 缩放偏移量
+        Vector2D scaledOffset = offset.multiply(globalScale);
+
+        vertices[0] = globalLocation.add(scaledOffset.rotateDeg(globalRotation));
+        vertices[1] = globalLocation.add((new Vector2D(-scaledOffset.x, scaledOffset.y)).rotateDeg(globalRotation));
+        vertices[2] = globalLocation.sub(scaledOffset.rotateDeg(globalRotation));
+        vertices[3] = globalLocation.add((new Vector2D(scaledOffset.x, -scaledOffset.y)).rotateDeg(globalRotation));
         return vertices;
     }
 
@@ -70,22 +76,6 @@ public class CollisionArea extends HDObject {
             if (projection > max) max = projection;
         }
         return new double[]{min, max};
-    }
-
-    public Vector2D getLocation() {
-        return new Vector2D(location);
-    }
-
-    public void setLocation(Vector2D location) {
-        this.location = new Vector2D(location);
-    }
-
-    public double getRotation() {
-        return rotation;
-    }
-
-    public void setRotation(double rotation) {
-        this.rotation = rotation;
     }
 
     public Vector2D getOffset() {
