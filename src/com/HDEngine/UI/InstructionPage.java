@@ -51,7 +51,7 @@ public class InstructionPage extends JFrame {
 
         // Create a JTextPane for displaying text content
         JTextPane textPane = new JTextPane();
-        textPane.setBackground(Color.DARK_GRAY); // 设置文本区域的背景色为深灰色
+        textPane.setBackground(Color.DARK_GRAY);
         textPane.setForeground(Color.WHITE);
         textPane.setEditable(false); // Set the text area to be non-editable
 
@@ -63,23 +63,19 @@ public class InstructionPage extends JFrame {
         StyleConstants.setForeground(normal, Color.WHITE);
         
         bottomPanel = new JPanel(new FlowLayout(FlowLayout.TRAILING));  // Initialize bottomPanel
-        bottomPanel.setBackground(Color.DARK_GRAY); // 设置底部面板的背景色为深灰色
+        bottomPanel.setBackground(Color.DARK_GRAY);
         bottomPanel.add(okRadioButton);
         bottomPanel.add(btn);
 
 
         try {
-            // 在插入第一行文本之前，创建一个新的 SimpleAttributeSet 并将对齐方式设置为居中
             SimpleAttributeSet center = new SimpleAttributeSet();
             StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
 
-            // 插入第一行文本
             doc.insertString(doc.getLength(), "請詳閱以下使用須知，以助於使用者使用所有功能 :\n\n", normal); 
             
-            // 设置第一行文本的段落样式为居中对齐
             doc.setParagraphAttributes(doc.getLength()-38, 38, center, false);
 
-            // 继续添加左对齐的文本
             doc.insertString(doc.getLength(), "*待新增，程式使用須知*\n", normal);
             doc.insertString(doc.getLength(), "\n*1*\n\n", normal);
             doc.insertString(doc.getLength(), "\n*2*\n\n", normal);
@@ -88,13 +84,10 @@ public class InstructionPage extends JFrame {
             doc.insertString(doc.getLength(), "\n*5*\n\n", normal);
             doc.insertString(doc.getLength(), "\n*6*\n\n", normal);
             
-            // 用于右下角 OK 按钮的文本
             doc.insertString(doc.getLength(), "\n(點擊右下角OK以退出此頁面)\n", normal);  
             
-            // 设置滚动条到最底部
             textPane.setCaretPosition(doc.getLength());
             
-            // 在底部添加按钮面板
             textPane.insertComponent(bottomPanel);
         } catch (Exception e) {
             e.printStackTrace();
@@ -112,7 +105,6 @@ public class InstructionPage extends JFrame {
         setResizable(false);
         setVisible(true);
 
-        // 在界面渲染完成后，将滚动条位置设置为顶部
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
