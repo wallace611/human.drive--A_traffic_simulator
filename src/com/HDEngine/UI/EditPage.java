@@ -175,7 +175,7 @@ public class EditPage extends JFrame implements ActionListener {
     private void updateAttributePanel(String string, String buttonId) {
         attributePanel.removeAll(); // Clear existing components
 
-        // Add new JTextFields
+        ////在這邊的panel改紅綠燈或道路需要的參數名稱(jlabel)，可能設判斷每個i要加甚麼jlabel?
         for (int i = 1; i <= 5; i++) {
             JPanel linePanel = new JPanel();
             linePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -238,7 +238,8 @@ public class EditPage extends JFrame implements ActionListener {
             Point newLocation = new Point(xMoved, yMoved);
             ghostWindow.setLocation(newLocation);
         }
-
+        
+        //在這邊擷取updateAttributePanel的jtextfield然後丟到Dditor就行
         @Override
         public void mouseReleased(MouseEvent e) {
             Point releasePoint = ghostWindow.getLocation();
@@ -249,7 +250,7 @@ public class EditPage extends JFrame implements ActionListener {
             } else {
                 System.out.println("Dropped outside screenPanel");
             }
-
+            
             ghostWindow.dispose(); // Dispose the drag image window
         }
     }
