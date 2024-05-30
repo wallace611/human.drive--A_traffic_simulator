@@ -1,6 +1,8 @@
 package com.HDEngine.Editor;
 
 import com.HDEngine.Editor.Object.Road.EditorRoadChunk;
+
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.io.*;
 import com.HDEngine.Utilities.FileManager;
@@ -40,7 +42,7 @@ public class Editor implements Serializable
         }
     }
 
-    public void addNewChunk()//create a new chunk
+    /*public void addNewChunk()//create a new chunk
     {
         EditorRoadChunk newRoadChunk = new EditorRoadChunk();
         newRoadChunk.getData();//get ID,StartPoint,speedLimit,intersection,traffic light,weight to other road
@@ -57,6 +59,22 @@ public class Editor implements Serializable
             addToTrafficLightGroup(newRoadChunk);
             newRoadChunk.setTrafficLightTimer(getTrafficLightGroupTimer(group));//set the data of traffic(timer)
         }
+    }*/
+
+    public void addNewChunk() {
+        EditorRoadChunk newRoadChunk = new EditorRoadChunk();
+        newRoadChunk.getData();
+        if(newRoadChunk.outOfMap(map)) {
+            expandMap(map, newRoadChunk);
+        } else {
+            map[newRoadChunk.getIDX()][newRoadChunk.getIDY()] = newRoadChunk;
+            connectionAdd(map, newRoadChunk);
+        }
+        if(newRoadChunk.haveTrafficLight()) {
+            int group = newRoadChunk.getTrafficLightGroup();
+            addToTrafficLightGroup(newRoadChunk);
+            newRoadChunk.setTrafficLightTimer(getTrafficLightGroupTimer(group));
+        }
     }
 
     public void addToTrafficLightGroup(EditorRoadChunk target)//record the traffic light group at map
@@ -64,11 +82,29 @@ public class Editor implements Serializable
         trafficLightGroup[target.getIDX()][target.getIDY()] = target.getTrafficLightGroup();
     }
 
-    public void setTrafficLightGroupTimer()//set group timer
+    /*public void setTrafficLightGroupTimer()//set group timer
     {
         int group = input.nextInt();
         double timer = input.nextDouble();
         trafficLightGroupTimer[group] = timer;
+    }*/
+
+    public void setTrafficLightGroupTimer() {
+        boolean valid = false;
+        while(!valid)
+        {    
+            try {
+                System.out.print("Enter traffic light group number: ");
+                int group = input.nextInt();
+                System.out.print("Enter timer for the group: ");
+                double timer = input.nextDouble();
+                trafficLightGroupTimer[group] = timer;
+                valid = true;
+            } catch (InputMismatchException e) {
+                System.out.println("Input type mismatch. Please enter a valid number.");
+                input.nextLine(); // clear the invalid input
+            }    
+        }
     }
 
     public double getTrafficLightGroupTimer(int group)
@@ -76,7 +112,7 @@ public class Editor implements Serializable
         return trafficLightGroupTimer[group];
     }
 
-    public void addMapRequest(EditorRoadChunk[][] map,EditorRoadChunk target){//to put road chunk into map, target is the one to put in the chunk
+    /*public void addMapRequest(EditorRoadChunk[][] map,EditorRoadChunk target){//to put road chunk into map, target is the one to put in the chunk
         if(map[target.getIDX()][target.getIDY()] == null)
             if(connectionJudge(map[target.getIDX()][target.getIDY()+1], target, SOUTH) && connectionJudge(map[target.getIDX()+1][target.getIDY()], target, WEST) && connectionJudge(map[target.getIDX()][target.getIDY()-1], target, NORTH) && connectionJudge(map[target.getIDX()-1][target.getIDY()], target, EAST))
             {
@@ -87,6 +123,21 @@ public class Editor implements Serializable
         {
             map[target.getIDX()][target.getIDY()] = target;
             chunkCount+=1;
+        }
+    }*/
+
+    public void addMapRequest(EditorRoadChunk[][] map, EditorRoadChunk target) {
+        if(map[target.getIDX()][target.getIDY()] == null) {
+            if(connectionJudge(map[target.getIDX()][target.getIDY()+1], target, SOUTH) &&
+                connectionJudge(map[target.getIDX()+1][target.getIDY()], target, WEST) &&
+                connectionJudge(map[target.getIDY()][target.getIDY()-1], target, NORTH) &&
+                connectionJudge(map[target.getIDX()-1][target.getIDY()], target, EAST)) {
+                map[target.getIDX()][target.getIDY()] = target;
+                chunkCount++;
+            }
+        } else if(chunkCount == 0) {
+            map[target.getIDX()][target.getIDY()] = target;
+            chunkCount++;
         }
     }
 
@@ -192,7 +243,7 @@ public class Editor implements Serializable
         return false;
     }
 
-    private void expandMap(EditorRoadChunk[][]map,EditorRoadChunk target){//expand map if the current new chunk is out of range
+    /*private void expandMap(EditorRoadChunk[][]map,EditorRoadChunk target){//expand map if the current new chunk is out of range
         EditorRoadChunk[][] newmap = new EditorRoadChunk[target.getIDX()+2][target.getIDY()+2];//to keep the margin clear so +2
         int[][] newTrafficLightGroup = new int[target.getIDX()+2][target.getIDY()+2];
         double[] newTrafficLightGroupTimer = new double[target.getIDX()+2];
@@ -207,6 +258,23 @@ public class Editor implements Serializable
             newTrafficLightGroupTimer[i] = trafficLightGroupTimer[i];
         }
         map = newmap;
+        trafficLightGroup = newTrafficLightGroup;
+        trafficLightGroupTimer = newTrafficLightGroupTimer;
+    }*/
+
+    private void expandMap(EditorRoadChunk[][] map, EditorRoadChunk target) {
+        EditorRoadChunk[][] newMap = new EditorRoadChunk[target.getIDX() + 2][target.getIDY() + 2];
+        int[][] newTrafficLightGroup = new int[target.getIDX() + 2][target.getIDY() + 2];
+        double[] newTrafficLightGroupTimer = new double[target.getIDX() + 2];
+
+        for(int i = 0 ; i < map.length ; i++) {
+            for(int j = 0 ; j < map[i].length ; j++) {
+                newMap[i][j] = map[i][j];
+                newTrafficLightGroup[i][j] = trafficLightGroup[i][j];
+            }
+            newTrafficLightGroupTimer[i] = trafficLightGroupTimer[i];
+        }
+        map = newMap;
         trafficLightGroup = newTrafficLightGroup;
         trafficLightGroupTimer = newTrafficLightGroupTimer;
     }

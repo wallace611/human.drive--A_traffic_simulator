@@ -42,43 +42,19 @@ public class EditorRoadChunk implements Serializable
         {
             for (int i = 0; i < 8; i++) {
                 switch (i) {
-                    case 0:
-                        System.out.print("Does East side have intersection (Please input True or False):");
-                    break;
-                
-                    case 1:
-                        System.out.print("Is switching lanes towards North-East allowed? (Please input True or False):");
-                    break;
-
-                    case 2:
-                        System.out.print("Does North side have intersection (Please input True or False):");
-                    break;
-
-                    case 3:
-                        System.out.print("Is switching lanes towards North-West allowed? (Please input True or False):");
-                    break;
-                    
-                    case 4:
-                        System.out.print("Does West side have intersection (Please input True or False):");
-                    break;
-
-                    case 5:
-                        System.out.print("Is switching lanes towards South-West allowed? (Please input True or False):");
-                    break;
-
-                    case 6:
-                        System.out.print("Does South side have intersection (Please input True or False):");
-                    break;
-
-                    case 7:
-                        System.out.print("Is switching lanes towards South-East allowed? (Please input True or False):");
-                    break;
+                    case 0:System.out.print("Does East side have intersection (Please input True or False):");break;
+                    case 1:System.out.print("Is switching lanes towards North-East allowed? (Please input True or False):");break;
+                    case 2:System.out.print("Does North side have intersection (Please input True or False):");break;
+                    case 3:System.out.print("Is switching lanes towards North-West allowed? (Please input True or False):");break;
+                    case 4:System.out.print("Does West side have intersection (Please input True or False):");break;
+                    case 5:System.out.print("Is switching lanes towards South-West allowed? (Please input True or False):");break;
+                    case 6:System.out.print("Does South side have intersection (Please input True or False):");break;
+                    case 7:System.out.print("Is switching lanes towards South-East allowed? (Please input True or False):");break;
                 }
                 try
                 {
                     String input = this.input.next(); // Read user input
-                    input.toLowerCase();
-                    if (input.equals("true")  || input.equals("t")) {
+                    if (input.equalsIgnoreCase("true")  || input.equalsIgnoreCase("t")) {
                         // Set the bit corresponding to the direction
                         this.intersection[i] = 1; // Shift bit to positions 0, 2, 4, and 6
                     } else 
@@ -299,9 +275,13 @@ public class EditorRoadChunk implements Serializable
     }
 
     @Override
-    public String toString()
-    {
-        return "intersection =" + intersection + " , ID = " + idX + "," + idY + " , start = " + startFlag +  ", Speed limit = " + speedLimit + " ,traffic light falg = " + trafficLightFlag + " ,connection:" + connectionStatus();
+    public String toString() {
+        return "Intersection = " + Arrays.toString(intersection) +
+                ", ID = " + idX + "," + idY +
+                ", Start = " + startFlag +
+                ", Speed limit = " + speedLimit +
+                ", Traffic light flag = " + trafficLightFlag +
+                ", Connection status = " + connectionStatus();
     }
 
     public void setWeight() 
