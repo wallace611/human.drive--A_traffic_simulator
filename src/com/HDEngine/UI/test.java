@@ -97,27 +97,27 @@ public class test {
 
         @Override
         public void mouseReleased(MouseEvent e) {
-            // 获取拖曳结束后的位置
-            Point screenPoint = e.getLocationOnScreen();
-            Point containerPoint = SwingUtilities.convertPointFromScreen(screenPoint, dragPanel);
-
-            // 检查按钮的位置是否在底部面板的区域内
-            if (bottomPanel.contains(containerPoint)) {
-                // 在拖曳结束后创建新的按钮并添加到 dragPanel 中
-                JButton newButton = new JButton("Drag Me");
-                newButton.setBounds(containerPoint.x, containerPoint.y, component.getWidth(), component.getHeight());
-                newButton.setBackground(Color.LIGHT_GRAY);
-                newButton.setFocusPainted(false);
-                
-                GhostDragListener newGhostDragListener = new GhostDragListener(newButton, dragPanel, bottomPanel);
-                newButton.addMouseListener(newGhostDragListener);
-                newButton.addMouseMotionListener(newGhostDragListener);
-
-                dragPanel.add(newButton);
-                dragPanel.repaint(); // 重新绘制以显示新的按钮
-            }
-
-            ghostWindow.dispose(); // 关闭拖动的影子窗口
+//            // 获取拖曳结束后的位置
+//            Point screenPoint = e.getLocationOnScreen();
+//            Point containerPoint = SwingUtilities.convertPointFromScreen(screenPoint, dragPanel);
+//
+//            // 检查按钮的位置是否在底部面板的区域内
+//            if (bottomPanel.contains(containerPoint)) {
+//                // 在拖曳结束后创建新的按钮并添加到 dragPanel 中
+//                JButton newButton = new JButton("Drag Me");
+//                newButton.setBounds(containerPoint.x, containerPoint.y, component.getWidth(), component.getHeight());
+//                newButton.setBackground(Color.LIGHT_GRAY);
+//                newButton.setFocusPainted(false);
+//
+//                GhostDragListener newGhostDragListener = new GhostDragListener(newButton, dragPanel, bottomPanel);
+//                newButton.addMouseListener(newGhostDragListener);
+//                newButton.addMouseMotionListener(newGhostDragListener);
+//
+//                dragPanel.add(newButton);
+//                dragPanel.repaint(); // 重新绘制以显示新的按钮
+//            }
+//
+//            ghostWindow.dispose(); // 关闭拖动的影子窗口
         }
     }
 }
