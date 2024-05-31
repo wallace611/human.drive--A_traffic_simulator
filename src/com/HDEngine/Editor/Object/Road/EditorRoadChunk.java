@@ -296,4 +296,46 @@ public class EditorRoadChunk implements Serializable
         }
     }
 
+
+    //function overload for GUI
+
+    public void setIntersection(int[] intersection) {
+        this.intersection = intersection;//需要修改 intersection陣列
+    }
+
+    public void setTrafficLightFlag(boolean trafficLightFlag) {
+        this.trafficLightFlag = trafficLightFlag;
+    }
+
+    /*public void setTrafficLightTimer(double trafficLightTimer) {
+        this.trafficLightTimer = trafficLightTimer;
+    }*/
+
+    public void setTrafficLightGroup(int trafficLightGroup) {
+        this.trafficLightGroup = trafficLightGroup;
+    }
+
+    public void setSpeedLimit(double speedLimit) {
+        this.speedLimit = speedLimit;
+    }
+
+    public void setIdX(int idX) {
+        this.idX = idX;
+    }
+
+    public void setIdY(int idY) {
+        this.idY = idY;
+    }
+
+    public void setStartFlag(boolean startFlag) {
+        this.startFlag = startFlag;
+    }
+
+    public void setWeights(double[] weights) {
+        this.weights = weights;  // 需修改：處理 weights 陣列
+    }
+
+    public void setConnection(int[] connection) {
+        this.connection = connection;  // 需修改：處理 connection 陣列
+    }
 }
