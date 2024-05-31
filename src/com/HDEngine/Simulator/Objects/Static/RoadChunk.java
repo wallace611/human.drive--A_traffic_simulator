@@ -8,6 +8,7 @@ import com.HDEngine.Utilities.Vector2D;
 public class RoadChunk extends HDObject {
     private final RoadDirectionManager roadDir;
     private final CollisionArea roadArea;
+    public boolean hasVehicle = false;
 
     // private ArrayList<Vehicle> children; from HDObject class, containing the cars which are heading here
 
@@ -69,4 +70,5 @@ public class RoadChunk extends HDObject {
     public CollisionArea getRoadArea() {
         return roadArea;
     }
+
 }

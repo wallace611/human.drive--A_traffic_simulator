@@ -25,20 +25,24 @@ public class RenderWindow extends PApplet {
         camLoc = new Vector2D();
         camRot = 0.0f;
         camScale = 1.0f;
-        renderCollisionArea = true;
+        renderCollisionArea = false;
     }
 
     @Override
     public void settings() {
+        System.out.println("Simulator renderer thread: Loading settings...");
         size(800, 600);
+        System.out.println("Simulator renderer thread: Done!");
     }
 
     @Override
     public void setup() {
+        System.out.println("Simulator renderer thread: Setting everything up...");
         frameRate(100);
         background(200);
         translate(0, 0);
         surface.setVisible(false);
+        System.out.println("Simulator renderer thread: All stuff has been set up, it's time for rendering something :D");
     }
     @Override
     public void draw() {
@@ -167,11 +171,5 @@ public class RenderWindow extends PApplet {
 
     public float getCamScale() {
         return camScale;
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new RenderWindow(null);
-        });
     }
 }

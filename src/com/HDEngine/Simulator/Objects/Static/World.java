@@ -3,19 +3,23 @@ package com.HDEngine.Simulator.Objects.Static;
 import com.HDEngine.Simulator.Objects.Dynamic.Vehicle;
 import com.HDEngine.Simulator.Objects.HDObject;
 import com.HDEngine.Utilities.Vector2D;
+import processing.core.PImage;
 
 import java.util.ArrayList;
 
 public class
 World extends HDObject {
-    private RoadChunk[][] chunks;
-    private RoadChunk[] summonChunk;
+    private final RoadChunk[][] chunks;
+    private final ArrayList<RoadChunk> summonChunk;
     private int roadCount;
+    private int count = 0;
+    private PImage carImage;
 
     // private ArrayList<HDObject> children; from HDObject class, containing the RoadChunk and Vehicle which need to be rendered
 
     public World(int x, int y) {
         chunks = new RoadChunk[x][y];
+        summonChunk = new ArrayList<>();
         roadCount = 0;
     }
 
@@ -41,19 +45,45 @@ World extends HDObject {
     @Override
     public void tick(double deltaTime) {
         super.tick(deltaTime);
+        collisionDetection();
+
+        if (count % 200 == 0) {
+            count = 0;
+            spawnVehicleThroughArr();
+        }
+
+        for (RoadChunk[] rcArr : chunks) {
+            for (RoadChunk rc : rcArr) {
+                if (rc != null) {
+                    rc.tick(deltaTime);
+                    rc.hasVehicle = false;
+                }
+            }
+        }
+    }
+
+    private void collisionDetection() {
         // collision detection
         for (int i = roadCount; i < children.size(); i++) {
-            Vehicle currentCar = (Vehicle) children.get(i);
+            Vehicle currentCar = (Vehicle) children.get(i); // the vehicle to detect the collision
             CollisionArea frontCA = currentCar.getFrontCollision();
-            ArrayList<RoadChunk> hitRC = new ArrayList<>();
+            CollisionArea backCA = currentCar.getCollision();
+
+            ArrayList<RoadChunk> hitFRC = new ArrayList<>();
+            ArrayList<RoadChunk> hitBRC = new ArrayList<>();
             for (int j = 0; j < roadCount; j++) {
                 if (children.get(j) instanceof RoadChunk rc) {
                     if (CollisionArea.areOverlapping(frontCA, rc.getRoadArea())) {
-                        hitRC.add(rc);
+                        hitFRC.add(rc);
+                        rc.hasVehicle = true;
+                    }
+                    if (CollisionArea.areOverlapping(backCA, rc.getRoadArea())) {
+                        hitBRC.add(rc);
+                        rc.hasVehicle = true;
                     }
                 }
             }
-            for (RoadChunk rc : hitRC) {
+            for (RoadChunk rc : hitFRC) {
                 for (HDObject object : rc.getChildren()) {
                     if (object instanceof Vehicle v) {
                         if (CollisionArea.areOverlapping(v.getCollision(), frontCA)) {
@@ -63,12 +93,16 @@ World extends HDObject {
                 }
             }
         }
+    }
 
-        for (RoadChunk[] rcArr : chunks) {
-            for (RoadChunk rc : rcArr) {
-                if (rc != null) {
-                    rc.tick(deltaTime);
-                }
+    public void spawnVehicleThroughArr() {
+        for (RoadChunk rc : summonChunk) {
+            if (!rc.hasVehicle) {
+                Vehicle v = new Vehicle(100);
+                v.setScale(1.5f);
+                v.setSprite(carImage);
+                rc.spawnVehicle(v);
+                children.add(v);
             }
         }
     }
@@ -104,7 +138,15 @@ World extends HDObject {
         }
     }
 
-    public RoadChunk[] getSummonChunk() {
+    public ArrayList<RoadChunk> getSummonChunk() {
         return summonChunk;
+    }
+
+    public PImage getCarImage() {
+        return carImage;
+    }
+
+    public void setCarImage(PImage carImage) {
+        this.carImage = carImage;
     }
 }

@@ -8,15 +8,23 @@ import com.HDEngine.Utilities.Vector2D;
 public class Vehicle extends HDObject {
     protected boolean arrived;
     protected double speed; // x meters per second
+    protected double maxSpeed;
+    protected double acceleration;
+    protected double deceleration;
+    protected MovingState movingState;
     protected Vector2D targetLocation;
     protected CollisionArea collision;
     protected CollisionArea frontCollision;
 
-    public Vehicle(double speed) {
-        this.speed = speed;
-        collision = new CollisionArea(new Vector2D(0, 0), 0.0f, new Vector2D(25, 10));
+    public Vehicle(double maxSpeed) {
+        speed = 100.0f;
+        this.maxSpeed = maxSpeed;
+        acceleration = 50.0f;
+        deceleration = 80.0f;
+        movingState = MovingState.IDLE;
+        collision = new CollisionArea(new Vector2D(-20, 0), 0.0f, new Vector2D(30, 10));
         collision.setParent(this);
-        frontCollision = new CollisionArea(new Vector2D(50, 0), 0.0f, new Vector2D(25, 15));
+        frontCollision = new CollisionArea(new Vector2D(30, 0), 0.0f, new Vector2D(15, 15));
         frontCollision.setParent(this);
         targetLocation = null;
         arrived = false;
@@ -32,7 +40,24 @@ public class Vehicle extends HDObject {
     public void tick(double deltaTime) {
         super.tick(deltaTime);
 
+        setNextSpeed(deltaTime);
         move(deltaTime);
+        movingState = MovingState.FORWARD;
+    }
+
+    private void setNextSpeed(double deltaTime) {
+        switch (movingState) {
+            case FORWARD:
+                setSpeed(speed + acceleration * deltaTime);
+                break;
+
+            case BREAK:
+                setSpeed(speed - acceleration * deltaTime);
+                break;
+
+            case IDLE:
+                break;
+        }
     }
 
     private void move(double deltaTime) {
@@ -64,7 +89,6 @@ public class Vehicle extends HDObject {
             setGlobalLocation(newLocation); // 更新全局位置
             arrived = false;
         }
-        speed = 100;
     }
 
     @Override
@@ -83,6 +107,11 @@ public class Vehicle extends HDObject {
         return speed;
     }
 
+    public void setSpeed(double speed) {
+        if (speed < 0) this.speed = 0;
+        else this.speed = Math.min(speed, maxSpeed);
+    }
+
     public CollisionArea getCollision() {
         return collision;
     }
@@ -93,7 +122,7 @@ public class Vehicle extends HDObject {
 
     public void frontCollide(HDObject target) {
         if (target != this) {
-            speed = 0;
+            movingState = MovingState.BREAK;
         }
     }
 
