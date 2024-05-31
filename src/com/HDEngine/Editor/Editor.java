@@ -43,24 +43,24 @@ public class Editor implements Serializable
         }
     }
 
-    /*public void addNewChunk()//create a new chunk
+    public void addNewChunk()//create a new chunk
     {
         EditorRoadChunk newRoadChunk = new EditorRoadChunk();
         newRoadChunk.getData();//get ID,StartPoint,speedLimit,intersection,traffic light,weight to other road
-        if(newRoadChunk.outOfMap(map))//the ID is out of map
+        /*if(newRoadChunk.outOfMap(map))//the ID is out of map
             expandMap(map,newRoadChunk);
         else
-        {
+        {*/
             map[newRoadChunk.getIDX()][newRoadChunk.getIDY()] = newRoadChunk;
             connectionAdd(map, newRoadChunk);
-        }
-        if(newRoadChunk.haveTrafficLight())//there is a traffic light in this chunk
+        //}
+        /*if(newRoadChunk.haveTrafficLight())//there is a traffic light in this chunk
         {
             int group = newRoadChunk.getTrafficLightGroup();//which group is the traffic light in
             addToTrafficLightGroup(newRoadChunk);
             newRoadChunk.setTrafficLightTimer(getTrafficLightGroupTimer(group));//set the data of traffic(timer)
-        }
-    }*/
+        }*/
+    }
 
     public void addNewChunk(int id,int IDX, int IDY) {
         EditorRoadChunk newRoadChunk = new EditorRoadChunk();
