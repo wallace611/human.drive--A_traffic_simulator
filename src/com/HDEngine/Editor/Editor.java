@@ -18,6 +18,7 @@ public class Editor implements Serializable
     private static final int SW = 5;
     private static final int NW = 3;
     private EditorRoadChunk[][] map = new EditorRoadChunk[102][102];//if possible, keep the outer side of the array clear(eg. map[0][0] should always be null)
+    private EditorRoadChunk[] templateChunks = new EditorRoadChunk[10];
     private int[][] trafficLightGroup = new int[102][102];//if(is same group){[a][a] = [b][b]for road_a and road_b}
     private double[] trafficLightGroupTimer = new double[102];
     private int chunkCount = 0;
@@ -61,20 +62,20 @@ public class Editor implements Serializable
         }
     }*/
 
-    public void addNewChunk() {
+    public void addNewChunk(int id,int IDX, int IDY) {
         EditorRoadChunk newRoadChunk = new EditorRoadChunk();
-        newRoadChunk.getData();
-        if(newRoadChunk.outOfMap(map)) {
+        newRoadChunk = templateChunks[id];
+        /*if(newRoadChunk.outOfMap(map)) {
             expandMap(map, newRoadChunk);
-        } else {
-            map[newRoadChunk.getIDX()][newRoadChunk.getIDY()] = newRoadChunk;
+        } else {*/
+            map[IDX][IDY] = newRoadChunk;
             connectionAdd(map, newRoadChunk);
-        }
-        if(newRoadChunk.haveTrafficLight()) {
+        //}
+        /*if(newRoadChunk.haveTrafficLight()) {
             int group = newRoadChunk.getTrafficLightGroup();
             addToTrafficLightGroup(newRoadChunk);
             newRoadChunk.setTrafficLightTimer(getTrafficLightGroupTimer(group));
-        }
+        }*/
     }
 
     public void addToTrafficLightGroup(EditorRoadChunk target)//record the traffic light group at map
@@ -262,7 +263,7 @@ public class Editor implements Serializable
         trafficLightGroupTimer = newTrafficLightGroupTimer;
     }*/
 
-    private void expandMap(EditorRoadChunk[][] map, EditorRoadChunk target) {
+    /*private void expandMap(EditorRoadChunk[][] map, EditorRoadChunk target) {
         EditorRoadChunk[][] newMap = new EditorRoadChunk[target.getIDX() + 2][target.getIDY() + 2];
         int[][] newTrafficLightGroup = new int[target.getIDX() + 2][target.getIDY() + 2];
         double[] newTrafficLightGroupTimer = new double[target.getIDX() + 2];
@@ -277,7 +278,7 @@ public class Editor implements Serializable
         map = newMap;
         trafficLightGroup = newTrafficLightGroup;
         trafficLightGroupTimer = newTrafficLightGroupTimer;
-    }
+    }*/
 
     public FileManager exportData() 
     {
@@ -306,9 +307,8 @@ public class Editor implements Serializable
 
 
     public void updateRoadParameter(String buttonId, int parameterIndex, String newValue) {
-        int chunkGroup = Integer.parseInt(buttonId.replace("roadButton", ""));
-        EditorRoadChunk roadChunk = findRoadChunkById(chunkGroup);
-        if (roadChunk != null) {
+        int id = Integer.parseInt(buttonId.replace("roadButton", ""));
+        if (templateChunks[id] != null) {
             switch (parameterIndex) {
                 case 1:
                     break;
@@ -319,20 +319,14 @@ public class Editor implements Serializable
     
     public void updateTrafficLightParameter(String buttonId, int parameterIndex, String newValue) {
         int id = Integer.parseInt(buttonId.replace("trafficlightButton", ""));
-        EditorRoadChunk roadChunk = findRoadChunkById(id);
-        if (roadChunk != null) {
+        if (templateChunks[id] != null) 
+        {
             switch (parameterIndex) {
                 case 1:
-                    roadChunk.setTrafficLightTimer(Double.parseDouble(newValue));
+                    templateChunks[id].setTrafficLightTimer(Double.parseDouble(newValue));
                     break;
                 // 根據需要添加更多參數的更新邏輯
             }
         }
-    }
-    
-    private EditorRoadChunk findRoadChunkById(int chunkGroup) {
-        //TODO
-        
-        return null;
     }
 }

@@ -172,10 +172,9 @@ public class EditorRoadChunk implements Serializable
             {
                 this.weights[position] = weight;
                 valid = true;
-            } catch (Exception e) {
-                
+            } catch (InputMismatchException e) {
+                System.out.println("wrong input");
             }
-            
         }
     }
     
