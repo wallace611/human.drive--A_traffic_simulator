@@ -1,5 +1,6 @@
 package com.HDEngine.Simulator;
 
+import com.HDEngine.Editor.Object.Road.EditorRoadChunk;
 import com.HDEngine.Simulator.Objects.Dynamic.Vehicle;
 import com.HDEngine.Simulator.Objects.Static.RoadChunk;
 import com.HDEngine.Simulator.Objects.Static.World;
@@ -12,6 +13,21 @@ import javax.swing.*;
 public class Simulator {
     public static World world;
     public static SimulationPage ui;
+
+    private static World loadFile(String path) {
+        FileManager file = FileManager.loadFromFile("src/SavedFile/editor_map.obj");
+        World world = new World(file.getMap().length, file.getMap()[0].length);
+        for (EditorRoadChunk[] ercArr : file.getMap()) {
+            for (EditorRoadChunk erc : ercArr) {
+                if (erc != null) {
+                    // TODO
+                    RoadChunk rc = new RoadChunk();
+                    world.addRoadChunk(erc.getIDX(), erc.getIDY(), rc);
+                }
+            }
+        }
+        return world;
+    }
 
     private static SimulationPage constructSimulatePage(World world) throws InterruptedException {
         final SimulationPage[] uiContainer = new SimulationPage[1];
@@ -33,7 +49,7 @@ public class Simulator {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        FileManager file = FileManager.loadFromFile("src/SavedFile/editor_map.obj");
+        loadFile("src/SavedFile/editor_map.obj");
 
         world = new World(100, 100);
         ui = constructSimulatePage(world);

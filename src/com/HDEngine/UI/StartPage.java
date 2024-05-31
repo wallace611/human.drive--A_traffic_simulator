@@ -154,5 +154,4 @@ public class StartPage extends JFrame implements ActionListener{
             System.exit(0);
         }
     }
-
 }

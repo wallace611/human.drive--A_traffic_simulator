@@ -5,6 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7ec58115-9cd6-4f8f-9386-46447ab19eb4" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SavedFile/editor_map.obj" beforeDir="false" afterPath="$PROJECT_DIR$/src/SavedFile/editor_map.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Simulator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Simulator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/HDEngine/UI/StartPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/UI/StartPage.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -43,6 +46,7 @@
   "keyToString": {
     "Application.EditorTest.executor": "Debug",
     "Application.Simulator.executor": "Debug",
+    "Application.StartPage.executor": "Debug",
     "Application.Test.executor": "Debug",
     "Downloaded.Files.Path.Enabled": "false",
     "Repository.Attach.Annotations": "false",
@@ -51,7 +55,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "Editor",
+    "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/urmom/IdeaProjects/test",
     "node.js.detected.package.eslint": "true",
