@@ -1,6 +1,8 @@
 package com.HDEngine.Editor;
 
 import com.HDEngine.Editor.Object.Road.EditorRoadChunk;
+
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.io.*;
 import com.HDEngine.Utilities.FileManageTools.FileManager;
@@ -40,19 +42,38 @@ public class Editor implements Serializable
         }
     }
 
-    public void addNewChunk()//create a new chunk
+    /*public void addNewChunk()//create a new chunk
     {
         EditorRoadChunk newRoadChunk = new EditorRoadChunk();
         newRoadChunk.getData();//get ID,StartPoint,speedLimit,intersection,traffic light,weight to other road
         if(newRoadChunk.outOfMap(map))//the ID is out of map
             expandMap(map,newRoadChunk);
         else
+        {
             map[newRoadChunk.getIDX()][newRoadChunk.getIDY()] = newRoadChunk;
+            connectionAdd(map, newRoadChunk);
+        }
         if(newRoadChunk.haveTrafficLight())//there is a traffic light in this chunk
         {
             int group = newRoadChunk.getTrafficLightGroup();//which group is the traffic light in
             addToTrafficLightGroup(newRoadChunk);
             newRoadChunk.setTrafficLightTimer(getTrafficLightGroupTimer(group));//set the data of traffic(timer)
+        }
+    }*/
+
+    public void addNewChunk() {
+        EditorRoadChunk newRoadChunk = new EditorRoadChunk();
+        newRoadChunk.getData();
+        if(newRoadChunk.outOfMap(map)) {
+            expandMap(map, newRoadChunk);
+        } else {
+            map[newRoadChunk.getIDX()][newRoadChunk.getIDY()] = newRoadChunk;
+            connectionAdd(map, newRoadChunk);
+        }
+        if(newRoadChunk.haveTrafficLight()) {
+            int group = newRoadChunk.getTrafficLightGroup();
+            addToTrafficLightGroup(newRoadChunk);
+            newRoadChunk.setTrafficLightTimer(getTrafficLightGroupTimer(group));
         }
     }
 
@@ -61,11 +82,29 @@ public class Editor implements Serializable
         trafficLightGroup[target.getIDX()][target.getIDY()] = target.getTrafficLightGroup();
     }
 
-    public void setTrafficLightGroupTimer()//set group timer
+    /*public void setTrafficLightGroupTimer()//set group timer
     {
         int group = input.nextInt();
         double timer = input.nextDouble();
         trafficLightGroupTimer[group] = timer;
+    }*/
+
+    public void setTrafficLightGroupTimer() {
+        boolean valid = false;
+        while(!valid)
+        {    
+            try {
+                System.out.print("Enter traffic light group number: ");
+                int group = input.nextInt();
+                System.out.print("Enter timer for the group: ");
+                double timer = input.nextDouble();
+                trafficLightGroupTimer[group] = timer;
+                valid = true;
+            } catch (InputMismatchException e) {
+                System.out.println("Input type mismatch. Please enter a valid number.");
+                input.nextLine(); // clear the invalid input
+            }    
+        }
     }
 
     public double getTrafficLightGroupTimer(int group)
@@ -73,7 +112,7 @@ public class Editor implements Serializable
         return trafficLightGroupTimer[group];
     }
 
-    public void addMapRequest(EditorRoadChunk[][] map,EditorRoadChunk target){//to put road chunk into map, target is the one to put in the chunk
+    /*public void addMapRequest(EditorRoadChunk[][] map,EditorRoadChunk target){//to put road chunk into map, target is the one to put in the chunk
         if(map[target.getIDX()][target.getIDY()] == null)
             if(connectionJudge(map[target.getIDX()][target.getIDY()+1], target, SOUTH) && connectionJudge(map[target.getIDX()+1][target.getIDY()], target, WEST) && connectionJudge(map[target.getIDX()][target.getIDY()-1], target, NORTH) && connectionJudge(map[target.getIDX()-1][target.getIDY()], target, EAST))
             {
@@ -84,6 +123,21 @@ public class Editor implements Serializable
         {
             map[target.getIDX()][target.getIDY()] = target;
             chunkCount+=1;
+        }
+    }*/
+
+    public void addMapRequest(EditorRoadChunk[][] map, EditorRoadChunk target) {
+        if(map[target.getIDX()][target.getIDY()] == null) {
+            if(connectionJudge(map[target.getIDX()][target.getIDY()+1], target, SOUTH) &&
+                connectionJudge(map[target.getIDX()+1][target.getIDY()], target, WEST) &&
+                connectionJudge(map[target.getIDY()][target.getIDY()-1], target, NORTH) &&
+                connectionJudge(map[target.getIDX()-1][target.getIDY()], target, EAST)) {
+                map[target.getIDX()][target.getIDY()] = target;
+                chunkCount++;
+            }
+        } else if(chunkCount == 0) {
+            map[target.getIDX()][target.getIDY()] = target;
+            chunkCount++;
         }
     }
 
@@ -96,7 +150,7 @@ public class Editor implements Serializable
         int x = target.getIDX();
         int y = target.getIDY();
         // Check and set connection for NORTH
-    if (y + 1 < map[0].length && map[x][y + 1] != null && (target.getIntersection() & (1 << (NORTH - 1))) != 0 && (map[x][y + 1].getIntersection() & (1 << (SOUTH - 1))) != 0) {
+    if (y + 1 < map[0].length && map[x][y + 1] != null && (target.getIntersection()[NORTH] != 0) && (map[x][y + 1].getIntersection()[SOUTH] != 0)) {
         if (y < y + 1) {
             target.setConnection(NORTH);
         } else {
@@ -105,7 +159,7 @@ public class Editor implements Serializable
     }
 
     // Check and set connection for EAST
-    if (x + 1 < map.length && map[x + 1][y] != null && (target.getIntersection() & (1 << (EAST - 1))) != 0 && (map[x + 1][y].getIntersection() & (1 << (WEST - 1))) != 0) {
+    if (x + 1 < map.length && map[x + 1][y] != null && (target.getIntersection()[EAST]) != 0 && (map[x + 1][y].getIntersection()[WEST]) != 0) {
         if (x < x + 1) {
             target.setConnection(EAST);
         } else {
@@ -114,7 +168,7 @@ public class Editor implements Serializable
     }
 
     // Check and set connection for SOUTH
-    if (y - 1 >= 0 && map[x][y - 1] != null && (target.getIntersection() & (1 << (SOUTH - 1))) != 0 && (map[x][y - 1].getIntersection() & (1 << (NORTH - 1))) != 0) {
+    if (y - 1 >= 0 && map[x][y - 1] != null && (target.getIntersection()[SOUTH]) != 0 && (map[x][y - 1].getIntersection()[NORTH]) != 0) {
         if (y > y - 1) {
             target.setConnection(SOUTH);
         } else {
@@ -123,7 +177,7 @@ public class Editor implements Serializable
     }
 
     // Check and set connection for WEST
-    if (x - 1 >= 0 && map[x - 1][y] != null && (target.getIntersection() & (1 << (WEST - 1))) != 0 && (map[x - 1][y].getIntersection() & (1 << (EAST - 1))) != 0) {
+    if (x - 1 >= 0 && map[x - 1][y] != null && (target.getIntersection()[WEST]) != 0 && (map[x - 1][y].getIntersection()[EAST]) != 0) {
         if (x > x - 1) {
             target.setConnection(WEST);
         } else {
@@ -133,7 +187,7 @@ public class Editor implements Serializable
 
     // Check and set connection for NORTH-EAST
     if (x + 1 < map.length && y + 1 < map[0].length && map[x + 1][y + 1] != null) {
-        if ((map[x][y + 1] != null || map[x + 1][y] != null) && (target.getIntersection() & (1 << (NE - 1))) != 0 && (map[x + 1][y + 1].getIntersection() & (1 << (SW - 1))) != 0) {
+        if ((map[x][y + 1] != null || map[x + 1][y] != null) && (target.getIntersection()[NE]) != 0 && (map[x + 1][y + 1].getIntersection()[SW]) != 0) {
             if (x < x + 1 && y < y + 1) {
                 target.setConnection(NE);
             } else {
@@ -144,7 +198,7 @@ public class Editor implements Serializable
 
     // Check and set connection for SOUTH-EAST
     if (x + 1 < map.length && y - 1 >= 0 && map[x + 1][y - 1] != null) {
-        if ((map[x][y - 1] != null || map[x + 1][y] != null) && (target.getIntersection() & (1 << (SE - 1))) != 0 && (map[x + 1][y - 1].getIntersection() & (1 << (NW - 1))) != 0) {
+        if ((map[x][y - 1] != null || map[x + 1][y] != null) && (target.getIntersection()[SE]) != 0 && (map[x + 1][y - 1].getIntersection()[NW]) != 0) {
             if (x < x + 1 && y > y - 1) {
                 target.setConnection(SE);
             } else {
@@ -155,7 +209,7 @@ public class Editor implements Serializable
 
     // Check and set connection for SOUTH-WEST
     if (x - 1 >= 0 && y - 1 >= 0 && map[x - 1][y - 1] != null) {
-        if ((map[x][y - 1] != null || map[x - 1][y] != null) && (target.getIntersection() & (1 << (SW - 1))) != 0 && (map[x - 1][y - 1].getIntersection() & (1 << (NE - 1))) != 0) {
+        if ((map[x][y - 1] != null || map[x - 1][y] != null) && (target.getIntersection()[SW]) != 0 && (map[x - 1][y - 1].getIntersection()[NE]) != 0) {
             if (x > x - 1 && y > y - 1) {
                 target.setConnection(SW);
             } else {
@@ -166,7 +220,7 @@ public class Editor implements Serializable
 
     // Check and set connection for NORTH-WEST
     if (x - 1 >= 0 && y + 1 < map[0].length && map[x - 1][y + 1] != null) {
-        if ((map[x][y + 1] != null || map[x - 1][y] != null) && (target.getIntersection() & (1 << (NW - 1))) != 0 && (map[x - 1][y + 1].getIntersection() & (1 << (SE - 1))) != 0) {
+        if ((map[x][y + 1] != null || map[x - 1][y] != null) && (target.getIntersection()[NW]) != 0 && (map[x - 1][y + 1].getIntersection()[SE]) != 0) {
             if (x > x - 1 && y < y + 1) {
                 target.setConnection(NW);
             } else {
@@ -183,13 +237,13 @@ public class Editor implements Serializable
     }
 
     private boolean connectionJudge(EditorRoadChunk connectToChunk, EditorRoadChunk target, int facing) {
-        if (connectToChunk != null && (connectToChunk.getIntersection() & (1 << (facing - 1))) != 0) {
+        if (connectToChunk != null && (connectToChunk.getIntersection()[facing]) != 0) {
             return true;
         }
         return false;
     }
 
-    private void expandMap(EditorRoadChunk[][]map,EditorRoadChunk target){//expand map if the current new chunk is out of range
+    /*private void expandMap(EditorRoadChunk[][]map,EditorRoadChunk target){//expand map if the current new chunk is out of range
         EditorRoadChunk[][] newmap = new EditorRoadChunk[target.getIDX()+2][target.getIDY()+2];//to keep the margin clear so +2
         int[][] newTrafficLightGroup = new int[target.getIDX()+2][target.getIDY()+2];
         double[] newTrafficLightGroupTimer = new double[target.getIDX()+2];
@@ -204,6 +258,23 @@ public class Editor implements Serializable
             newTrafficLightGroupTimer[i] = trafficLightGroupTimer[i];
         }
         map = newmap;
+        trafficLightGroup = newTrafficLightGroup;
+        trafficLightGroupTimer = newTrafficLightGroupTimer;
+    }*/
+
+    private void expandMap(EditorRoadChunk[][] map, EditorRoadChunk target) {
+        EditorRoadChunk[][] newMap = new EditorRoadChunk[target.getIDX() + 2][target.getIDY() + 2];
+        int[][] newTrafficLightGroup = new int[target.getIDX() + 2][target.getIDY() + 2];
+        double[] newTrafficLightGroupTimer = new double[target.getIDX() + 2];
+
+        for(int i = 0 ; i < map.length ; i++) {
+            for(int j = 0 ; j < map[i].length ; j++) {
+                newMap[i][j] = map[i][j];
+                newTrafficLightGroup[i][j] = trafficLightGroup[i][j];
+            }
+            newTrafficLightGroupTimer[i] = trafficLightGroupTimer[i];
+        }
+        map = newMap;
         trafficLightGroup = newTrafficLightGroup;
         trafficLightGroupTimer = newTrafficLightGroupTimer;
     }
@@ -223,4 +294,45 @@ public class Editor implements Serializable
         this.trafficLightGroupTimer = fileManager.getTrafficLightGroupTimer();
     }
 
+    public String assignPath(Scanner input) {
+        System.out.print("\nEnter the file path where you want to save the data:");
+        String path = input.nextLine();
+
+        System.out.print("\nEnter the file name:");
+        String fileName = input.nextLine();
+
+        return path + "\\" + fileName+".obj";
+    }
+
+
+    public void updateRoadParameter(String buttonId, int parameterIndex, String newValue) {
+        int chunkGroup = Integer.parseInt(buttonId.replace("roadButton", ""));
+        EditorRoadChunk roadChunk = findRoadChunkById(chunkGroup);
+        if (roadChunk != null) {
+            switch (parameterIndex) {
+                case 1:
+                    break;
+                // 根據需要添加更多參數的更新邏輯
+            }
+        }
+    }
+    
+    public void updateTrafficLightParameter(String buttonId, int parameterIndex, String newValue) {
+        int id = Integer.parseInt(buttonId.replace("trafficlightButton", ""));
+        EditorRoadChunk roadChunk = findRoadChunkById(id);
+        if (roadChunk != null) {
+            switch (parameterIndex) {
+                case 1:
+                    roadChunk.setTrafficLightTimer(Double.parseDouble(newValue));
+                    break;
+                // 根據需要添加更多參數的更新邏輯
+            }
+        }
+    }
+    
+    private EditorRoadChunk findRoadChunkById(int chunkGroup) {
+        //TODO
+        
+        return null;
+    }
 }

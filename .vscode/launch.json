@@ -6,7 +6,14 @@
     "configurations": [
         {
             "type": "java",
-            "name": "SimulationPage",
+            "name": "EditorTest3",
+            "request": "launch",
+            "mainClass": "com.HDEngine.Editor.EditorTest3",
+            "projectName": "human.drive--A_traffic_simulator_cbf0fbf2"
+        },
+        {
+            "type": "java",
+            "name": "EditorTest2",
             "request": "launch",
             "mainClass": "com.HDEngine.UI.SimulationPage",
             "projectName": "human.drive--A_traffic_simulator_ee3a0a79"

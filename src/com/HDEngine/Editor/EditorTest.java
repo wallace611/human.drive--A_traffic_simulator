@@ -8,17 +8,17 @@ public class EditorTest {
         Scanner input = new Scanner(System.in);
         int runset=0;
         runset = input.nextInt();
+        input.nextLine();
         Editor editor = new Editor();
         System.out.println("EditorTest start");
         for(int i = 0 ; i < runset ; i++)
         {
             editor.addNewChunk();
-            //ID_X = input.nextInt();
-            //ID_Y = input.nextInt();
         }
-        //System.out.println(editor.getChunk(ID_X, ID_Y));
+        String filePath = editor.assignPath(input);
         FileManager fileManager = editor.exportData();
         fileManager.saveToFile("src/SavedFile/editor_map.obj");
+        //fileManager.saveToFile(filePath);
         input.close();
     }
 }
