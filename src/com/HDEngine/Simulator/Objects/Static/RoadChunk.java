@@ -22,7 +22,7 @@ public class RoadChunk extends HDObject {
         for (int i = 0; i < connectRoad.length; i++) {
             roadDir.addRoadRef(connectRoad[i], roadWeight[i]);
         }
-        roadArea = new CollisionArea(new Vector2D(0, 0), 0.0f, new Vector2D(100, 100));
+        roadArea = new CollisionArea(new Vector2D(0, 0), 0.0f, new Vector2D(50, 50));
         roadArea.setParent(this);
 
     }
@@ -52,7 +52,6 @@ public class RoadChunk extends HDObject {
     }
 
     public void carArrived(Vehicle car) {
-        System.out.println("Arrived!");
         try {
             Vector2D locTmp = car.getGlobalLocation();
             RoadChunk newTarget = roadDir.accessRoad();
@@ -60,8 +59,6 @@ public class RoadChunk extends HDObject {
             childRemoveList.add(car);
             car.setTargetLocation(newTarget.getGlobalLocation());
             car.setGlobalLocation(locTmp);
-            System.out.println(newTarget.getGlobalLocation());
-            System.out.println(car.getGlobalLocation());
         } catch (Exception e) {
             car.kill();
             childRemoveList.add(car);

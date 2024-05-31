@@ -4,7 +4,6 @@ import com.HDEngine.Simulator.Objects.Dynamic.Vehicle;
 import com.HDEngine.Simulator.Objects.Static.RoadChunk;
 import com.HDEngine.Simulator.Objects.Static.World;
 import com.HDEngine.Simulator.Render.RenderWindow;
-import com.HDEngine.Simulator.RenderUITest;
 import processing.awt.PSurfaceAWT;
 import processing.core.PApplet;
 import processing.core.PImage;
@@ -21,7 +20,7 @@ public class SimulationPage extends JFrame {
     private JPanel screenPanel;
     private JPanel attributePanel;
 
-    SimulationPage() {
+    public SimulationPage() {
         frame = new JFrame();
         frame.setTitle("Simulation Screen");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -87,9 +86,8 @@ public class SimulationPage extends JFrame {
         frame.add(background);
         frame.setResizable(false);
 
-        world = new World(100, 100);
         SwingUtilities.invokeLater(() -> {
-            window = new RenderWindow(world.getChildrenListRef());
+            window = new RenderWindow(world.getChildren());
             String[] processingArgs = {"window"};
             PApplet.runSketch(processingArgs, window);
             PSurfaceAWT surf = (PSurfaceAWT) window.getSurface();
@@ -160,11 +158,25 @@ public class SimulationPage extends JFrame {
         return outerPanel; // Return the outer panel
     }
 
+    public void setWorld(World world) {
+        this.world = world;
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
+    public RenderWindow getWindow() {
+        return window;
+    }
+
     public static void main(String[] args) throws InterruptedException {
+        World world = new World(100, 100);
         final SimulationPage[] uiContainer = new SimulationPage[1];
 
         SwingUtilities.invokeLater(() -> {
             uiContainer[0] = new SimulationPage();
+            uiContainer[0].setWorld(world);
         });
 
         while (uiContainer[0] == null) {
@@ -175,6 +187,11 @@ public class SimulationPage extends JFrame {
         while (simulator.window == null) {
             Thread.sleep(10);
         }
+        while (simulator.world == null) {
+            Thread.sleep(100);
+            System.out.println("wait");
+        }
+
         RoadChunk rc1 = new RoadChunk();
         //rc1.setSprite(simulator.window.loadImage("src\\com\\HDEngine\\Simulator\\image\\testimg.png"));
         //rc1.setScale(0.2f);

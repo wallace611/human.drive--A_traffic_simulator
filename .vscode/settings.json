@@ -2,7 +2,8 @@
     "java.project.sourcePaths": ["src"],
     "java.project.outputPath": "out",
     "java.project.referencedLibraries": [
-        "lib/**/*.jar"
+        "lib/**/*.jar",
+        "c:\\Program Files (x86)\\Java\\processing-3.5.4\\core\\library\\core.jar"
     ],
     "java.debug.settings.onBuildFailureProceed": true
 }

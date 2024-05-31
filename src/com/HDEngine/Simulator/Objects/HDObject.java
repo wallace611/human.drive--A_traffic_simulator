@@ -159,10 +159,6 @@ public class HDObject implements ITransform{
     }
 
     public ArrayList<HDObject> getChildren() {
-        return new ArrayList<HDObject>(children);
-    }
-
-    public ArrayList<HDObject> getChildrenListRef() {
         return children;
     }
 

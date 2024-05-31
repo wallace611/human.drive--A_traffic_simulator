@@ -43,7 +43,7 @@ public class RenderUITest {
         panel.add(button);
 
         SwingUtilities.invokeLater(() -> {
-            window = new RenderWindow(world.getChildrenListRef());
+            window = new RenderWindow(world.getChildren());
             String[] processingArgs = {"GameLoopWindow"};
             PApplet.runSketch(processingArgs, window);
             PSurfaceAWT surf = (PSurfaceAWT) window.getSurface();

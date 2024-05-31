@@ -9,6 +9,20 @@
             "name": "SimulationPage",
             "request": "launch",
             "mainClass": "com.HDEngine.UI.SimulationPage",
+            "projectName": "human.drive--A_traffic_simulator_ee3a0a79"
+        },
+        {
+            "type": "java",
+            "name": "RenderUITest",
+            "request": "launch",
+            "mainClass": "com.HDEngine.Simulator.RenderUITest",
+            "projectName": "human.drive--A_traffic_simulator_ee3a0a79"
+        },
+        {
+            "type": "java",
+            "name": "SimulationPage",
+            "request": "launch",
+            "mainClass": "com.HDEngine.UI.SimulationPage",
             "projectName": "human.drive--A_traffic_simulator_51d4a7c0"
         },
         {

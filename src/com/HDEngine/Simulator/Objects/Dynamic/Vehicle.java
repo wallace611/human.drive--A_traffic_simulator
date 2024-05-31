@@ -14,9 +14,9 @@ public class Vehicle extends HDObject {
 
     public Vehicle(double speed) {
         this.speed = speed;
-        collision = new CollisionArea(new Vector2D(0, 0), 0.0f, new Vector2D(50, 25));
+        collision = new CollisionArea(new Vector2D(0, 0), 0.0f, new Vector2D(25, 10));
         collision.setParent(this);
-        frontCollision = new CollisionArea(new Vector2D(50, 0), 0.0f, new Vector2D(10, 10));
+        frontCollision = new CollisionArea(new Vector2D(50, 0), 0.0f, new Vector2D(25, 15));
         frontCollision.setParent(this);
         targetLocation = null;
         arrived = false;
@@ -64,6 +64,7 @@ public class Vehicle extends HDObject {
             setGlobalLocation(newLocation); // 更新全局位置
             arrived = false;
         }
+        speed = 100;
     }
 
     @Override
@@ -90,8 +91,10 @@ public class Vehicle extends HDObject {
         return frontCollision;
     }
 
-    public void collide(Vehicle target) {
-
+    public void frontCollide(HDObject target) {
+        if (target != this) {
+            speed = 0;
+        }
     }
 
     public Vector2D getTargetLocation() {

@@ -41,17 +41,10 @@ World extends HDObject {
     @Override
     public void tick(double deltaTime) {
         super.tick(deltaTime);
-
-        for (RoadChunk[] rcArr : chunks) {
-            for (RoadChunk rc : rcArr) {
-                if (rc != null) {
-                    rc.tick(deltaTime);
-                }
-            }
-        }
         // collision detection
         for (int i = roadCount; i < children.size(); i++) {
-            CollisionArea frontCA = ((Vehicle) children.get(i)).getCollision();
+            Vehicle currentCar = (Vehicle) children.get(i);
+            CollisionArea frontCA = currentCar.getFrontCollision();
             ArrayList<RoadChunk> hitRC = new ArrayList<>();
             for (int j = 0; j < roadCount; j++) {
                 if (children.get(j) instanceof RoadChunk rc) {
@@ -60,7 +53,23 @@ World extends HDObject {
                     }
                 }
             }
-            System.out.println(hitRC);
+            for (RoadChunk rc : hitRC) {
+                for (HDObject object : rc.getChildren()) {
+                    if (object instanceof Vehicle v) {
+                        if (CollisionArea.areOverlapping(v.getCollision(), frontCA)) {
+                            currentCar.frontCollide(object);
+                        }
+                    }
+                }
+            }
+        }
+
+        for (RoadChunk[] rcArr : chunks) {
+            for (RoadChunk rc : rcArr) {
+                if (rc != null) {
+                    rc.tick(deltaTime);
+                }
+            }
         }
     }
 

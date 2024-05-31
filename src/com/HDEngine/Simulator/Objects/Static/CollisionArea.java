@@ -85,4 +85,5 @@ public class CollisionArea extends HDObject {
     public void setOffset(Vector2D offset) {
         this.offset = new Vector2D(offset);
     }
+
 }

@@ -10,6 +10,7 @@ import processing.core.PApplet;
 import static java.lang.Math.*;
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.Vector;
 
 public class RenderWindow extends PApplet {
     private ArrayList<HDObject> objToRender;
@@ -25,7 +26,6 @@ public class RenderWindow extends PApplet {
         camRot = 0.0f;
         camScale = 1.0f;
         renderCollisionArea = true;
-        System.out.println("sdf");
     }
 
     @Override
@@ -89,8 +89,8 @@ public class RenderWindow extends PApplet {
                     y = (float) ca.getGlobalLocation().y;
                     r = radians((float) ca.getGlobalRotation());
                     s = (float) ca.getGlobalScale();
-                    float w = (float) ca.getOffset().x;
-                    float h = (float) ca.getOffset().y;
+                    float w = (float) ca.getOffset().x * 2;
+                    float h = (float) ca.getOffset().y * 2;
 
                     translate(x, y);
                     rotate(r);
@@ -109,8 +109,8 @@ public class RenderWindow extends PApplet {
                     y = (float) ca.getGlobalLocation().y;
                     r = radians((float) ca.getGlobalRotation());
                     s = (float) ca.getGlobalScale();
-                    float w = (float) ca.getOffset().x;
-                    float h = (float) ca.getOffset().y;
+                    float w = (float) ca.getOffset().x * 2;
+                    float h = (float) ca.getOffset().y * 2;
 
                     translate(x, y);
                     rotate(r);
