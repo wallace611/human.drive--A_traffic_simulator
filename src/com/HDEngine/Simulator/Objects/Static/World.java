@@ -2,6 +2,7 @@ package com.HDEngine.Simulator.Objects.Static;
 
 import com.HDEngine.Simulator.Objects.Dynamic.Vehicle;
 import com.HDEngine.Simulator.Objects.HDObject;
+import com.HDEngine.Utilities.ITransform;
 import com.HDEngine.Utilities.Vector2D;
 import processing.core.PImage;
 

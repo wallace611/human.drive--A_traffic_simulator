@@ -6,11 +6,11 @@ import com.HDEngine.Simulator.Objects.Static.CollisionArea;
 import com.HDEngine.Simulator.Objects.Static.RoadChunk;
 import com.HDEngine.Utilities.Vector2D;
 import processing.core.PApplet;
+import processing.core.PImage;
 
 import static java.lang.Math.*;
-import javax.swing.*;
+
 import java.util.ArrayList;
-import java.util.Vector;
 
 public class RenderWindow extends PApplet {
     private ArrayList<HDObject> objToRender;
@@ -25,7 +25,7 @@ public class RenderWindow extends PApplet {
         camLoc = new Vector2D();
         camRot = 0.0f;
         camScale = 1.0f;
-        renderCollisionArea = false;
+        renderCollisionArea = true;
     }
 
     @Override
@@ -50,83 +50,75 @@ public class RenderWindow extends PApplet {
         float centerX = width >> 1;
         float centerY = height >> 1;
 
-        translate(centerX, centerY);
-
-        scale(camScale);
-        rotate(camRot);
-        translate((float) camLoc.x, (float) camLoc.y);
-        translate(-centerX, -centerY);
-
+        setupCamera(centerX, centerY);
 
         HDObject[] tmp = new ArrayList<>(objToRender).toArray(new HDObject[0]);
         for (HDObject object : tmp) {
             if (object.isKilled()) continue;
-            pushMatrix();
+            renderObject(object);
 
+        }
+    }
 
-            float x = (float) object.getGlobalLocation().x;
-            float y = (float) object.getGlobalLocation().y;
-            float r = radians((float) object.getGlobalRotation());
-            float s = (float) object.getGlobalScale();
+    private void setupCamera(float centerX, float centerY) {
+        translate(centerX, centerY);
+        scale(camScale);
+        rotate(camRot);
+        translate((float) camLoc.x, (float) camLoc.y);
+        translate(-centerX, -centerY);
+    }
 
-            translate(x, y);
-            rotate(r);
-            scale(s);
-            if (object.getSprite() != null && object.getSprite().getImage() != null) {
-                float w = object.getSprite().width;
-                float h = object.getSprite().height;
-                image(object.getSprite(), -w / 2, -h / 2);
-            }
+    private void renderObject(HDObject object) {
+        pushMatrix();
+        applyTransformations(object.getGlobalLocation(), object.getGlobalRotation(), object.getGlobalScale());
+        if (object.getSprite() != null && object.getSprite().getImage() != null) {
+            PImage sprite = object.getSprite();
+            image(sprite, -sprite.width / 2, -sprite.height / 2);
+        }
+        popMatrix();
 
-            popMatrix();
-            if (renderCollisionArea) {
-                pushMatrix();
+        if (renderCollisionArea) {
+            renderCollision(object);
+        }
+    }
 
-                CollisionArea ca = null;
-                if (object instanceof RoadChunk rc) {
-                    ca = rc.getRoadArea();
-                } else if (object instanceof Vehicle v) {
-                    ca = v.getCollision();
-                }
-                if (ca != null) {
-                    x = (float) ca.getGlobalLocation().x;
-                    y = (float) ca.getGlobalLocation().y;
-                    r = radians((float) ca.getGlobalRotation());
-                    s = (float) ca.getGlobalScale();
-                    float w = (float) ca.getOffset().x * 2;
-                    float h = (float) ca.getOffset().y * 2;
-
-                    translate(x, y);
-                    rotate(r);
-                    scale(s);
-                    fill(173, 216, 230, 128);
-                    rect(-w / 2, -h / 2, w, h);
-                }
-
-                popMatrix();
-                if (object instanceof Vehicle v) {
-                    ca = v.getFrontCollision();
-                }
-                pushMatrix();
-                if (ca != null) {
-                    x = (float) ca.getGlobalLocation().x;
-                    y = (float) ca.getGlobalLocation().y;
-                    r = radians((float) ca.getGlobalRotation());
-                    s = (float) ca.getGlobalScale();
-                    float w = (float) ca.getOffset().x * 2;
-                    float h = (float) ca.getOffset().y * 2;
-
-                    translate(x, y);
-                    rotate(r);
-                    scale(s);
-                    fill(173, 216, 230, 128);
-                    rect(-w / 2, -h / 2, w, h);
-                }
-                popMatrix();
+    private void renderCollision(HDObject object) {
+        CollisionArea ca = getCollisionArea(object);
+        if (ca != null) {
+            renderCollisionArea(ca);
+        }
+        if (object instanceof Vehicle v) {
+            ca = v.getFrontCollision();
+            if (ca != null) {
+                renderCollisionArea(ca);
             }
         }
     }
 
+    private void renderCollisionArea(CollisionArea ca) {
+        pushMatrix();
+        applyTransformations(ca.getGlobalLocation(), ca.getGlobalRotation(), ca.getGlobalScale());
+        fill(173, 216, 230, 128);
+        float w = (float) ca.getOffset().x * 2;
+        float h = (float) ca.getOffset().y * 2;
+        rect(-w / 2, -h / 2, w, h);
+        popMatrix();
+    }
+
+    private void applyTransformations(Vector2D location, double rotation, double scale) {
+        translate((float) location.x, (float) location.y);
+        rotate(radians((float) rotation));
+        scale((float) scale);
+    }
+
+    private CollisionArea getCollisionArea(HDObject object) {
+        if (object instanceof RoadChunk rc) {
+            return rc.getRoadArea();
+        } else if (object instanceof Vehicle v) {
+            return v.getCollision();
+        }
+        return null;
+    }
     @Override
     public void keyPressed() {
         float moveSpeed = 10;
