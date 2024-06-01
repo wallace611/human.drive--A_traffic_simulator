@@ -1,6 +1,7 @@
 package com.HDEngine.Simulator.Components;
 
 import com.HDEngine.Simulator.Objects.Static.RoadChunk;
+import com.HDEngine.Utilities.Vector2D;
 
 import java.security.SecureRandom;
 
@@ -85,4 +86,5 @@ public class RoadDirectionManager {
     public int getCurrentRoadCount() {
         return currentRoadCount;
     }
+
 }

@@ -14,6 +14,7 @@ public class HDObject implements ITransform{
     protected final ArrayList<HDObject> childRemoveList;
 
     protected PImage sprite;
+    protected String imagePath;
 
     protected boolean killed;
 
@@ -168,6 +169,14 @@ public class HDObject implements ITransform{
 
     public void setSprite(PImage sprite) {
         this.sprite = sprite;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 
     public boolean isKilled() {

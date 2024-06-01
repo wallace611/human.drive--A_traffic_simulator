@@ -16,16 +16,19 @@ public class RoadChunk extends HDObject {
         this((byte) 0, new RoadChunk[0], new float[0]);
     }
 
-    public RoadChunk(byte dirs, RoadChunk[] connectRoad, float[] roadWeight) {
+    public RoadChunk(byte dirs) {
         super();
-        if (connectRoad.length != roadWeight.length) throw new RuntimeException("");
         roadDir = new RoadDirectionManager(dirs);
+        roadArea = new CollisionArea(new Vector2D(0, 0), 0.0f, new Vector2D(50, 50));
+        roadArea.setParent(this);
+    }
+
+    public RoadChunk(byte dirs, RoadChunk[] connectRoad, float[] roadWeight) {
+        this(dirs);
+        if (connectRoad.length != roadWeight.length) throw new RuntimeException("");
         for (int i = 0; i < connectRoad.length; i++) {
             roadDir.addRoadRef(connectRoad[i], roadWeight[i]);
         }
-        roadArea = new CollisionArea(new Vector2D(0, 0), 0.0f, new Vector2D(50, 50));
-        roadArea.setParent(this);
-
     }
 
     @Override
@@ -69,6 +72,10 @@ public class RoadChunk extends HDObject {
 
     public CollisionArea getRoadArea() {
         return roadArea;
+    }
+
+    public void addRoad(RoadChunk rc, float weight) {
+        roadDir.addRoadRef(rc, weight);
     }
 
 }
