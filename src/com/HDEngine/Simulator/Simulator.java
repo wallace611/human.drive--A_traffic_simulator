@@ -1,12 +1,11 @@
 package com.HDEngine.Simulator;
 
-import com.HDEngine.Editor.Editor;
 import com.HDEngine.Editor.Object.Road.EditorRoadChunk;
-import com.HDEngine.Simulator.Objects.Dynamic.Vehicle;
 import com.HDEngine.Simulator.Objects.HDObject;
 import com.HDEngine.Simulator.Objects.Static.RoadChunk;
 import com.HDEngine.Simulator.Objects.Static.World;
-import com.HDEngine.Simulator.Render.RenderWindow;
+import com.HDEngine.UI.ProgressPage;
+import com.HDEngine.Utilities.Render.RenderWindow;
 import com.HDEngine.UI.SimulationPage;
 import com.HDEngine.Utilities.FileManageTools.FileManager;
 import processing.core.PImage;
@@ -78,6 +77,7 @@ public class Simulator {
     }
 
     public static void main(String[] args) throws InterruptedException {
+        new ProgressPage();
         //world = loadFile("src/SavedFile/editor_map.obj");
 
         world = new World(100, 100);

@@ -1,12 +1,9 @@
 package com.HDEngine.UI;
 
-import com.HDEngine.Simulator.Objects.Dynamic.Vehicle;
-import com.HDEngine.Simulator.Objects.Static.RoadChunk;
 import com.HDEngine.Simulator.Objects.Static.World;
-import com.HDEngine.Simulator.Render.RenderWindow;
+import com.HDEngine.Utilities.Render.RenderWindow;
 import processing.awt.PSurfaceAWT;
 import processing.core.PApplet;
-import processing.core.PImage;
 
 import javax.swing.*;
 import java.awt.*;
@@ -84,7 +81,7 @@ public class SimulationPage extends JFrame {
         background.add(attributePanel);
 
         frame.add(background);
-        frame.setResizable(false);
+        //frame.setResizable(false);
 
         SwingUtilities.invokeLater(() -> {
             window = new RenderWindow(world.getChildren());

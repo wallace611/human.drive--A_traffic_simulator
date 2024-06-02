@@ -8,7 +8,7 @@ public class ProgressPage extends JFrame{ //跑條程式
     private JFrame frame;
     private JProgressBar bar;
     
-    ProgressPage(){
+    public ProgressPage(){
         
         frame = new JFrame();
         bar = new JProgressBar();
