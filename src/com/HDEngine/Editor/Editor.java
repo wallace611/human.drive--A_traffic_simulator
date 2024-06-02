@@ -399,4 +399,10 @@ public class Editor implements Serializable
             }
         }
     }
+
+    public void deleteChunk(int IDX , int IDY)
+    {
+        map[IDX][IDY] = null;
+    }
+
 }

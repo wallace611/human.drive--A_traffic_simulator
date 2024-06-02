@@ -1,5 +1,0 @@
-目前理想流程:
-new一個新的road chunk出來 -> setdata(紅綠燈只會先設置有 還是 沒有) -> if超出地圖則擴張地圖 -> if有紅綠燈則設置紅綠燈group和timer
-
-紅綠燈group要自己創 目前有get set他們
-
