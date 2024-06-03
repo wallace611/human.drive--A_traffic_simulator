@@ -4,6 +4,7 @@ import com.HDEngine.Simulator.Objects.Dynamic.Vehicle;
 import com.HDEngine.Simulator.Objects.HDObject;
 import com.HDEngine.Simulator.Objects.Static.CollisionArea;
 import com.HDEngine.Simulator.Objects.Static.RoadChunk;
+import com.HDEngine.Simulator.Settings;
 import com.HDEngine.Utilities.Vector2D;
 import processing.core.PApplet;
 import processing.core.PImage;
@@ -13,11 +14,10 @@ import static java.lang.Math.*;
 import java.util.ArrayList;
 
 public class RenderWindow extends PApplet {
-    private ArrayList<HDObject> objToRender;
+    private final ArrayList<HDObject> objToRender;
     private Vector2D camLoc;
     private float camRot;
     private float camScale;
-    private boolean renderCollisionArea;
 
     public RenderWindow(ArrayList<HDObject> renderListRef) {
         super();
@@ -25,7 +25,6 @@ public class RenderWindow extends PApplet {
         camLoc = new Vector2D();
         camRot = 0.0f;
         camScale = 1.0f;
-        renderCollisionArea = true;
     }
 
     @Override
@@ -38,7 +37,7 @@ public class RenderWindow extends PApplet {
     @Override
     public void setup() {
         System.out.println("Simulator renderer thread: Setting everything up...");
-        frameRate(100);
+        frameRate(Settings.fps);
         background(200);
         translate(0, 0);
         surface.setVisible(false);
@@ -74,23 +73,27 @@ public class RenderWindow extends PApplet {
         if (object.getSprite() != null && object.getSprite().getImage() != null) {
             PImage sprite = object.getSprite();
             image(sprite, -sprite.width / 2, -sprite.height / 2);
+            if (object instanceof RoadChunk rc && rc.isTrafficLight()) {
+                if (rc.isTrafficLightGreen()) {
+                    fill(0, 255, 0);
+                } else {
+                    fill(255, 0, 0);
+                }
+                circle(0, 0, 50);
+            }
         }
         popMatrix();
 
-        if (renderCollisionArea) {
-            renderCollision(object);
-        }
-    }
-
-    private void renderCollision(HDObject object) {
-        CollisionArea ca = getCollisionArea(object);
-        if (ca != null) {
-            renderCollisionArea(ca);
-        }
-        if (object instanceof Vehicle v) {
-            ca = v.getFrontCollision();
+        if (Settings.renderCollision) {
+            CollisionArea ca = getCollisionArea(object);
             if (ca != null) {
                 renderCollisionArea(ca);
+            }
+            if (object instanceof Vehicle v) {
+                ca = v.getFrontCollision();
+                if (ca != null) {
+                    renderCollisionArea(ca);
+                }
             }
         }
     }

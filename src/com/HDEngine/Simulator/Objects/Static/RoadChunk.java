@@ -1,5 +1,6 @@
 package com.HDEngine.Simulator.Objects.Static;
 
+import com.HDEngine.Simulator.Components.Traffic.TrafficLightManager;
 import com.HDEngine.Simulator.Objects.Dynamic.Vehicle;
 import com.HDEngine.Simulator.Objects.HDObject;
 import com.HDEngine.Simulator.Components.RoadDirectionManager;
@@ -9,6 +10,10 @@ public class RoadChunk extends HDObject {
     private final RoadDirectionManager roadDir;
     private final CollisionArea roadArea;
     public boolean hasVehicle = false;
+    private boolean hasTrafficLight;
+    private int trafficLightGroup;
+    private int trafficLightTeam;
+    private boolean trafficLightGreen;
 
     // private ArrayList<Vehicle> children; from HDObject class, containing the cars which are heading here
 
@@ -34,6 +39,9 @@ public class RoadChunk extends HDObject {
     @Override
     public void tick(double deltaTime) {
         super.tick(deltaTime);
+        if (hasTrafficLight) {
+            trafficLightGreen = TrafficLightManager.getGreenTeam(trafficLightGroup) == trafficLightTeam;
+        }
         for (HDObject object : children) {
             if (object instanceof Vehicle c) {
                 c.tick(deltaTime);
@@ -78,4 +86,31 @@ public class RoadChunk extends HDObject {
         roadDir.addRoadRef(rc, weight);
     }
 
+    public boolean isTrafficLight() {
+        return hasTrafficLight;
+    }
+
+    public void setHasTrafficLight(boolean hasTrafficLight) {
+        this.hasTrafficLight = hasTrafficLight;
+    }
+
+    public int getTrafficLightGroup() {
+        return trafficLightGroup;
+    }
+
+    public void setTrafficLightGroup(int trafficLightGroup) {
+        this.trafficLightGroup = trafficLightGroup;
+    }
+
+    public int getTrafficLightTeam() {
+        return trafficLightTeam;
+    }
+
+    public void setTrafficLightTeam(int trafficLightTeam) {
+        this.trafficLightTeam = trafficLightTeam;
+    }
+
+    public boolean isTrafficLightGreen() {
+        return trafficLightGreen;
+    }
 }

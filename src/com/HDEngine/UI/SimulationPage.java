@@ -1,6 +1,7 @@
 package com.HDEngine.UI;
 
 import com.HDEngine.Simulator.Objects.Static.World;
+import com.HDEngine.Simulator.Settings;
 import com.HDEngine.Utilities.Render.RenderWindow;
 import processing.awt.PSurfaceAWT;
 import processing.core.PApplet;
@@ -21,7 +22,7 @@ public class SimulationPage extends JFrame {
         frame = new JFrame();
         frame.setTitle("Simulation Screen");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(900, 615);
+        frame.setSize(Settings.uiWidth, Settings.uiHeight);
         frame.setLocationRelativeTo(null);
 
         background = new JPanel();

@@ -1,5 +1,6 @@
 package com.HDEngine.Simulator.Objects.Static;
 
+import com.HDEngine.Simulator.Components.Traffic.TrafficLightManager;
 import com.HDEngine.Simulator.Objects.Dynamic.Vehicle;
 import com.HDEngine.Simulator.Objects.HDObject;
 import com.HDEngine.Utilities.ITransform;
@@ -15,6 +16,7 @@ World extends HDObject {
     private int roadCount;
     private int count = 0;
     private PImage carImage;
+    public int currentTPS;
 
     // private ArrayList<HDObject> children; from HDObject class, containing the RoadChunk and Vehicle which need to be rendered
 
@@ -22,6 +24,7 @@ World extends HDObject {
         chunks = new RoadChunk[x][y];
         summonChunk = new ArrayList<>();
         roadCount = 0;
+
     }
 
     @Override
@@ -46,12 +49,14 @@ World extends HDObject {
     @Override
     public void tick(double deltaTime) {
         super.tick(deltaTime);
+        currentTPS = (int) (1 / deltaTime);
         collisionDetection();
 
         if (count % 200 == 0) {
             count = 0;
             spawnVehicleThroughArr();
         }
+        TrafficLightManager.nextTime(deltaTime);
 
         for (RoadChunk[] rcArr : chunks) {
             for (RoadChunk rc : rcArr) {

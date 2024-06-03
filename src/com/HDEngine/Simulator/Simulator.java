@@ -1,10 +1,11 @@
 package com.HDEngine.Simulator;
 
 import com.HDEngine.Editor.Object.Road.EditorRoadChunk;
+import com.HDEngine.Simulator.Components.Traffic.TLGroup;
+import com.HDEngine.Simulator.Components.Traffic.TrafficLightManager;
 import com.HDEngine.Simulator.Objects.HDObject;
 import com.HDEngine.Simulator.Objects.Static.RoadChunk;
 import com.HDEngine.Simulator.Objects.Static.World;
-import com.HDEngine.UI.ProgressPage;
 import com.HDEngine.Utilities.Render.RenderWindow;
 import com.HDEngine.UI.SimulationPage;
 import com.HDEngine.Utilities.FileManageTools.FileManager;
@@ -41,6 +42,7 @@ public class Simulator {
         for (RoadChunk rc : rcToConnect) {
             // TODO
         }
+
         System.out.println("Simulator Main Thread: Done!");
         return world;
     }
@@ -77,13 +79,13 @@ public class Simulator {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        new ProgressPage();
         //world = loadFile("src/SavedFile/editor_map.obj");
+        TrafficLightManager.tLGroupsSecs.put(0, new TLGroup(new int[]{2, 3, 4}));
 
         world = new World(100, 100);
         ui = constructSimulatePage(world);
         setupImage(world, ui.getWindow());
-//
+
         RoadChunk rc1 = new RoadChunk();
         rc1.setSprite(ui.getWindow().loadImage("src\\com\\HDEngine\\Simulator\\image\\testimg.png"));
         //rc1.setScale(0.2f);
@@ -97,6 +99,8 @@ public class Simulator {
         RoadChunk rc3 = new RoadChunk((byte) 0b100, new RoadChunk[]{rc2}, new float[]{1.0f});
         rc3.setSprite(ui.getWindow().loadImage("src\\com\\HDEngine\\Simulator\\image\\testimg.png"));
         //rc3.setScale(0.2f);
+        rc3.setHasTrafficLight(true);
+        rc3.setTrafficLightTeam(2);
         ui.getWorld().addRoadChunk(3, 1, rc3);
 
         RoadChunk rc4 = new RoadChunk((byte) 0b11000, new RoadChunk[]{rc2, rc3}, new float[]{1.0f, 1.0f});
@@ -108,10 +112,20 @@ public class Simulator {
         PImage img = ui.getWindow().loadImage("src/com/HDEngine/Simulator/image/car.png");
         world.setCarImage(img);
 
+        long targetDeltaTime;
+        long startMS;
         while (true) {
-            Thread.sleep(5);
-            ui.getWorld().tick((double) 5 / 1000);
+            targetDeltaTime = (long) ((double) 1 / Settings.tps * 1e9f);
+            startMS = System.nanoTime();
+            long currentMS;
 
+            do {
+                currentMS = System.nanoTime();
+            } while (currentMS - startMS <= targetDeltaTime);
+
+            double deltaTime = (double) (currentMS - startMS) / 1e9f;
+            startMS = currentMS;
+            ui.getWorld().tick((double) deltaTime);
         }
     }
 }
