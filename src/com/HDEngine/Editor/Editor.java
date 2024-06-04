@@ -1,15 +1,12 @@
 package com.HDEngine.Editor;
 
 import com.HDEngine.Editor.Object.Road.EditorRoadChunk;
-import com.HDEngine.Editor.Object.TrafficLight.TrafficLight;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.Map;
 import java.io.*;
 import com.HDEngine.Utilities.FileManageTools.FileManager;
-
-import processing.app.syntax.InputHandler.repeat;
 
 public class Editor implements Serializable
 {
@@ -32,9 +29,9 @@ public class Editor implements Serializable
     private static final int WEIGHTS = 9;
     private static final int CONNECTION = 10;*/
     private EditorRoadChunk[][] map = new EditorRoadChunk[22][22];//if possible, keep the outer side of the array clear(eg. map[0][0] should always be null)
-    private EditorRoadChunk[] templateChunks = new EditorRoadChunk[10];
     private Map<Integer,int[]> trafficLight = new HashMap<>();
-    private int chunkCount = 0;
+    private transient FileManager fileManager = new FileManager();
+    //private transient FileManager loadedFileManager = FileManager.loadFromFile("src/SavedFile/editor_map.obj");
     private transient Scanner input = new Scanner(System.in);
 
     public Editor()
@@ -56,50 +53,41 @@ public class Editor implements Serializable
 
     public void startEditing()
     {
-        while(true)
+        boolean quit = false;
+        while(!quit)
         {
-        String action;
-        action = input.next();
-        action.toLowerCase();
-            if(action.equals("add chunk"))
+            showChunk();
+            showTrafficLight();
+            try
             {
-                addNewChunk();
+                String action;
+                action = input.nextLine();
+                action.toLowerCase();
+                switch (action) {
+                    case "add chunk","new chunk":addNewChunk();break;
+                    case "edit chunk": editRoadChunk();break;
+                    case "delete chunk": deleteChunk();break;
+                    case "add traffic light group", "add trafficlight group": newTrafficLightGroup();break;
+                    case "edit traffic light group","edit trafficlight group": editTrafficLightTeamTimer();break;
+                    case "save": exportData();break;
+                    case "load": importData(); break;
+                    case "quit","leave": 
+                        exportData();
+                        System.out.println("See you next time!");
+                        quit = true;
+                    break;
+                    case "how" , "help":showHow();break;
+                    case "chunk info","chunkinfo": chunkInfo();break;
+                }
             }
-            else if(action.equals("edit chunk"))
+            catch (IllegalArgumentException e) 
             {
-                editRoadChunk();
-            }
-            else if(action.equals("delete chunk"))
-            {
-                deleteChunk();
-            }
-            else if(action.equals("add traffic light group"))
-            {
-
-            }
-            else if(action.equals("edit traffic light group"))
-            {
-
-            }
-            else if(action.equals("save"))
-            {
-
-            }
-            else if(action.equals("load"))
-            {
-
-            }
-            else if(action.equals("quit"))
-            {
-                
-            }
-            else
-            {
-                throw new IllegalArgumentException("Coordinates must be in the range of 1 to 20.");
+                System.out.println("we dont have this attribute");
+                input.nextLine();
             }
         }
     }
-    
+
     public void addNewChunk()//create a new chunk
     {
         boolean valid = false;
@@ -107,10 +95,48 @@ public class Editor implements Serializable
         {
             try
             {
+                System.out.print("please endet axis:");
                 EditorRoadChunk newRoadChunk = new EditorRoadChunk();
+                newRoadChunk.initializeScanner();
                 int IDX=0,IDY=0;
                 IDX = input.nextInt();
                 IDY = input.nextInt();
+                if (IDX > 20 || IDX <= 0 || IDY > 20 || IDY <= 0) 
+                {
+                    throw new IllegalArgumentException("Coordinates must be in the range of 1 to 20.");
+                }
+                if(map[IDX][IDY] == null)
+                {
+                    newRoadChunk.getData(IDX, IDY);
+                    map[IDX][IDY] = newRoadChunk;
+                    connectionAdd(map, newRoadChunk);
+                    valid = true;
+                }
+                else
+                {
+                    System.out.println("This axis already have data. Switching to edit mode");
+                    editRoadChunk(IDX, IDY);
+                    valid = true;
+                }
+            }
+            catch(IllegalArgumentException e)
+            {
+                System.out.println(e.getMessage());
+                input.nextLine();
+            }
+        }
+    }
+
+    public void addNewChunk(int IDX, int IDY)//create a new chunk
+    {
+        boolean valid = false;
+        while (!valid) 
+        {
+            try
+            {
+                System.out.print("please endet axis:");
+                EditorRoadChunk newRoadChunk = new EditorRoadChunk();
+                newRoadChunk.initializeScanner();
                 if (IDX > 20 || IDX <= 0 || IDY > 20 || IDY <= 0) 
                 {
                     throw new IllegalArgumentException("Coordinates must be in the range of 1 to 20.");
@@ -149,6 +175,7 @@ public class Editor implements Serializable
                     throw new IllegalArgumentException("Coordinates must be in the range of 1 to 20.");
                 }
                 EditorRoadChunk target = map[IDX][IDY];
+                target.initializeScanner();
                 System.out.print("Enter the attribute to edit (PS.axis can't edit):");
                 String attribute = input.next().toLowerCase();
                 switch (attribute) {
@@ -185,13 +212,22 @@ public class Editor implements Serializable
         {
             try
             {
+                System.out.print("please endet axis:");
+                IDX= input.nextInt();
+                IDY = input.nextInt();
                 if (IDX > 20 || IDX <= 0 || IDY > 20 || IDY <= 0) 
                 {
                     throw new IllegalArgumentException("Coordinates must be in the range of 1 to 20.");
                 }
+                if(map[IDX][IDY] == null)
+                {
+                    System.out.println("there is no data in that axis. Swithching to add mode...");
+                    addNewChunk();
+                }
                 EditorRoadChunk target = map[IDX][IDY];
+                target.initializeScanner();
                 System.out.print("Enter the attribute to edit (PS.axis can't edit):");
-                String attribute = input.next().toLowerCase();
+                String attribute = input.next().toLowerCase();;
                 switch (attribute) {
                     case "start flag","start","startflag": target.setStartPoint();break;
                     case "speedlimit","speed limit": target.setSpeedLimit();  break;
@@ -250,9 +286,103 @@ public class Editor implements Serializable
     public void newTrafficLightGroup()//record the traffic light group at map
     {
         boolean valid = false;
+        int key ,teamnum, timer;
         while (!valid) 
         {
-            
+            try
+            {
+                System.out.print("please enter group number:");
+                key = input.nextInt();
+                if(trafficLight.get(key) != null)
+                {
+                    System.out.println("\nyou have already created this group. Swithching to edit mode...");
+                    editTrafficLightTeamTimer(key);
+                    valid = true;
+                }
+                else
+                {
+                    System.out.print("how many teams is allowed in the group:");
+                    teamnum = input.nextInt();
+                    int[] teams = new int[teamnum];
+                    for(int i = 0 ; i < teamnum ; i++)
+                    {
+                        System.out.print("please enter team " + i + "'s wait time:");
+                        timer = input.nextInt();
+                        teams[i] = timer;
+                    }
+                    trafficLight.put(key, teams);
+                    valid = true;
+                }
+            }
+            catch(InputMismatchException e)
+            {
+                input.nextLine();
+                System.out.println("wrong input");
+            }
+        }
+    }
+
+    public void newTrafficLightGroup(int key)//record the traffic light group at map
+    {
+        boolean valid = false;
+        int teamnum, timer;
+        while (!valid) 
+        {
+            try
+            {
+                if(trafficLight.get(key) != null)
+                {
+                    System.out.println("\nyou have already created this group. Swithching to edit mode...");
+                    editTrafficLightTeamTimer(key);
+                    valid = true;
+                }
+                else
+                {
+                    System.out.print("how many teams is allowed in the group:");
+                    teamnum = input.nextInt();
+                    int[] teams = new int[teamnum];
+                    for(int i = 0 ; i < teamnum ; i++)
+                    {
+                        System.out.print("please enter team " + i + "'s wait time:");
+                        timer = input.nextInt();
+                        teams[i] = timer;
+                    }
+                    trafficLight.put(key, teams);
+                    valid = true;
+                }
+            }
+            catch(InputMismatchException e)
+            {
+                input.nextLine();
+                System.out.println("wrong input");
+            }
+        }
+    }
+
+    public void editTrafficLightTeamTimer(int key) {
+        boolean valid = false;
+        while(!valid)
+        {    
+            try 
+            {
+                System.out.println("Start editing group " + key + "!");
+                int[] target = trafficLight.get(key);
+                int newtime;
+                for(int i = 0 ; i < trafficLight.get(key).length ; i ++)
+                {
+                    System.out.print("current team " + i + " wait time is " + trafficLight.get(key)[i] + "\n");
+                    System.out.print("new time:");
+                    newtime = input.nextInt();
+                    target[i] = newtime;
+                }
+                trafficLight.replace(key, target);
+                valid = true;
+            } 
+            catch (InputMismatchException e) 
+            {
+                System.out.println("Input type mismatch. Please enter a valid number.");
+                input.nextLine(); // clear the invalid input
+            }    
         }
     }
 
@@ -260,10 +390,31 @@ public class Editor implements Serializable
         boolean valid = false;
         while(!valid)
         {    
-            try {
-                
+            try 
+            {
+                int key;
+                System.out.print("which group do you want to edit:");
+                key = input.nextInt();
+                if(trafficLight.get(key) == null)
+                {
+                    System.out.print("there is no group " + key +". Switching to add mode");
+                    newTrafficLightGroup(key);
+                }
+                System.out.println("Start editing group " + key + "!");
+                int[] target = trafficLight.get(key);
+                int newtime;
+                for(int i = 0 ; i < trafficLight.get(key).length ; i ++)
+                {
+                    System.out.print("current team " + i + " wait time is" + trafficLight.get(key)[i]);
+                    System.out.print("new time:");
+                    newtime = input.nextInt();
+                    target[i] = newtime;
+                }
+                trafficLight.replace(key, target);
                 valid = true;
-            } catch (InputMismatchException e) {
+            } 
+            catch (InputMismatchException e) 
+            {
                 System.out.println("Input type mismatch. Please enter a valid number.");
                 input.nextLine(); // clear the invalid input
             }    
@@ -272,7 +423,24 @@ public class Editor implements Serializable
 
     public void deleteTrafficLightGroup()
     {
-        
+        try
+        {
+            int key = input.nextInt();
+            if(trafficLight.containsKey(key))
+            {
+                trafficLight.remove(key);
+                System.out.println("Removed!");
+            }
+            else
+            {
+                System.out.println("Remove unsucessful. Key not found.");
+            }
+        }
+        catch(InputMismatchException e )
+        {
+            System.out.println("input mismatch");
+            input.nextLine();
+        }
     }
 
     public EditorRoadChunk getChunk(int ID_X, int ID_Y)
@@ -287,8 +455,10 @@ public class Editor implements Serializable
     if (y + 1 < map[0].length && map[x][y + 1] != null && (target.getDirection()[NORTH] != 0) && (map[x][y + 1].getDirection()[SOUTH] != 0)) {
         if (y < y + 1) {
             target.setConnection(NORTH);
+            target.setConnected(map[x][y+1], NORTH);
         } else {
             map[x][y + 1].setConnection(SOUTH);
+            map[x][y+1].setConnected(target, SOUTH);
         }
     }
 
@@ -296,8 +466,10 @@ public class Editor implements Serializable
     if (x + 1 < map.length && map[x + 1][y] != null && (target.getDirection()[EAST]) != 0 && (map[x + 1][y].getDirection()[WEST]) != 0) {
         if (x < x + 1) {
             target.setConnection(EAST);
+            target.setConnected(map[x+1][y], EAST);
         } else {
             map[x + 1][y].setConnection(WEST);
+            map[x+1][y].setConnected(target, WEST);
         }
     }
 
@@ -305,8 +477,10 @@ public class Editor implements Serializable
     if (y - 1 >= 0 && map[x][y - 1] != null && (target.getDirection()[SOUTH]) != 0 && (map[x][y - 1].getDirection()[NORTH]) != 0) {
         if (y > y - 1) {
             target.setConnection(SOUTH);
+            target.setConnected(map[x][y - 1], SOUTH);
         } else {
             map[x][y - 1].setConnection(NORTH);
+            map[x][y - 1].setConnected(target, NORTH);
         }
     }
 
@@ -314,8 +488,10 @@ public class Editor implements Serializable
     if (x - 1 >= 0 && map[x - 1][y] != null && (target.getDirection()[WEST]) != 0 && (map[x - 1][y].getDirection()[EAST]) != 0) {
         if (x > x - 1) {
             target.setConnection(WEST);
+            target.setConnected(map[x-1][y], WEST);
         } else {
             map[x - 1][y].setConnection(EAST);
+            map[x-1][y].setConnected(target, EAST);
         }
     }
 
@@ -324,8 +500,10 @@ public class Editor implements Serializable
         if ((map[x][y + 1] != null || map[x + 1][y] != null) && (target.getDirection()[NE]) != 0 && (map[x + 1][y + 1].getDirection()[SW]) != 0) {
             if (x < x + 1 && y < y + 1) {
                 target.setConnection(NE);
+                target.setConnected(map[x + 1][y + 1], NE);
             } else {
                 map[x + 1][y + 1].setConnection(SW);
+                map[x + 1][y + 1].setConnected(target, SW);
             }
         }
     }
@@ -335,8 +513,10 @@ public class Editor implements Serializable
         if ((map[x][y - 1] != null || map[x + 1][y] != null) && (target.getDirection()[SE]) != 0 && (map[x + 1][y - 1].getDirection()[NW]) != 0) {
             if (x < x + 1 && y > y - 1) {
                 target.setConnection(SE);
+                target.setConnected(map[x + 1][y - 1], SE);
             } else {
                 map[x + 1][y - 1].setConnection(NW);
+                map[x + 1][y - 1].setConnected(target, NW);
             }
         }
     }
@@ -346,8 +526,10 @@ public class Editor implements Serializable
         if ((map[x][y - 1] != null || map[x - 1][y] != null) && (target.getDirection()[SW]) != 0 && (map[x - 1][y - 1].getDirection()[NE]) != 0) {
             if (x > x - 1 && y > y - 1) {
                 target.setConnection(SW);
+                target.setConnected(map[x - 1][y - 1], SW);
             } else {
                 map[x - 1][y - 1].setConnection(NE);
+                map[x - 1][y - 1].setConnected(target, NE);
             }
         }
     }
@@ -357,26 +539,32 @@ public class Editor implements Serializable
         if ((map[x][y + 1] != null || map[x - 1][y] != null) && (target.getDirection()[NW]) != 0 && (map[x - 1][y + 1].getDirection()[SE]) != 0) {
             if (x > x - 1 && y < y + 1) {
                 target.setConnection(NW);
+                target.setConnected(map[x - 1][y + 1], NW);
             } else {
                 map[x - 1][y + 1].setConnection(SE);
+                map[x - 1][y + 1].setConnected(target, SE);
             }
         }
     }
         
     }
 
-    public FileManager exportData() 
+    public void exportData() 
     {
-        FileManager fileManager = new FileManager();
         fileManager.setData(map,trafficLight);
-        return fileManager;
+        fileManager.saveToFile("src/SavedFile/editor_map.obj");
     }
 
     // read file from FileManager
-    public void importData(FileManager fileManager)
-    {
-        this.map = fileManager.getMap();
-        this.trafficLight = fileManager.getTrafficLight();
+    public void importData() {
+        FileManager fileManager = FileManager.loadFromFile("src/SavedFile/editor_map.obj");
+        if (fileManager != null) {
+            this.map = fileManager.getMap();
+            this.trafficLight = fileManager.getTrafficLight();
+            System.out.println("Data loaded successfully.");
+        } else {
+            System.out.println("Failed to load data.");
+        }
     }
 
     public String assignPath(Scanner input) {
@@ -389,91 +577,86 @@ public class Editor implements Serializable
         return path + "\\" + fileName+".obj";
     }
 
-/* for GUI
-    public void updateRoadParameter(String buttonId, int parameterIndex, String newValue) {
-        int id = Integer.parseInt(buttonId);
-        if (templateChunks[id] != null) {
-            try {
-                switch (parameterIndex) {
-                    case INTERSECTION:
-                        // 需修改：處理 intersection 陣列
-                        break;
-                    case TRAFFICLIGHTFLAG:
-                        templateChunks[id].setTrafficLightFlag(Boolean.parseBoolean(newValue));
-                        break;
-                    case TRAFFICLIGHTTIMER:
-                        templateChunks[id].setTrafficLightTimer(Double.parseDouble(newValue));
-                        break;
-                    case TRAFFICLIGHTGROUP:
-                        templateChunks[id].setTrafficLightGroup(Integer.parseInt(newValue));
-                        break;
-                    case SPEEDLIMIT:
-                        templateChunks[id].setSpeedLimit(Double.parseDouble(newValue));
-                        break;
-                    case IDX:
-                        templateChunks[id].setIdX(Integer.parseInt(newValue));
-                        break;
-                    case IDY:
-                        templateChunks[id].setIdY(Integer.parseInt(newValue));
-                        break;
-                    case STARTFLAG:
-                        templateChunks[id].setStartFlag(Boolean.parseBoolean(newValue));
-                        break;
-                    case WEIGHTS:
-                        // 需修改：處理 weights 陣列 
-                        break;
-                    case CONNECTION:
-                        // 需修改：處理 connection 陣列
-                        break;
+    private void showChunk() {
+        for (int i = 20; i > 0; i--) {
+            for (int j = 1; j <= 20; j++) {
+                if (map[j][i] == null) {
+                    System.out.print("| |");
+                } else if (map[j][i].haveTrafficLight()) {
+                    System.out.print("|T|");
+                } else if (!map[j][i].getIntersection()) {
+                    System.out.print("|U|");
+                } else {
+                    System.out.print("|T|");
                 }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input for parameter " + parameterIndex + ": " + newValue);
+            }
+            System.out.println();
+        }
+        System.out.println("V = this chunk dont have traffic light, " +
+        "T = this chunk have traffic light, "+
+        "U = this chunk dont get effected by traffic light"
+        );
+    }
+
+    private void showTrafficLight() {
+        if (trafficLight.isEmpty()) {
+            System.out.println("There is no traffic light group.");
+        } else {
+            for (Map.Entry<Integer, int[]> entry : trafficLight.entrySet()) {
+                int groupNumber = entry.getKey();
+                int[] teamTimes = entry.getValue();
+                System.out.print("group #" + groupNumber + " : ");
+                for (int i = 0; i < teamTimes.length; i++) {
+                    System.out.print("team#" + i + "   " + teamTimes[i]);
+                    if (i < teamTimes.length - 1) {
+                        System.out.print(" , ");
+                    }
+                }
+                System.out.println();
             }
         }
     }
 
-    public void updateTrafficLightParameter(String buttonId, int parameterIndex, String newValue) {
-        int id = Integer.parseInt(buttonId);
-        if (templateChunks[id] != null) {
+    private void showHow() {
+        System.out.println("Commands and their functions:");
+        System.out.println("add chunk - add new chunk to map");
+        System.out.println("new chunk - add new chunk to map (same as 'add chunk')");
+        System.out.println("edit chunk - edit an existing chunk in the map");
+        System.out.println("delete chunk - delete a chunk from the map");
+        System.out.println("add traffic light group - add a new traffic light group");
+        System.out.println("add trafficlight group - add a new traffic light group (same as 'add traffic light group')");
+        System.out.println("edit traffic light group - edit an existing traffic light group");
+        System.out.println("edit trafficlight group - edit an existing traffic light group (same as 'edit traffic light group')");
+        System.out.println("save - save the map and traffic light group data to a file");
+        System.out.println("load - load the map and traffic light group data from a file");
+        System.out.println("quit - save data and exit the program");
+        System.out.println("leave - save data and exit the program (same as 'quit')");
+    }
+
+    private void chunkInfo() {
+        boolean valid = false;
+        while (!valid) {
             try {
-                switch (parameterIndex) {
-                    case INTERSECTION:
-                        // 需修改：處理 intersection 陣列
-                        break;
-                    case TRAFFICLIGHTFLAG:
-                        templateChunks[id].setTrafficLightFlag(Boolean.parseBoolean(newValue));
-                        break;
-                    case TRAFFICLIGHTTIMER:
-                        templateChunks[id].setTrafficLightTimer(Double.parseDouble(newValue));
-                        break;
-                    case TRAFFICLIGHTGROUP:
-                        templateChunks[id].setTrafficLightGroup(Integer.parseInt(newValue));
-                        break;
-                    case SPEEDLIMIT:
-                        templateChunks[id].setSpeedLimit(Double.parseDouble(newValue));
-                        break;
-                    case IDX:
-                        templateChunks[id].setIdX(Integer.parseInt(newValue));
-                        break;
-                    case IDY:
-                        templateChunks[id].setIdY(Integer.parseInt(newValue));
-                        break;
-                    case STARTFLAG:
-                        templateChunks[id].setStartFlag(Boolean.parseBoolean(newValue));
-                        break;
-                    case WEIGHTS:
-                        // 需修改：處理 weights 陣列
-                        break;
-                    case CONNECTION:
-                        // 需修改：處理 connection 陣列
-                        break;
+                System.out.print("Please enter the coordinates of the chunk (IDX IDY): ");
+                int IDX = input.nextInt();
+                int IDY = input.nextInt();
+                if (IDX > 20 || IDX <= 0 || IDY > 20 || IDY <= 0) {
+                    throw new IllegalArgumentException("Coordinates must be in the range of 1 to 20.");
                 }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input for parameter " + parameterIndex + ": " + newValue);
+                EditorRoadChunk chunk = map[IDX][IDY];
+                if (chunk != null) {
+                    System.out.println(chunk.toString());
+                } else {
+                    System.out.println("No chunk found at the specified coordinates.");
+                }
+                valid = true;
+            } catch (InputMismatchException e) {
+                input.nextLine(); // Clear the invalid input
+                System.out.println("Input must be an integer.");
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
             }
         }
     }
-*/
-    
 
 }

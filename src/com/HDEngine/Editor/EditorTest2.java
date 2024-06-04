@@ -10,7 +10,7 @@ public class EditorTest2 {
         int ID_X = 0, ID_Y = 0, runset=0;
         runset = input.nextInt();
         Editor editor = new Editor();
-        FileManager loadedFileManager = FileManager.loadFromFile("src/com/HDEngine/Utilities/SavedFile/editor_map.obj");
+        FileManager loadedFileManager = FileManager.loadFromFile("src/SavedFile/editor_map.obj");
         if (loadedFileManager != null) 
         {
             editor.importData(loadedFileManager);

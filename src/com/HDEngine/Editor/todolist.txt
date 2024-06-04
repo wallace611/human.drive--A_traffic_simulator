@@ -1,0 +1,130 @@
+    /*//function overload for GUI
+
+    public void setIntersection(int[] intersection) {
+        this.intersection = intersection;//需要修改 intersection陣列
+    }
+
+    public void setTrafficLightFlag(boolean trafficLightFlag) {
+        this.trafficLightFlag = trafficLightFlag;
+    }
+
+
+    public void setTrafficLightGroup(int trafficLightGroup) {
+        this.trafficLightGroup = trafficLightGroup;
+    }
+
+    public void setSpeedLimit(double speedLimit) {
+        this.speedLimit = speedLimit;
+    }
+
+    public void setIdX(int idX) {
+        this.idX = idX;
+    }
+
+    public void setIdY(int idY) {
+        this.idY = idY;
+    }
+
+    public void setStartFlag(boolean startFlag) {
+        this.startFlag = startFlag;
+    }
+
+    public void setWeights(double[] weights) {
+        this.weights = weights;  // 需修改：處理 weights 陣列
+    }
+
+    public void setConnection(int[] connection) {
+        this.connection = connection;  // 需修改：處理 connection 陣列
+    }
+}*/
+
+roadchunk的
+
+====
+
+/* for GUI
+    public void updateRoadParameter(String buttonId, int parameterIndex, String newValue) {
+        int id = Integer.parseInt(buttonId);
+        if (templateChunks[id] != null) {
+            try {
+                switch (parameterIndex) {
+                    case INTERSECTION:
+                        // 需修改：處理 intersection 陣列
+                        break;
+                    case TRAFFICLIGHTFLAG:
+                        templateChunks[id].setTrafficLightFlag(Boolean.parseBoolean(newValue));
+                        break;
+                    case TRAFFICLIGHTTIMER:
+                        templateChunks[id].setTrafficLightTimer(Double.parseDouble(newValue));
+                        break;
+                    case TRAFFICLIGHTGROUP:
+                        templateChunks[id].setTrafficLightGroup(Integer.parseInt(newValue));
+                        break;
+                    case SPEEDLIMIT:
+                        templateChunks[id].setSpeedLimit(Double.parseDouble(newValue));
+                        break;
+                    case IDX:
+                        templateChunks[id].setIdX(Integer.parseInt(newValue));
+                        break;
+                    case IDY:
+                        templateChunks[id].setIdY(Integer.parseInt(newValue));
+                        break;
+                    case STARTFLAG:
+                        templateChunks[id].setStartFlag(Boolean.parseBoolean(newValue));
+                        break;
+                    case WEIGHTS:
+                        // 需修改：處理 weights 陣列 
+                        break;
+                    case CONNECTION:
+                        // 需修改：處理 connection 陣列
+                        break;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input for parameter " + parameterIndex + ": " + newValue);
+            }
+        }
+    }
+
+    public void updateTrafficLightParameter(String buttonId, int parameterIndex, String newValue) {
+        int id = Integer.parseInt(buttonId);
+        if (templateChunks[id] != null) {
+            try {
+                switch (parameterIndex) {
+                    case INTERSECTION:
+                        // 需修改：處理 intersection 陣列
+                        break;
+                    case TRAFFICLIGHTFLAG:
+                        templateChunks[id].setTrafficLightFlag(Boolean.parseBoolean(newValue));
+                        break;
+                    case TRAFFICLIGHTTIMER:
+                        templateChunks[id].setTrafficLightTimer(Double.parseDouble(newValue));
+                        break;
+                    case TRAFFICLIGHTGROUP:
+                        templateChunks[id].setTrafficLightGroup(Integer.parseInt(newValue));
+                        break;
+                    case SPEEDLIMIT:
+                        templateChunks[id].setSpeedLimit(Double.parseDouble(newValue));
+                        break;
+                    case IDX:
+                        templateChunks[id].setIdX(Integer.parseInt(newValue));
+                        break;
+                    case IDY:
+                        templateChunks[id].setIdY(Integer.parseInt(newValue));
+                        break;
+                    case STARTFLAG:
+                        templateChunks[id].setStartFlag(Boolean.parseBoolean(newValue));
+                        break;
+                    case WEIGHTS:
+                        // 需修改：處理 weights 陣列
+                        break;
+                    case CONNECTION:
+                        // 需修改：處理 connection 陣列
+                        break;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input for parameter " + parameterIndex + ": " + newValue);
+            }
+        }
+    }
+*/
+    
