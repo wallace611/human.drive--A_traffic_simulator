@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.*;
 import com.HDEngine.Editor.Object.TrafficLight.TrafficLight;
 
-import ch.randelshofer.media.quicktime.QuickTimeWriter.Edit;
+import processing.app.syntax.InputHandler.repeat;
 
 public class EditorRoadChunk implements Serializable
 {
@@ -12,14 +12,15 @@ public class EditorRoadChunk implements Serializable
     private int idY;
     private boolean startFlag;//is this the start point
     private double speedLimit;//the speed limit (if = -1 then there is no speed limit on this chunk)
-    private int[] intersection = new int[8];//using bit refence to record where is the road going
+    private int[] direction = new int[8];//using bit refence to record where is the road going
     private boolean isWeighted;
     private double[] weights = new double[8];//recording the weight of different road
     private int[] connection = new int[8];//to record where is the road going (if data==0 -> no)(if data == 1  ==  the road is connected)(1 is on the right hand side, clockwise)
     transient Scanner input = new Scanner(System.in);
     private EditorRoadChunk[] connected =new EditorRoadChunk[8];//do it last
     private boolean trafficLightFlag;
-    private TrafficLight trafficLight = new TrafficLight();
+    private TrafficLight trafficLight;
+    private boolean intersection;
 
     public void getData(int IDX, int IDY)
     {
@@ -30,10 +31,12 @@ public class EditorRoadChunk implements Serializable
         System.out.println("Setting speed limit...");
         setStartPoint();
         System.out.println("Setting direction...");
-        setIntersection();
+        setDirection();
         System.out.println("Setting weight...");
         setWeight();
         System.out.println("Setting traffic light info...");
+        setTrafficLight();
+        System.out.println("Setting intersection info...");
         setTrafficLight();
         System.out.println("done!! Adding the current chunk to map...");
         for(int i = 0 ; i < 8 ;  i++)
@@ -46,7 +49,6 @@ public class EditorRoadChunk implements Serializable
         boolean valid = false;
         while (!valid) {
             try {
-                
                 if (idX > 20 || idX <= 0 || idY > 20 || idY <= 0) 
                 {
                     throw new IllegalArgumentException("Coordinates must be in the range of 1 to 20.");
@@ -111,19 +113,19 @@ public class EditorRoadChunk implements Serializable
         }
     }
 
-    public void setIntersection() {
+    public void setDirection() {
         boolean valid = false;
         while(!valid)
         {
             for (int i = 0; i < 8; i++) {
                 switch (i) {
-                    case 0:System.out.print("Does East side have intersection (Please input True or False):");break;
+                    case 0:System.out.print("Can this chunc drive towards East (Please input True or False):");break;
                     case 1:System.out.print("Is switching lanes towards North-East allowed? (Please input True or False):");break;
-                    case 2:System.out.print("Does North side have intersection (Please input True or False):");break;
+                    case 2:System.out.print("Can this chunc drive towards North (Please input True or False):");break;
                     case 3:System.out.print("Is switching lanes towards North-West allowed? (Please input True or False):");break;
-                    case 4:System.out.print("Does West side have intersection (Please input True or False):");break;
+                    case 4:System.out.print("Can this chunc drive towards West (Please input True or False):");break;
                     case 5:System.out.print("Is switching lanes towards South-West allowed? (Please input True or False):");break;
-                    case 6:System.out.print("Does South side have intersection (Please input True or False):");break;
+                    case 6:System.out.print("Can this chunc drive towards South(Please input True or False):");break;
                     case 7:System.out.print("Is switching lanes towards South-East allowed? (Please input True or False):");break;
                 }
                 try
@@ -131,11 +133,11 @@ public class EditorRoadChunk implements Serializable
                     String input = this.input.next();
                     if (input.equalsIgnoreCase("true")  || input.equalsIgnoreCase("t")) 
                     {
-                        this.intersection[i] = 1;
+                        this.direction[i] = 1;
                     } 
                     else if(input.equalsIgnoreCase("flase")|| input.equalsIgnoreCase("f"))
                     {
-                        this.intersection[i] = 0;;
+                        this.direction[i] = 0;;
                     }
                     else 
                     {
@@ -163,7 +165,7 @@ public class EditorRoadChunk implements Serializable
                 if (ref.equals("true") || ref.equals("t")) {
                     isWeighted = true;
                     for (int i = 0; i < 8; i++) {
-                        if (intersection[i] == 1) 
+                        if (direction[i] == 1) 
                         {
                             switch (i) 
                             {
@@ -212,6 +214,7 @@ public class EditorRoadChunk implements Serializable
                 if(flag.equals("true") || flag.equals("t"))
                 {
                     this.trafficLightFlag = true;
+                    trafficLight = new TrafficLight();
                     System.out.print("Which group is this chunk in(0 ~ the max group in the traffic light system):");
                     trafficLight.setTrafficLightGroup(input.nextInt());
                     System.out.print("Which team is this chunk in(0 ~ the max team in the traffic light group):");
@@ -240,6 +243,30 @@ public class EditorRoadChunk implements Serializable
         this.connection[facing] = 1;
     }
 
+    public void setIntersection()
+    {
+        boolean valid = false;
+        while (!valid)
+        {
+            try {
+                System.out.print("Is this chunk the effected by traffic light (Please enter True or False): ");
+                String ref = this.input.next();
+                ref = ref.toLowerCase();
+                if (ref.equals("true") || ref.equals("t")) {
+                    this.intersection = true;
+                } else if (ref.equals("false") || ref.equals("f")) {
+                    this.intersection = false;
+                } else {
+                    throw new InputMismatchException();
+                }
+                valid = true;
+            } catch (InputMismatchException e) {
+                System.out.println("input type mismatch");
+                input.nextLine(); // Clear the invalid input from the scanner buffer
+            }
+        }
+    }
+
     public int getIDX(){
         return idX;
     }
@@ -256,8 +283,8 @@ public class EditorRoadChunk implements Serializable
         return speedLimit;
     }
 
-    public int[] getIntersection(){
-        return intersection;
+    public int[] getDirection(){
+        return direction;
     }
 
     public boolean isWeighted(){
@@ -294,6 +321,10 @@ public class EditorRoadChunk implements Serializable
         return connection;
     }
 
+    public boolean getIntersection(){
+        return intersection;
+    }
+
     public int connectionStatus() {
         boolean north = connection[2] == 1;
         boolean south = connection[6] == 1;
@@ -322,7 +353,7 @@ public class EditorRoadChunk implements Serializable
 
     @Override
     public String toString() {
-        return "Intersection = " + Arrays.toString(intersection) +
+        return "Intersection = " + Arrays.toString(direction) +
                 ", ID = " + idX + "," + idY +
                 ", Start = " + startFlag +
                 ", Speed limit = " + speedLimit +

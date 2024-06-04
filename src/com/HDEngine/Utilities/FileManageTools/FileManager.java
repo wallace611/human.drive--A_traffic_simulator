@@ -1,32 +1,29 @@
 package com.HDEngine.Utilities.FileManageTools;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.HDEngine.Editor.Object.Road.EditorRoadChunk;
 
 public class FileManager implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private EditorRoadChunk[][] map;
-    private int[][] trafficLightGroup;
-    private double[] trafficLightGroupTimer;
+    private Map<Integer,int[]> trafficLight = new HashMap<>();
 
     // transfer Editor's data to FileManager
-    public void setData(EditorRoadChunk[][] map, int[][] trafficLightGroup, double[] trafficLightGroupTimer) {
+    public void setData(EditorRoadChunk[][] map, Map<Integer,int[]> trafficLight) {
         this.map = map;
-        this.trafficLightGroup = trafficLightGroup;
-        this.trafficLightGroupTimer = trafficLightGroupTimer;
+        this.trafficLight = trafficLight;
     }
 
     public EditorRoadChunk[][] getMap() {
         return map;
     }
 
-    public int[][] getTrafficLightGroup() {
-        return trafficLightGroup;
-    }
-
-    public double[] getTrafficLightGroupTimer() {
-        return trafficLightGroupTimer;
+    public Map<Integer,int[]> getTrafficLight() {
+        return trafficLight;
     }
 
     public void saveToFile(String filename) {
