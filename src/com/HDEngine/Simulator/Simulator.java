@@ -27,7 +27,7 @@ public class Simulator {
             for (EditorRoadChunk erc : ercArr) {
                 if (erc != null) {
                     byte roadDir = 0;
-                    for (int i : erc.getIntersection()) {
+                    for (int i : erc.getDirection()) {
                         roadDir <<= 1;
                         roadDir += i;
                     }
@@ -77,7 +77,7 @@ public class Simulator {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        new ProgressPage();
+        loadFile("src/SavedFile/editor_map.obj");
         //world = loadFile("src/SavedFile/editor_map.obj");
 
         world = new World(100, 100);

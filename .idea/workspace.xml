@@ -6,17 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="7ec58115-9cd6-4f8f-9386-46447ab19eb4" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Render/RenderWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Utilities/Render/RenderWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Render/document.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Utilities/Render/document.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Simulator/RenderUITest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Simulator/RenderUITest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SavedFile/good.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Editor/EditorTest2.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Simulator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Simulator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Test.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Test.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/UI/Main.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/UI/ProgressPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/UI/ProgressPage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/UI/RoundBorder.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/UI/SimulationPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/UI/SimulationPage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/UI/StackLayoutExample.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/UI/test.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/UI/EditPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/UI/EditPage.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,7 +59,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "Editor",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/urmom/IdeaProjects/test",
     "node.js.detected.package.eslint": "true",
@@ -78,7 +71,7 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager" selected="Application.Simulator">
+  <component name="RunManager">
     <configuration name="EditorTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.HDEngine.Editor.EditorTest" />
       <module name="human.drive--A_traffic_simulator" />
