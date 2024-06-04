@@ -6,14 +6,15 @@
   <component name="ChangeListManager">
     <list default="true" id="7ec58115-9cd6-4f8f-9386-46447ab19eb4" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Components/Traffic/TrafficLightManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Components/Traffic/TrafficLightManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Objects/Dynamic/Vehicle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Objects/Dynamic/Vehicle.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Objects/Static/CollisionArea.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Objects/Static/CollisionArea.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Objects/Static/RoadChunk.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Objects/Static/RoadChunk.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Objects/Static/World.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Objects/Static/World.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Simulator/RenderUITest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Simulator/RenderUITest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Settings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Settings.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Simulator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Simulator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Utilities/Render/RenderWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Utilities/Render/RenderWindow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/UI/SimulationPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/UI/SimulationPage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Utilities/Render/RenderWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Components/Render/RenderWindow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Utilities/Render/document.md" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -135,6 +136,14 @@
       </list>
     </recent_temporary>
   </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9f38398b9061-39b83d9b5494-intellij.indexing.shared.core-IU-241.17011.79" />
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-IU-241.17011.79" />
+      </set>
+    </attachedChunks>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -174,6 +183,7 @@
       <workItem from="1717433151925" duration="2728000" />
       <workItem from="1717474317660" duration="3269000" />
       <workItem from="1717479680641" duration="3688000" />
+      <workItem from="1717487361298" duration="7108000" />
     </task>
     <servers />
   </component>

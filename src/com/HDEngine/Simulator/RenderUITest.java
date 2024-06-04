@@ -3,7 +3,7 @@ package com.HDEngine.Simulator;
 import com.HDEngine.Simulator.Objects.Dynamic.Vehicle;
 import com.HDEngine.Simulator.Objects.Static.RoadChunk;
 import com.HDEngine.Simulator.Objects.Static.World;
-import com.HDEngine.Utilities.Render.RenderWindow;
+import com.HDEngine.Simulator.Components.Render.RenderWindow;
 import processing.awt.PSurfaceAWT;
 import processing.core.PApplet;
 import processing.core.PImage;

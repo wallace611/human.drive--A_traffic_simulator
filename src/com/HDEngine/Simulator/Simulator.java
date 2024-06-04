@@ -6,7 +6,7 @@ import com.HDEngine.Simulator.Components.Traffic.TrafficLightManager;
 import com.HDEngine.Simulator.Objects.HDObject;
 import com.HDEngine.Simulator.Objects.Static.RoadChunk;
 import com.HDEngine.Simulator.Objects.Static.World;
-import com.HDEngine.Utilities.Render.RenderWindow;
+import com.HDEngine.Simulator.Components.Render.RenderWindow;
 import com.HDEngine.UI.SimulationPage;
 import com.HDEngine.Utilities.FileManageTools.FileManager;
 import processing.core.PImage;
@@ -30,7 +30,7 @@ public class Simulator {
                     byte roadDir = 0;
                     for (int i : erc.getIntersection()) {
                         roadDir <<= 1;
-                        roadDir += i;
+                        roadDir += (byte) i;
                     }
                     RoadChunk rc = new RoadChunk(roadDir);
                     rc.setImagePath("src\\com\\HDEngine\\Simulator\\image\\testimg.png");
@@ -150,16 +150,23 @@ public class Simulator {
 
         rc25.addRoad(rc15, 1.0f);
         rc35.addRoad(rc25, 1.0f);
+        rc25.setIntersection(true);
+        rc35.setIntersection(true);
 
         RoadChunk rc55 = new RoadChunk((byte) 1, new RoadChunk[]{rc45}, new float[]{1.0f});
         rc55.setSprite(roadImg);
         world.addRoadChunk(5, 5, rc55);
         world.getSummonChunk().add(rc55);
 
-        TLGroup tl1 = new TLGroup(new int[]{3, 3});
+        TLGroup tl1 = new TLGroup(new int[]{5, 20});
         TrafficLightManager.addGroup(0, tl1);
 
-        rc55.setTrafficLight(0, 0);
+        rc24.setTrafficLight(0, 0);
+        rc34.setTrafficLight(0, 0);
+        rc26.setTrafficLight(0, 0);
+        rc36.setTrafficLight(0, 0);
+        rc15.setTrafficLight(0, 1);
+        rc45.setTrafficLight(0, 1);
 
         PImage img = ui.getWindow().loadImage("src/com/HDEngine/Simulator/image/car.png");
         world.setCarImage(img);

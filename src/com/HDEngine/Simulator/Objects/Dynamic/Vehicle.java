@@ -4,6 +4,7 @@ import com.HDEngine.Simulator.Objects.Static.CollisionArea;
 import com.HDEngine.Simulator.Objects.HDObject;
 import static java.lang.Math.*;
 
+import com.HDEngine.Simulator.Objects.Static.RoadChunk;
 import com.HDEngine.Simulator.Settings;
 import com.HDEngine.Utilities.Vector2D;
 
@@ -16,7 +17,7 @@ public class Vehicle extends HDObject {
     protected double stopTime;
     protected final int timeout;
     protected MovingState movingState;
-    protected Vector2D targetLocation;
+    protected RoadChunk targetRoadChunk;
     protected CollisionArea backCollision;
     protected final double bcWidth;
     protected final double bcHeight;
@@ -24,24 +25,25 @@ public class Vehicle extends HDObject {
     protected final double fcWidth;
     protected final double fcHeight;
     protected Vehicle frontVehicle;
+    protected boolean ignoreTrafficLight;
 
     public Vehicle(double maxSpeed) {
         speed = 100.0f;
         this.maxSpeed = maxSpeed;
-        accelerationRate = 0.5f;
+        accelerationRate = 0.2f;
         decelerationRate = 0.8f;
         stopTime = 0.0f;
         timeout = Settings.congestionTimeout;
         movingState = MovingState.IDLE;
-        bcWidth = 10;
+        bcWidth = 8;
         bcHeight = 30;
-        backCollision = new CollisionArea(new Vector2D(-20, 0), 0.0f, new Vector2D(bcHeight, bcWidth));
+        backCollision = new CollisionArea(new Vector2D(-10, 0), 0.0f, new Vector2D(bcHeight, bcWidth));
         backCollision.setParent(this);
         fcWidth = 15;
         fcHeight = 15;
         frontCollision = new CollisionArea(new Vector2D(20, 0), 0.0f, new Vector2D(fcHeight, fcWidth));
         frontCollision.setParent(this);
-        targetLocation = null;
+        targetRoadChunk = null;
         arrived = false;
         killed = false;
         frontVehicle = null;
@@ -56,10 +58,11 @@ public class Vehicle extends HDObject {
     public void tick(double deltaTime) {
         super.tick(deltaTime);
 
+        nextState();
         setNextSpeed(deltaTime);
         if (speed < 1e-4) {
             stopTime += deltaTime;
-            if (stopTime >= timeout && Settings.killCongestedVehicle) {
+            if (Settings.killCongestedVehicle && stopTime >= timeout) {
                 kill();
             }
         } else {
@@ -67,7 +70,6 @@ public class Vehicle extends HDObject {
         }
         resizeCollisionShapeAccordingToSpeed();
         move(deltaTime);
-        movingState = MovingState.FORWARD;
         frontVehicle = null;
     }
 
@@ -80,7 +82,7 @@ public class Vehicle extends HDObject {
             case BREAK:
                 if (frontVehicle != null) {
                     double dist = Vector2D.distance(frontVehicle.getGlobalLocation(), getGlobalLocation());
-                    setSpeed(speed - decelerationRate * maxSpeed / dist * 200 * deltaTime);
+                    setSpeed(speed - decelerationRate * maxSpeed / dist * 100 * deltaTime);
                 } else {
                     setSpeed(speed - decelerationRate * maxSpeed * deltaTime);
                 }
@@ -91,17 +93,40 @@ public class Vehicle extends HDObject {
         }
     }
 
-    private void detectTrafficLight() {
-
+    private void nextState() {
+        // speed limit
+        if (targetRoadChunk.getSpeedLimit() != -1) {
+            if (targetRoadChunk.getSpeedLimit() < speed) {
+                movingState = MovingState.BREAK;
+            } else {
+                movingState = MovingState.FORWARD;
+            }
+        } else {
+            movingState = MovingState.FORWARD;
+        }
+        if (Settings.speedUpAtIntersection && (targetRoadChunk.isIntersection() || targetRoadChunk.isTrafficLight())) {
+            movingState = MovingState.FORWARD;
+        }
+        // traffic light
+        if (!ignoreTrafficLight && targetRoadChunk.isTrafficLight() && !targetRoadChunk.isTrafficLightGreen()) {
+            movingState = MovingState.BREAK;
+            stopTime = 0.0f;
+        }
+        if (frontVehicle != null) {
+            movingState = MovingState.BREAK;
+            if (frontVehicle.stopTime < 1) {
+                stopTime = 0.0f;
+            }
+        }
     }
 
     private void resizeCollisionShapeAccordingToSpeed() {
         Vector2D fcMag = new Vector2D(
-                (speed + 1) / 100 * fcHeight,
-                (speed + 50) / 150 * fcWidth
+                (speed + 1) / (100 + 1) * fcHeight,
+                (speed + 20) / (speed + 40) * fcWidth
         );
         Vector2D bcMag = new Vector2D(
-                150 / (speed + 150) * bcHeight,
+                (maxSpeed + 50) / (speed + (maxSpeed + 50)) * bcHeight,
                 bcWidth
         );
 
@@ -110,13 +135,13 @@ public class Vehicle extends HDObject {
     }
 
     private void move(double deltaTime) {
-        if (targetLocation == null) {
+        if (targetRoadChunk == null) {
             arrived = true;
             return;
         }
 
         Vector2D currentLocation = getGlobalLocation();
-        Vector2D moveDir = targetLocation.sub(currentLocation);
+        Vector2D moveDir = targetRoadChunk.getGlobalLocation().sub(currentLocation);
         double distanceToTarget = moveDir.getMagnitude();
 
         if (distanceToTarget == 0) {
@@ -129,7 +154,7 @@ public class Vehicle extends HDObject {
 
         if (distanceToTarget <= moveDistance) {
             // 如果即将移动的距离大于或等于到目标的距离，认为已到达
-            setGlobalLocation(targetLocation); // 直接设置位置为目标位置
+            setGlobalLocation(targetRoadChunk.getGlobalLocation()); // 直接设置位置为目标位置
             arrived = true;
         } else {
             // 更新位置和旋转
@@ -148,10 +173,6 @@ public class Vehicle extends HDObject {
         }
     }
 
-    public boolean isKilled() {
-        return killed;
-    }
-
     public double getSpeed() {
         return speed;
     }
@@ -159,6 +180,10 @@ public class Vehicle extends HDObject {
     public void setSpeed(double speed) {
         if (speed < 0) this.speed = 0;
         else this.speed = Math.min(speed, maxSpeed);
+    }
+
+    public MovingState getMovingState() {
+        return movingState;
     }
 
     public CollisionArea getBackCollision() {
@@ -174,26 +199,35 @@ public class Vehicle extends HDObject {
     }
 
     public boolean frontCollided(HDObject target) {
-        if (target != this) {
-            movingState = MovingState.BREAK;
-            if (target instanceof Vehicle v) {
-                frontVehicle = v;
-            }
+        if (target != this && target instanceof Vehicle v) {
+            frontVehicle = v;
             return true;
         }
         return false;
     }
 
     public Vector2D getTargetLocation() {
-        return targetLocation;
+        return targetRoadChunk.getGlobalLocation();
     }
 
-    public void setTargetLocation(Vector2D targetLocation) {
-        this.targetLocation = targetLocation;
+    public RoadChunk getTargetRoadChunk() {
+        return targetRoadChunk;
+    }
+
+    public void setTargetRoadChunk(RoadChunk targetRoadChunk) {
+        this.targetRoadChunk = targetRoadChunk;
         arrived = false;
     }
 
     public boolean isArrived() {
         return arrived;
+    }
+
+    public boolean isIgnoreTrafficLight() {
+        return ignoreTrafficLight;
+    }
+
+    public void setIgnoreTrafficLight(boolean ignoreTrafficLight) {
+        this.ignoreTrafficLight = ignoreTrafficLight;
     }
 }

@@ -126,7 +126,7 @@ World extends HDObject {
     public void spawnVehicleThroughArr() {
         for (RoadChunk rc : summonChunk) {
             if (!rc.hasVehicle) {
-                Vehicle v = new Vehicle(100);
+                Vehicle v = new Vehicle(200);
                 v.setScale(1.5f);
                 v.setSprite(carImage);
                 rc.spawnVehicle(v);

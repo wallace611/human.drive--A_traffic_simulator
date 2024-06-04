@@ -11,9 +11,11 @@ public class RoadChunk extends HDObject {
     private final CollisionArea roadArea;
     public boolean hasVehicle = false;
     private boolean hasTrafficLight;
+    private boolean intersection;
     private int trafficLightGroup;
     private int trafficLightTeam;
     private boolean trafficLightGreen;
+    private double speedLimit;
 
     // private ArrayList<Vehicle> children; from HDObject class, containing the cars which are heading here
 
@@ -26,6 +28,8 @@ public class RoadChunk extends HDObject {
         roadDir = new RoadDirectionManager(dirs);
         roadArea = new CollisionArea(new Vector2D(0, 0), 0.0f, new Vector2D(50, 50));
         roadArea.setParent(this);
+        hasTrafficLight = false;
+        speedLimit = 100.0f;
     }
 
     public RoadChunk(byte dirs, RoadChunk[] connectRoad, float[] roadWeight) {
@@ -69,8 +73,15 @@ public class RoadChunk extends HDObject {
             RoadChunk newTarget = roadDir.accessRoad();
             newTarget.addChild(car);
             childRemoveList.add(car);
-            car.setTargetLocation(newTarget.getGlobalLocation());
+            car.setTargetRoadChunk(newTarget);
             car.setGlobalLocation(locTmp);
+            if (newTarget.intersection) {
+                car.setIgnoreTrafficLight(true);
+            } else if (car.isIgnoreTrafficLight() && newTarget.hasTrafficLight) {
+                car.setIgnoreTrafficLight(true);
+            } else {
+                car.setIgnoreTrafficLight(false);
+            }
         } catch (Exception e) {
             car.kill();
             childRemoveList.add(car);
@@ -98,6 +109,14 @@ public class RoadChunk extends HDObject {
         return trafficLightTeam;
     }
 
+    public boolean isIntersection() {
+        return intersection;
+    }
+
+    public void setIntersection(boolean intersection) {
+        this.intersection = intersection;
+    }
+
     public void setTrafficLight(int group, int team) {
         if (group == -1) {
             hasTrafficLight = false;
@@ -110,5 +129,18 @@ public class RoadChunk extends HDObject {
 
     public boolean isTrafficLightGreen() {
         return trafficLightGreen;
+    }
+
+    public double getSpeedLimit() {
+        return speedLimit;
+    }
+
+    public void setSpeedLimit(double speedLimit) {
+        this.speedLimit = speedLimit;
+    }
+
+    @Override
+    public String toString() {
+        return "RoadChunk" + String.format("%d, %d", (int) getGlobalLocation().y / 100, (int) getGlobalLocation().x / 100);
     }
 }

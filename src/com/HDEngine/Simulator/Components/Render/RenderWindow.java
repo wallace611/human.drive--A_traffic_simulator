@@ -1,4 +1,4 @@
-package com.HDEngine.Utilities.Render;
+package com.HDEngine.Simulator.Components.Render;
 
 import com.HDEngine.Simulator.Objects.Dynamic.Vehicle;
 import com.HDEngine.Simulator.Objects.HDObject;
@@ -30,7 +30,7 @@ public class RenderWindow extends PApplet {
     @Override
     public void settings() {
         System.out.println("Simulator renderer thread: Loading settings...");
-        size(800, 600);
+        size(810, 310);
         System.out.println("Simulator renderer thread: Done!");
     }
 
@@ -53,7 +53,7 @@ public class RenderWindow extends PApplet {
 
         HDObject[] tmp = new ArrayList<>(objToRender).toArray(new HDObject[0]);
         for (HDObject object : tmp) {
-            if (object.isKilled()) continue;
+            if (object == null || object.isKilled()) continue;
             renderObject(object);
 
         }
@@ -74,17 +74,12 @@ public class RenderWindow extends PApplet {
             PImage sprite = object.getSprite();
             image(sprite, (float) -sprite.width / 2, (float) -sprite.height / 2);
             if (object instanceof RoadChunk rc && rc.isTrafficLight()) {
-                if (rc.isTrafficLightGreen()) {
-                    fill(0, 255, 0, 150);
-                } else {
-                    fill(255, 0, 0, 150);
-                }
-                circle(0, 0, 50);
+                renderRCTrafficLight(rc);
             }
         }
         popMatrix();
 
-        if (Settings.renderCollision) {
+        if (Settings.debugMode) {
             CollisionArea ca = getCollisionArea(object);
             if (ca != null) {
                 renderCollisionArea(ca);
@@ -95,7 +90,44 @@ public class RenderWindow extends PApplet {
                     renderCollisionArea(ca);
                 }
             }
+            renderInfo(object);
         }
+
+    }
+
+    private void renderInfo(HDObject object) {
+        pushMatrix();
+        applyTransformations(object.getGlobalLocation(), -toDegrees(camRot), 1.0f);
+        Vector2D axis = object.getGlobalLocation();
+        textSize(1 / camScale * 10);
+        fill(0);
+        if (object instanceof Vehicle v) {
+            text(String.format("%.1f, %.1f", axis.x, axis.y), -30, -20);
+            text(String.format("%.1f\nheading to %s\nignore TL: %b\nstate: %s",
+                    v.getSpeed(),
+                    v.getTargetRoadChunk(),
+                    v.isIgnoreTrafficLight(),
+                    v.getMovingState()),
+                    -30, 20
+            );
+
+        } else if (object instanceof RoadChunk rc) {
+            text(String.valueOf(rc), -40, -40);
+            text(String.format("tf: %b", rc.isTrafficLight()), -40, -20);
+            if (rc.isTrafficLight()) {
+                text(String.format("green: %b", rc.isTrafficLightGreen()), -40, -10);
+            }
+        }
+        popMatrix();
+    }
+
+    private void renderRCTrafficLight(RoadChunk rc) {
+        if (rc.isTrafficLightGreen()) {
+            fill(0, 255, 0, 150);
+        } else {
+            fill(255, 0, 0, 150);
+        }
+        circle(0, 0, 50);
     }
 
     private void renderCollisionArea(CollisionArea ca) {
