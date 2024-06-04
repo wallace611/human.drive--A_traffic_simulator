@@ -1,9 +1,11 @@
 package com.HDEngine.Editor;
 
 import com.HDEngine.Editor.Object.Road.EditorRoadChunk;
-
+import com.HDEngine.Editor.Object.TrafficLight.TrafficLight;
+import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.Map;
 import java.io.*;
 import com.HDEngine.Utilities.FileManageTools.FileManager;
 
@@ -17,7 +19,7 @@ public class Editor implements Serializable
     private static final int SE = 7;
     private static final int SW = 5;
     private static final int NW = 3;
-    private static final int INTERSECTION = 1;
+    /*private static final int INTERSECTION = 1;
     private static final int TRAFFICLIGHTFLAG = 2;
     private static final int TRAFFICLIGHTTIMER = 3;
     private static final int TRAFFICLIGHTGROUP = 4;
@@ -26,17 +28,17 @@ public class Editor implements Serializable
     private static final int IDY = 7;
     private static final int STARTFLAG = 8;
     private static final int WEIGHTS = 9;
-    private static final int CONNECTION = 10;
-    private EditorRoadChunk[][] map = new EditorRoadChunk[102][102];//if possible, keep the outer side of the array clear(eg. map[0][0] should always be null)
+    private static final int CONNECTION = 10;*/
+    private EditorRoadChunk[][] map = new EditorRoadChunk[22][22];//if possible, keep the outer side of the array clear(eg. map[0][0] should always be null)
     private EditorRoadChunk[] templateChunks = new EditorRoadChunk[10];
-    private int[][] trafficLightGroup = new int[102][102];//if(is same group){[a][a] = [b][b]for road_a and road_b}
-    private double[] trafficLightGroupTimer = new double[102];
+    private Map<Integer,int[]> trafficLight = new HashMap<>();
     private int chunkCount = 0;
     private transient Scanner input = new Scanner(System.in);
 
     public Editor()
     {
         initializemap();
+        startEditing();
     }
 
     private void initializemap()//set the map to null to initiialize
@@ -46,46 +48,40 @@ public class Editor implements Serializable
             for(int j = 0 ; j < map.length ; j++)
             {
                 map[i][j]=null;
-                trafficLightGroup[i][j] = 0;  
-                
             }
-            trafficLightGroupTimer[i] = 0;
         }
+    }
+
+    public void startEditing()
+    {
+        String action;
+        action = input.next();
+        action.toLowerCase();
     }
 
     public void addNewChunk()//create a new chunk
     {
         EditorRoadChunk newRoadChunk = new EditorRoadChunk();
-        //newRoadChunk.getData();//get ID,StartPoint,speedLimit,intersection,traffic light,weight to other road
-        /*if(newRoadChunk.outOfMap(map))//the ID is out of map
-            expandMap(map,newRoadChunk);
-        else
-        {*/
-            map[newRoadChunk.getIDX()][newRoadChunk.getIDY()] = newRoadChunk;
-            connectionAdd(map, newRoadChunk);
-        //}
-        /*if(newRoadChunk.haveTrafficLight())//there is a traffic light in this chunk
+        int IDX=0,IDY=0;
+        IDX = input.nextInt();
+        IDY = input.nextInt();
+        if(map[IDX][IDY] == null)
         {
-            int group = newRoadChunk.getTrafficLightGroup();//which group is the traffic light in
-            addToTrafficLightGroup(newRoadChunk);
-            newRoadChunk.setTrafficLightTimer(getTrafficLightGroupTimer(group));//set the data of traffic(timer)
-        }*/
+            newRoadChunk.getData(IDX, IDY);
+            map[IDX][IDY] = newRoadChunk;
+            connectionAdd(map, newRoadChunk);
+        }
+        else
+        {
+
+        }
     }
 
     public void addNewChunk(int id,int IDX, int IDY) {
         EditorRoadChunk newRoadChunk = new EditorRoadChunk();
         newRoadChunk = templateChunks[id];
-        /*if(newRoadChunk.outOfMap(map)) {
-            expandMap(map, newRoadChunk);
-        } else {*/
-            map[IDX][IDY] = newRoadChunk;
-            connectionAdd(map, newRoadChunk);
-        //}
-        /*if(newRoadChunk.haveTrafficLight()) {
-            int group = newRoadChunk.getTrafficLightGroup();
-            addToTrafficLightGroup(newRoadChunk);
-            newRoadChunk.setTrafficLightTimer(getTrafficLightGroupTimer(group));
-        }*/
+        map[IDX][IDY] = newRoadChunk;
+        connectionAdd(map, newRoadChunk);
     }
 
     public void addToTrafficLightGroup(EditorRoadChunk target)//record the traffic light group at map
@@ -315,7 +311,7 @@ public class Editor implements Serializable
         return path + "\\" + fileName+".obj";
     }
 
-
+/* 
     public void updateRoadParameter(String buttonId, int parameterIndex, String newValue) {
         int id = Integer.parseInt(buttonId);
         if (templateChunks[id] != null) {
@@ -399,7 +395,7 @@ public class Editor implements Serializable
             }
         }
     }
-
+*/
     public void deleteChunk(int IDX , int IDY)
     {
         map[IDX][IDY] = null;
