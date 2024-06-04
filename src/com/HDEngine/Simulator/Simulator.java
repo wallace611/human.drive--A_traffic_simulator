@@ -174,17 +174,22 @@ public class Simulator {
         long targetDeltaTime;
         long startMS;
         while (true) {
-            targetDeltaTime = (long) ((double) 1 / Settings.tps * 1e9f);
-            startMS = System.nanoTime();
-            long currentMS;
+            if (Settings.running) {
+                targetDeltaTime = (long) ((double) 1 / Settings.tps * 1e9f / Settings.speed);
+                startMS = System.nanoTime();
+                long currentMS;
+                do {
+                    currentMS = System.nanoTime();
+                } while (currentMS - startMS <= targetDeltaTime);
 
-            do {
-                currentMS = System.nanoTime();
-            } while (currentMS - startMS <= targetDeltaTime);
-
-            double deltaTime = (double) (currentMS - startMS) / 1e9f;
-            startMS = currentMS;
-            ui.getWorld().tick((double) deltaTime);
+                double deltaTime = (double) (currentMS - startMS) / 1e9f;
+                startMS = currentMS;
+                ui.getWorld().tick((double) deltaTime * Settings.speed);
+                Info.tps = (int) (1 / deltaTime);
+            } else {
+                Thread.sleep(10);
+                Info.tps = 0;
+            }
         }
     }
 }

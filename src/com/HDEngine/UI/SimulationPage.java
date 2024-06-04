@@ -9,10 +9,11 @@ import processing.core.PApplet;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.EventListener;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.border.*;
+
+import static java.lang.Math.*;
 
 public class SimulationPage extends JFrame {
     private World world;
@@ -131,16 +132,28 @@ public class SimulationPage extends JFrame {
         slowDownButton.setActionCommand("slowDown");
         JButton resetSpeedButton = createTextButton("🔄");
         resetSpeedButton.setActionCommand("resetSpeed");
+        JButton debugButton = createTextButton("\uD83D\uDC1B");
+        debugButton.setActionCommand("debug");
 
-        buttonPanel.add(slowDownButton);
         buttonPanel.add(startButton);
+        buttonPanel.add(slowDownButton);
         buttonPanel.add(speedUpButton);
         buttonPanel.add(resetSpeedButton);
+        buttonPanel.add(debugButton);
 
         buttonHandler = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println(e.getActionCommand());
+                String cmd = e.getActionCommand();
+                System.out.println(cmd);
+                switch (cmd) {
+                    case "start" -> Settings.running = true;
+                    case "pause" -> Settings.running = false;
+                    case "speedUp" -> Settings.speed = min(1.2f * Settings.speed, 5.0f);
+                    case "slowDown" -> Settings.speed = max(Settings.speed / 1.2f, 0.2f);
+                    case "resetSpeed" -> Settings.speed = 1.0f;
+                    case "debug" -> Settings.debugMode = !Settings.debugMode;
+                }
             }
         };
 
@@ -149,6 +162,7 @@ public class SimulationPage extends JFrame {
         pauseButton.addActionListener(buttonHandler);
         speedUpButton.addActionListener(buttonHandler);
         resetSpeedButton.addActionListener(buttonHandler);
+        debugButton.addActionListener(buttonHandler);
 
         topNorthPanel.setLayout(new BorderLayout());
         topNorthPanel.add(buttonPanel, BorderLayout.CENTER);
@@ -162,10 +176,22 @@ public class SimulationPage extends JFrame {
                 PSurfaceAWT.SmoothCanvas smoothCanvas = (PSurfaceAWT.SmoothCanvas) surf.getNative();
                 screenPanel.add(smoothCanvas, BorderLayout.CENTER);
                 frame.revalidate();
+
+                // 添加 ComponentListener 來監聽 screenPanel 的大小變化
+                screenPanel.addComponentListener(new ComponentAdapter() {
+                    @Override
+                    public void componentResized(ComponentEvent e) {
+                        // 當 screenPanel 大小改變時，更新 RenderWindow 的大小
+                        window.windowWidth = screenPanel.getWidth();
+                        window.windowHeight = screenPanel.getHeight();
+                    }
+                });
             }
         });
 
         frame.setVisible(true);
+        Settings.windowWidth = screenPanel.getWidth();
+        Settings.windowHeight = screenPanel.getHeight();
     }
 
     private JButton createTextButton(String text) {
@@ -290,7 +316,7 @@ public class SimulationPage extends JFrame {
     }
 
     // 可以拉動panel大小的超派類別
-    class ResizablePanel extends JPanel {
+    static class ResizablePanel extends JPanel {
         private Point initialClick;
         private int initialHeight;
         private boolean dragging = false;
@@ -319,7 +345,7 @@ public class SimulationPage extends JFrame {
                     if (dragging) {
                         Point current = e.getLocationOnScreen();
                         int deltaY = initialClick.y - current.y;
-                        int newHeight = Math.max(50, initialHeight + deltaY);
+                        int newHeight = max(50, initialHeight + deltaY);
                         setPreferredSize(new Dimension(getWidth(), newHeight));
                         revalidate();
                         repaint();

@@ -1,5 +1,6 @@
 package com.HDEngine.Simulator.Components.Render;
 
+import com.HDEngine.Simulator.Info;
 import com.HDEngine.Simulator.Objects.Dynamic.Vehicle;
 import com.HDEngine.Simulator.Objects.HDObject;
 import com.HDEngine.Simulator.Objects.Static.CollisionArea;
@@ -18,6 +19,7 @@ public class RenderWindow extends PApplet {
     private Vector2D camLoc;
     private float camRot;
     private float camScale;
+    public int windowWidth, windowHeight;
 
     public RenderWindow(ArrayList<HDObject> renderListRef) {
         super();
@@ -25,12 +27,14 @@ public class RenderWindow extends PApplet {
         camLoc = new Vector2D();
         camRot = 0.0f;
         camScale = 1.0f;
+        windowWidth = Settings.windowWidth;
+        windowHeight = Settings.windowHeight;
     }
 
     @Override
     public void settings() {
         System.out.println("Simulator renderer thread: Loading settings...");
-        size(810, 310);
+        size(windowWidth, windowHeight);
         System.out.println("Simulator renderer thread: Done!");
     }
 
@@ -45,6 +49,7 @@ public class RenderWindow extends PApplet {
     }
     @Override
     public void draw() {
+        surface.setSize(windowWidth, windowHeight);
         background(200);
         float centerX = width >> 1;
         float centerY = height >> 1;
@@ -56,6 +61,17 @@ public class RenderWindow extends PApplet {
             if (object == null || object.isKilled()) continue;
             renderObject(object);
 
+        }
+        resetMatrix();
+        renderWindowState();
+    }
+
+    private void renderWindowState() {
+        textSize(15);
+        fill(0);
+        text(String.format("FPS: %d\nTPS: %d",(int) frameRate, (int) Info.tps), 10, 15);
+        if (Settings.speed > 1.0001 || Settings.speed < 0.9999) {
+            text(String.format("Speed: %.1f", Settings.speed), 10, 75);
         }
     }
 
