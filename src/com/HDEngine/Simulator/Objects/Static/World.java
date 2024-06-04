@@ -17,7 +17,6 @@ World extends HDObject {
     private int roadCount;
     private int count = 0;
     private PImage carImage;
-    public int currentTPS;
 
     // private ArrayList<HDObject> children; from HDObject class, containing the RoadChunk and Vehicle which need to be rendered
 
@@ -50,7 +49,6 @@ World extends HDObject {
     @Override
     public void tick(double deltaTime) {
         super.tick(deltaTime);
-        currentTPS = (int) (1 / deltaTime);
         collisionDetection();
 
         if (count % 200 == 0) {
