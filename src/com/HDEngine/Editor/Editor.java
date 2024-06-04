@@ -53,6 +53,7 @@ public class Editor implements Serializable
 
     public void startEditing()
     {
+        showHow();
         boolean quit = false;
         while(!quit)
         {
