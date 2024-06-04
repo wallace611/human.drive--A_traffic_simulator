@@ -28,7 +28,7 @@ public class Simulator {
             for (EditorRoadChunk erc : ercArr) {
                 if (erc != null) {
                     byte roadDir = 0;
-                    for (int i : erc.getIntersection()) {
+                    for (int i : erc.getDirection()) {
                         roadDir <<= 1;
                         roadDir += (byte) i;
                     }

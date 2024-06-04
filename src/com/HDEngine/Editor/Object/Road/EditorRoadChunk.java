@@ -2,140 +2,67 @@ package com.HDEngine.Editor.Object.Road;
 
 import java.io.*;
 import java.util.*;
+import com.HDEngine.Editor.Object.TrafficLight.TrafficLight;
 
 public class EditorRoadChunk implements Serializable
 {
-    private int[] intersection = new int[8];//using bit refence to record where is the road going
-    private boolean trafficLightFlag;//have or dont have traffic light
-    private double trafficLightTimer;//timer of traffic light(this part should follow group, still working on it)
-    private byte trafficLightPosition;//where is the traffic light
-    private int trafficLightGroup;// the group
-    private double speedLimit;//the speed limit (if = -1 then there is no speed limit on this chunk)
+    private static final long serialVersionUID = 2343414172514131636L;
     private int idX;//to seperate differe road chunk
     private int idY;
     private boolean startFlag;//is this the start point
+    private double speedLimit;//the speed limit (if = -1 then there is no speed limit on this chunk)
+    private int[] direction = new int[8];//using bit refence to record where is the road going
+    private boolean isWeighted;
     private double[] weights = new double[8];//recording the weight of different road
     private int[] connection = new int[8];//to record where is the road going (if data==0 -> no)(if data == 1  ==  the road is connected)(1 is on the right hand side, clockwise)
     transient Scanner input = new Scanner(System.in);
+    private EditorRoadChunk[] connected =new EditorRoadChunk[8];//do it last
+    private boolean trafficLightFlag;
+    private TrafficLight trafficLight;
+    private boolean intersection;
 
-    public void getData()
+    public void getData(int IDX, int IDY)
     {
-        System.out.print("\nID\n");
-        setID();
-        System.out.print("\nStart\n");
+        System.out.println("Setting axis...");
+        setID(IDX,IDY);
+        System.out.println("Setting start point...");
         setStartPoint();
-        System.out.print("\nSpeedlimit");
+        System.out.println("Setting speed limit...");
         setSpeedLimit();
-        System.out.print("\nintersection");
-        setIntersection();
-        System.out.print("\nTrafficLight");
+        System.out.println("Setting direction...");
+        setDirection();
+        System.out.println("Setting weight...");
+        setWeight();
+        System.out.println("Setting traffic light info...");
         setTrafficLight();
+        System.out.println("Setting intersection info...");
+        setIntersection();
+        System.out.println("done!! Adding the current chunk to map...");
         for(int i = 0 ; i < 8 ;  i++)
         {
             connection[i] = 0;
         }
     }
 
-    public void setIntersection() {
+    public void setID(int IDX, int IDY) {
         boolean valid = false;
-        while(!valid)
-        {
-            for (int i = 0; i < 8; i++) {
-                switch (i) {
-                    case 0:System.out.print("Does East side have intersection (Please input True or False):");break;
-                    case 1:System.out.print("Is switching lanes towards North-East allowed? (Please input True or False):");break;
-                    case 2:System.out.print("Does North side have intersection (Please input True or False):");break;
-                    case 3:System.out.print("Is switching lanes towards North-West allowed? (Please input True or False):");break;
-                    case 4:System.out.print("Does West side have intersection (Please input True or False):");break;
-                    case 5:System.out.print("Is switching lanes towards South-West allowed? (Please input True or False):");break;
-                    case 6:System.out.print("Does South side have intersection (Please input True or False):");break;
-                    case 7:System.out.print("Is switching lanes towards South-East allowed? (Please input True or False):");break;
-                }
-                try
+        while (!valid) {
+            try {
+                if (IDX > 20 || IDX <= 0 || IDY > 20 || IDY <= 0) 
                 {
-                    String input = this.input.next(); // Read user input
-                    if (input.equalsIgnoreCase("true")  || input.equalsIgnoreCase("t")) {
-                        // Set the bit corresponding to the direction
-                        this.intersection[i] = 1; // Shift bit to positions 0, 2, 4, and 6
-                    } else 
-                    {
-                        // Optionally clear the bit if you want to reset it
-                        this.intersection[i] = 0;;
-                    }
-                    if(i == 7)
-                        valid = true;
-                } catch(InputMismatchException e)
-                {
-                    input.nextLine();
-                    System.out.println("Input was not a valid string!");
-                }
-            }
-        }
-    }
-    
-    public void setTrafficLight()//1 = have traffic light , set whick group its in
-    {
-        boolean valid = false;
-        while (!valid) 
-        {
-            try
-            {
-                System.out.print("Is there a traffic light in this chunk(1 = true , other number = false)");
-                int flag = input.nextInt();
-                valid = true;
-                if(flag == 1)
-                {
-                    this.trafficLightFlag = true;
-                    this.trafficLightGroup = input.nextInt();
+                    throw new IllegalArgumentException("Coordinates must be in the range of 1 to 20.");
                 }
                 else
-                    return;
-            }catch(InputMismatchException e)
-            {
-                input.nextLine();
-                System.out.println("input tpye missmatch");
-            }
-        }
-    }
-
-    public void setTrafficLightTimer(double timer){// set traffic light group, the record of group will be in the main function
-        this.trafficLightTimer = timer;
-    }
-
-    public void setSpeedLimit(){
-        boolean valid = false;
-        while (!valid)
-        {
-            try
-            {
-                System.out.println("please input speed limit for this chunk( input >0  = valid ,input <=0 = no speed limit)");
-                double limit = input.nextDouble();
-                valid = true;
-                if( limit > 0)
-                    this.speedLimit = limit;
-                else
-                    this.speedLimit = -1;//-1 = didn't set limit;
-            }catch(InputMismatchException e)
-            {
-                input.nextLine();
-                System.out.println("input tpye missmatch");
-            }
-        }
-    }
-
-    public void setID(){
-        boolean valid = false;
-        while (!valid)
-            {
-            try{
-                System.out.print("please input the coordinate of this chunk:");
-                this.idX = input.nextInt();
-                this.idY = input.nextInt();
-                valid = true;
-            }catch(InputMismatchException e)
-            {
-                input.nextLine();
-                System.out.println("input must be an integer");
+                {
+                    this.idX = IDX;
+                    this.idY = IDY;
+                    valid = true;
+                }
+            } catch (InputMismatchException e) {
+                input.nextLine(); // Clear the invalid input
+                System.out.println("Input must be an integer.");
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
             }
         }
     }
@@ -164,56 +91,183 @@ public class EditorRoadChunk implements Serializable
         }
     }
 
-    public void setWeight(double weight,int position){
+    public void setSpeedLimit(){
+        boolean valid = false;
+        while (!valid)
+        {
+            try
+            {
+                System.out.print("please input speed limit for this chunk( input > 0  = valid ,input <=0 = no speed limit):");
+                double limit = input.nextDouble();
+                valid = true;
+                if( limit > 0)
+                    this.speedLimit = limit;
+                else
+                    this.speedLimit = -1;//-1 = didn't set limit;
+            }catch(InputMismatchException e)
+            {
+                input.nextLine();
+                System.out.println("input tpye missmatch");
+            }
+        }
+    }
+
+    public void setDirection() {
         boolean valid = false;
         while(!valid)
         {
-            try 
-            {
-                this.weights[position] = weight;
-                valid = true;
-            } catch (InputMismatchException e) {
-                System.out.println("wrong input");
+            for (int i = 0; i < 8; i++) {
+                switch (i) {
+                    case 0:System.out.print("Can this chunc drive towards East (Please input True or False):");break;
+                    case 1:System.out.print("Is switching lanes towards North-East allowed? (Please input True or False):");break;
+                    case 2:System.out.print("Can this chunc drive towards North (Please input True or False):");break;
+                    case 3:System.out.print("Is switching lanes towards North-West allowed? (Please input True or False):");break;
+                    case 4:System.out.print("Can this chunc drive towards West (Please input True or False):");break;
+                    case 5:System.out.print("Is switching lanes towards South-West allowed? (Please input True or False):");break;
+                    case 6:System.out.print("Can this chunc drive towards South(Please input True or False):");break;
+                    case 7:System.out.print("Is switching lanes towards South-East allowed? (Please input True or False):");break;
+                }
+                try
+                {
+                    String input = this.input.next();
+                    if (input.equalsIgnoreCase("true")  || input.equalsIgnoreCase("t")) 
+                    {
+                        this.direction[i] = 1;
+                    } 
+                    else if(input.equalsIgnoreCase("false")|| input.equalsIgnoreCase("f"))
+                    {
+                        this.direction[i] = 0;;
+                    }
+                    else 
+                    {
+                        throw new InputMismatchException();
+                    }
+                    if(i == 7)
+                        valid = true;
+                } 
+                catch(InputMismatchException e)
+                {
+                    input.nextLine();
+                    System.out.println("Input was not a valid string!");
+                }
             }
         }
     }
     
+    public void setWeight() {
+        boolean valid = false;
+        while (!valid) {
+            try {
+                System.out.print("Is the chunk weighted? (Please input True or False): ");
+                String ref = this.input.next();
+                ref = ref.toLowerCase();
+                if (ref.equals("true") || ref.equals("t")) {
+                    isWeighted = true;
+                    for (int i = 0; i < 8; i++) {
+                        if (direction[i] == 1) 
+                        {
+                            switch (i) 
+                            {
+                                case 0:System.out.print("Please input weight for East side (the number can be float): ");break;
+                                case 1:System.out.print("Please input weight for North-East direction (the number can be float): ");break;
+                                case 2:System.out.print("Please input weight for North side (the number can be float): ");break;
+                                case 3:System.out.print("Please input weight for North-West direction (the number can be float): ");break;
+                                case 4:System.out.print("Please input weight for West side (the number can be float): ");break;
+                                case 5:System.out.print("Please input weight for South-West direction (the number can be float): ");break;
+                                case 6:System.out.print("Please input weight for South side (the number can be float): ");break;
+                                case 7:System.out.print("Please input weight for South-East direction (the number can be float): ");break;
+                            }
+                            weights[i] = input.nextDouble();
+                        } 
+                        else 
+                        {
+                            weights[i] = 1.0;
+                        }
+                    }
+                } 
+                else 
+                {
+                    isWeighted = false;
+                    for (int i = 0; i < 8; i++) 
+                    {
+                        weights[i] = 1.0;
+                    }
+                }
+                valid = true;
+            } catch (InputMismatchException e) {
+                input.nextLine();
+                System.out.println("Input was not valid. Please enter a number.");
+            }
+        }
+    }
+    
+    public void setTrafficLight()//1 = have traffic light , set whick group its in
+    {
+        boolean valid = false;
+        while (!valid) 
+        {
+            try
+            {
+                System.out.print("Is there a traffic light in this chunk(Please enter True or False):");
+                String flag = input.next().toLowerCase();
+                if(flag.equals("true") || flag.equals("t"))
+                {
+                    this.trafficLightFlag = true;
+                    this.intersection = true;
+                    trafficLight = new TrafficLight();
+                    System.out.print("Which group is this chunk in(0 ~ the max group in the traffic light system):");
+                    trafficLight.setTrafficLightGroup(input.nextInt());
+                    System.out.print("Which team is this chunk in(0 ~ the max team in the traffic light group):");
+                    trafficLight.setTrafficLightTeams(input.nextInt());
+                    valid = true;
+                }
+                else if(flag.equals("false") || flag.equals("f"))
+                {
+                    this.trafficLightFlag = false;
+                    valid = true;
+                }
+                else{
+                    throw new InputMismatchException();
+                }
+            }
+            catch(InputMismatchException e)
+            {
+                input.nextLine();
+                System.out.println("\ninput missmatch!");
+            }
+        }
+    }
+
     public void setConnection(int facing){
         this.connection[facing] = 1;
     }
 
-    public int[] getIntersection(){
-        return intersection;
-    }
-
-    public boolean haveTrafficLight(){
-        return trafficLightFlag;
-    }
-
-    public double getTrafficLightTimer()
+    public void setIntersection()
     {
-        if(haveTrafficLight())
+        boolean valid = false;
+        while (!valid)
         {
-            return trafficLightTimer;
+            try {
+                System.out.print("Is this chunk the effected by traffic light (Please enter True or False): ");
+                String ref = input.next();
+                ref = ref.toLowerCase();
+                if (ref.equals("true") || ref.equals("t")) {
+                    this.intersection = true;
+                } else if (ref.equals("false") || ref.equals("f")) {
+                    this.intersection = false;
+                } else {
+                    throw new InputMismatchException();
+                }
+                valid = true;
+            } catch (InputMismatchException e) {
+                System.out.println("input type mismatch");
+                input.nextLine(); // Clear the invalid input from the scanner buffer
+            }
         }
-        return -1;
     }
 
-    public byte getTrafficLightPosition(){
-        return trafficLightPosition;
-    }
-
-    public int getTrafficLightGroup()
-    {
-        if(haveTrafficLight())
-        {
-            return trafficLightGroup;
-        }
-        return -1;
-    }
-
-    public double getSpeedLimit(){
-        return speedLimit;
+    public void setConnected(EditorRoadChunk target,int facing){
+        connected[facing] = target;
     }
 
     public int getIDX(){
@@ -228,23 +282,55 @@ public class EditorRoadChunk implements Serializable
         return startFlag;
     }
 
+    public double getSpeedLimit(){
+        return speedLimit;
+    }
+
+    public int[] getDirection(){
+        return direction;
+    }
+
+    public boolean isWeighted(){
+        return isWeighted;
+    }
+
     public double[] getWeight(){
         return weights;
+    }
+
+    public boolean haveTrafficLight(){
+        return trafficLightFlag;
+    }
+
+    public int getTrafficLightGroup()
+    {
+        if(haveTrafficLight())
+        {
+            return trafficLight.getTrafficLightGroup();
+        }
+        return -1;
+    }
+
+    public int getTrafficLightTeams()
+    {
+        if(haveTrafficLight())
+        {
+            return trafficLight.getTrafficLightTeams();
+        }
+        return -1;
     }
 
     public int[] getConnection(){
         return connection;
     }
 
-    public boolean outOfMap(EditorRoadChunk[][] map)//if the target location is out of the current map size ,return true to editor
+    public boolean getIntersection(){
+        return intersection;
+    }
+
+    public EditorRoadChunk[] getConnected()
     {
-        int lenthOfArray = map.length;
-        int widthOfArray = map[0].length;
-        if(idX > lenthOfArray || idY > widthOfArray)
-        {
-            return true;
-        }
-        return false;
+        return connected;
     }
 
     public int connectionStatus() {
@@ -274,68 +360,36 @@ public class EditorRoadChunk implements Serializable
     }
 
     @Override
-    public String toString() {
-        return "Intersection = " + Arrays.toString(intersection) +
-                ", ID = " + idX + "," + idY +
-                ", Start = " + startFlag +
-                ", Speed limit = " + speedLimit +
-                ", Traffic light flag = " + trafficLightFlag +
-                ", Connection status = " + connectionStatus();
+public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("ID: [").append(idX).append(", ").append(idY).append("]\n");
+    sb.append("Start Point: ").append(startFlag).append("\n");
+    sb.append("Speed Limit: ").append(speedLimit > 0 ? speedLimit : "No limit").append("\n");
+    sb.append("Directions: ").append(Arrays.toString(direction)).append("\n");
+    sb.append("Weighted: ").append(isWeighted).append("\n");
+    sb.append("Weights: ").append(Arrays.toString(weights)).append("\n");
+    sb.append("Connections: ").append(Arrays.toString(connection)).append("\n");
+    sb.append("Traffic Light: ").append(trafficLightFlag).append("\n");
+    if (trafficLightFlag) {
+        sb.append("Traffic Light Group: ").append(trafficLight.getTrafficLightGroup()).append("\n");
+        sb.append("Traffic Light Team: ").append(trafficLight.getTrafficLightTeams()).append("\n");
     }
-
-    public void setWeight() 
-    {
-        double weight = 1.0; 
-        for (int i = 0; i < 8; i++) 
-        {
-            if (connection[i] == 1) 
-            {
-                weight = input.nextDouble();
-                this.weights[i] =weight;
-            }
+    sb.append("Intersection: ").append(intersection).append("\n");
+    sb.append("Connected Chunks: ");
+    for (int i = 0; i < connected.length; i++) {
+        if (connected[i] != null) {
+            sb.append("\n - Direction ").append(i).append(": [")
+                .append(connected[i].getIDX()).append(", ")
+                .append(connected[i].getIDY()).append("]");
         }
     }
-
-
-    //function overload for GUI
-
-    public void setIntersection(int[] intersection) {
-        this.intersection = intersection;//需要修改 intersection陣列
-    }
-
-    public void setTrafficLightFlag(boolean trafficLightFlag) {
-        this.trafficLightFlag = trafficLightFlag;
-    }
-
-    /*public void setTrafficLightTimer(double trafficLightTimer) {
-        this.trafficLightTimer = trafficLightTimer;
-    }*/
-
-    public void setTrafficLightGroup(int trafficLightGroup) {
-        this.trafficLightGroup = trafficLightGroup;
-    }
-
-    public void setSpeedLimit(double speedLimit) {
-        this.speedLimit = speedLimit;
-    }
-
-    public void setIdX(int idX) {
-        this.idX = idX;
-    }
-
-    public void setIdY(int idY) {
-        this.idY = idY;
-    }
-
-    public void setStartFlag(boolean startFlag) {
-        this.startFlag = startFlag;
-    }
-
-    public void setWeights(double[] weights) {
-        this.weights = weights;  // 需修改：處理 weights 陣列
-    }
-
-    public void setConnection(int[] connection) {
-        this.connection = connection;  // 需修改：處理 connection 陣列
-    }
+    return sb.toString();
 }
+
+    public void initializeScanner() {
+        this.input = new Scanner(System.in);
+    }
+
+}
+
+

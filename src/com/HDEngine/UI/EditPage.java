@@ -198,7 +198,7 @@ public class EditPage extends JFrame implements ActionListener {
                 public void focusLost(FocusEvent e) {
                     System.out.println("focusLost");
                     String newValue = textField.getText();
-                    updateEditorParameter(buttonId, parameterIndex, newValue);
+                    //updateEditorParameter(buttonId, parameterIndex, newValue);
                 }
             });//匿名內部類的使用方式 酷東西
 
@@ -277,13 +277,13 @@ public class EditPage extends JFrame implements ActionListener {
     }
 
     //new function by.昌
-    private void updateEditorParameter(String buttonId, int parameterIndex, String newValue) {
-        if (buttonId.startsWith("r")) {//r = road
-            // 處理道路參數
-            editor.updateRoadParameter(buttonId, parameterIndex, newValue);
-        } else if (buttonId.startsWith("t")) { //  t = traffic light 
-            // 處理紅綠燈參數
-            editor.updateTrafficLightParameter(buttonId, parameterIndex, newValue);
-        }
-    }
+//    private void updateEditorParameter(String buttonId, int parameterIndex, String newValue) {
+//        if (buttonId.startsWith("r")) {//r = road
+//            // 處理道路參數
+//            editor.updateRoadParameter(buttonId, parameterIndex, newValue);
+//        } else if (buttonId.startsWith("t")) { //  t = traffic light
+//            // 處理紅綠燈參數
+//            editor.updateTrafficLightParameter(buttonId, parameterIndex, newValue);
+//        }
+//    }
 }
