@@ -23,6 +23,9 @@ public class SimulationPage extends JFrame {
 
     private JButton startButton;
     private JButton pauseButton;
+    private JButton speedUpButton;
+    private JButton slowDownButton;
+    private JButton resetSpeedButton;
 
     // HashMap to store JTextFields
     private Map<String, JTextField> textFieldMap = new HashMap<>();
@@ -116,12 +119,46 @@ public class SimulationPage extends JFrame {
         startButton = createTextButton("  ▶️");
         pauseButton = createTextButton("  ⏸️");
 
-        startButton.addActionListener(e -> swapButton(buttonPanel, startButton, pauseButton));
-        pauseButton.addActionListener(e -> swapButton(buttonPanel, pauseButton, startButton));
+        //在這邊改actionPerformed by.ㄐㄐ
+        startButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("start");
+                swapButton(buttonPanel, startButton, pauseButton);
+            }
+        });
 
-        JButton speedUpButton = createTextButton("  ⏩️");
-        JButton slowDownButton = createTextButton("  ⏪️");
-        JButton resetSpeedButton = createTextButton("🔄");
+        pauseButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("pause");
+                swapButton(buttonPanel, pauseButton, startButton);
+            }
+        });
+
+        speedUpButton = createTextButton("  ⏩️");
+        speedUpButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("speedup");
+            }
+        });
+
+        slowDownButton = createTextButton("  ⏪️");
+        slowDownButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("slowdown");
+            }
+        });
+
+        resetSpeedButton = createTextButton("🔄");
+        resetSpeedButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("resetSpeed");
+            }
+        });
 
         buttonPanel.add(startButton); // Initially add startButton
         buttonPanel.add(speedUpButton);
