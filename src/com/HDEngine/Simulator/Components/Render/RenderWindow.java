@@ -143,7 +143,18 @@ public class RenderWindow extends PApplet {
         } else {
             fill(255, 0, 0, 150);
         }
-        circle(0, 0, 50);
+        drawLowPolyCircle((float) 0, (float) 0, 20, 20);
+    }
+
+    void drawLowPolyCircle(float x, float y, float radius, int numPoints) {
+        float angleStep = TWO_PI / numPoints;
+        beginShape();
+        for (float angle = 0; angle < TWO_PI; angle += angleStep) {
+            float sx = x + cos(angle) * radius;
+            float sy = y + sin(angle) * radius;
+            vertex(sx, sy);
+        }
+        endShape(CLOSE);
     }
 
     private void renderCollisionArea(CollisionArea ca) {
