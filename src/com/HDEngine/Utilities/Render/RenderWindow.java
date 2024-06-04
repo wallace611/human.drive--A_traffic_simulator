@@ -72,12 +72,12 @@ public class RenderWindow extends PApplet {
         applyTransformations(object.getGlobalLocation(), object.getGlobalRotation(), object.getGlobalScale());
         if (object.getSprite() != null && object.getSprite().getImage() != null) {
             PImage sprite = object.getSprite();
-            image(sprite, -sprite.width / 2, -sprite.height / 2);
+            image(sprite, (float) -sprite.width / 2, (float) -sprite.height / 2);
             if (object instanceof RoadChunk rc && rc.isTrafficLight()) {
                 if (rc.isTrafficLightGreen()) {
-                    fill(0, 255, 0);
+                    fill(0, 255, 0, 150);
                 } else {
-                    fill(255, 0, 0);
+                    fill(255, 0, 0, 150);
                 }
                 circle(0, 0, 50);
             }

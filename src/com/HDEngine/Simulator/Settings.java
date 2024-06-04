@@ -1,5 +1,7 @@
 package com.HDEngine.Simulator;
 
+import processing.core.PImage;
+
 public class Settings {
     public static int fps = 100;
     public static int tps = 120;

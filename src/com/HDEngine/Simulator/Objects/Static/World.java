@@ -8,6 +8,8 @@ import com.HDEngine.Utilities.Vector2D;
 import processing.core.PImage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class
 World extends HDObject {
@@ -56,6 +58,7 @@ World extends HDObject {
             count = 0;
             spawnVehicleThroughArr();
         }
+        count += 1;
         TrafficLightManager.nextTime(deltaTime);
 
         for (RoadChunk[] rcArr : chunks) {
@@ -69,31 +72,44 @@ World extends HDObject {
     }
 
     private void collisionDetection() {
-        // collision detection
-        for (int i = roadCount; i < children.size(); i++) {
-            Vehicle currentCar = (Vehicle) children.get(i); // the vehicle to detect the collision
-            CollisionArea frontCA = currentCar.getFrontCollision();
-            CollisionArea backCA = currentCar.getCollision();
+        // Record the vehicles in a single RoadChunk
+        Map<RoadChunk, ArrayList<Vehicle>> collisionMap = new HashMap<>();
 
-            ArrayList<RoadChunk> hitFRC = new ArrayList<>();
-            ArrayList<RoadChunk> hitBRC = new ArrayList<>();
-            for (int j = 0; j < roadCount; j++) {
-                if (children.get(j) instanceof RoadChunk rc) {
-                    if (CollisionArea.areOverlapping(frontCA, rc.getRoadArea())) {
-                        hitFRC.add(rc);
-                        rc.hasVehicle = true;
-                    }
-                    if (CollisionArea.areOverlapping(backCA, rc.getRoadArea())) {
-                        hitBRC.add(rc);
-                        rc.hasVehicle = true;
+        // iterate through all RoadChunk
+        for (int i = 0; i < roadCount; i++) {
+            if (children.get(i) instanceof RoadChunk rc) {
+                ArrayList<Vehicle> collidedVehicle = new ArrayList<>();
+                // iterate through all Vehicle to find if it is collided with the RoadChunk
+                for (int j = roadCount; j < children.size(); j++) {
+                    if (children.get(j) instanceof Vehicle v) {
+                        if (CollisionArea.areOverlapping(rc.getRoadArea(), v.getCollision())) {
+                            collidedVehicle.add(v);
+                            rc.hasVehicle = true;
+                        }
                     }
                 }
+                collisionMap.put(rc, collidedVehicle);
             }
-            for (RoadChunk rc : hitFRC) {
-                for (HDObject object : rc.getChildren()) {
-                    if (object instanceof Vehicle v) {
-                        if (CollisionArea.areOverlapping(v.getCollision(), frontCA)) {
-                            currentCar.frontCollide(object);
+        }
+
+        // iterate through all Vehicle to find if it's front collision area is hit or not
+        for (int i = roadCount; i < children.size(); i++) {
+            if (children.get(i) instanceof Vehicle v) {
+                // Record the RoadChunks which is collided with Vehicle's front collision area
+                ArrayList<RoadChunk> collidedRoadChunk = new ArrayList<>();
+                for (int j = 0; j < roadCount; j++) {
+                    if (children.get(j) instanceof RoadChunk rc) {
+                        if (CollisionArea.areOverlapping(rc.getRoadArea(), v.getFrontCollision())) {
+                            collidedRoadChunk.add(rc);
+                        }
+                    }
+                }
+
+                for (RoadChunk rc : collidedRoadChunk) {
+                    // target vehicle
+                    for (Vehicle tv : collisionMap.get(rc)) {
+                        if (CollisionArea.areOverlapping(tv.getCollision(), v.getFrontCollision())) {
+                            v.frontCollide(tv);
                         }
                     }
                 }

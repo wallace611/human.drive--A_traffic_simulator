@@ -86,28 +86,79 @@ public class Simulator {
         ui = constructSimulatePage(world);
         setupImage(world, ui.getWindow());
 
-        RoadChunk rc1 = new RoadChunk();
-        rc1.setSprite(ui.getWindow().loadImage("src\\com\\HDEngine\\Simulator\\image\\testimg.png"));
-        //rc1.setScale(0.2f);
-        ui.getWorld().addRoadChunk(1, 1, rc1);
+        PImage roadImg = ui.getWindow().loadImage("src/com/HDEngine/Simulator/image/testimg.png");
+        RoadChunk rc22 = new RoadChunk((byte) 0);
+        rc22.setSprite(roadImg);
+        world.addRoadChunk(2, 2, rc22);
 
-        RoadChunk rc2 = new RoadChunk((byte) 0b100, new RoadChunk[]{rc1}, new float[]{1.0f});
-        rc2.setSprite(ui.getWindow().loadImage("src\\com\\HDEngine\\Simulator\\image\\testimg.png"));
-        //rc2.setScale(0.2f);
-        ui.getWorld().addRoadChunk(2, 1, rc2);
+        RoadChunk rc23 = new RoadChunk((byte) 1, new RoadChunk[]{rc22}, new float[]{1.0f});
+        rc23.setSprite(roadImg);
+        world.addRoadChunk(2, 3, rc23);
 
-        RoadChunk rc3 = new RoadChunk((byte) 0b100, new RoadChunk[]{rc2}, new float[]{1.0f});
-        rc3.setSprite(ui.getWindow().loadImage("src\\com\\HDEngine\\Simulator\\image\\testimg.png"));
-        //rc3.setScale(0.2f);
-        rc3.setHasTrafficLight(true);
-        rc3.setTrafficLightTeam(2);
-        ui.getWorld().addRoadChunk(3, 1, rc3);
+        RoadChunk rc24 = new RoadChunk((byte) 1, new RoadChunk[]{rc23}, new float[]{1.0f});
+        rc24.setSprite(roadImg);
+        world.addRoadChunk(2, 4, rc24);
 
-        RoadChunk rc4 = new RoadChunk((byte) 0b11000, new RoadChunk[]{rc2, rc3}, new float[]{1.0f, 1.0f});
-        rc4.setSprite(ui.getWindow().loadImage("src\\com\\HDEngine\\Simulator\\image\\testimg.png"));
-        //rc4.setScale(0.2f);
-        ui.getWorld().addRoadChunk(3, 2, rc4);
-        ui.getWorld().getSummonChunk().add(rc4);
+        RoadChunk rc25 = new RoadChunk((byte) 3, new RoadChunk[]{rc24}, new float[]{1.0f});
+        rc25.setSprite(roadImg);
+        world.addRoadChunk(2, 5, rc25);
+
+        RoadChunk rc26 = new RoadChunk((byte) 1, new RoadChunk[]{rc25}, new float[]{1.0f});
+        rc26.setSprite(roadImg);
+        world.addRoadChunk(2, 6, rc26);
+
+        RoadChunk rc27 = new RoadChunk((byte) 1, new RoadChunk[]{rc26}, new float[]{1.0f});
+        rc27.setSprite(roadImg);
+        world.addRoadChunk(2, 7, rc27);
+        world.getSummonChunk().add(rc27);
+
+        RoadChunk rc37 = new RoadChunk((byte) 0);
+        rc37.setSprite(roadImg);
+        world.addRoadChunk(3, 7, rc37);
+
+        RoadChunk rc36 = new RoadChunk((byte) 1, new RoadChunk[]{rc37}, new float[]{1.0f});
+        rc36.setSprite(roadImg);
+        world.addRoadChunk(3, 6, rc36);
+
+        RoadChunk rc35 = new RoadChunk((byte) 3, new RoadChunk[]{rc36}, new float[]{1.0f});
+        rc35.setSprite(roadImg);
+        world.addRoadChunk(3, 5, rc35);
+
+        RoadChunk rc34 = new RoadChunk((byte) 1, new RoadChunk[]{rc35}, new float[]{1.0f});
+        rc34.setSprite(roadImg);
+        world.addRoadChunk(3, 4, rc34);
+
+        RoadChunk rc33 = new RoadChunk((byte) 1, new RoadChunk[]{rc34}, new float[]{1.0f});
+        rc33.setSprite(roadImg);
+        world.addRoadChunk(3, 3, rc33);
+
+        RoadChunk rc32 = new RoadChunk((byte) 1, new RoadChunk[]{rc33}, new float[]{1.0f});
+        rc32.setSprite(roadImg);
+        world.addRoadChunk(3, 2, rc32);
+        world.getSummonChunk().add(rc32);
+
+        RoadChunk rc05 = new RoadChunk((byte) 0);
+        rc05.setSprite(roadImg);
+        world.addRoadChunk(0, 5, rc05);
+
+        RoadChunk rc15 = new RoadChunk((byte) 1, new RoadChunk[]{rc05}, new float[]{1.0f});
+        rc15.setSprite(roadImg);
+        world.addRoadChunk(1, 5, rc15);
+
+        RoadChunk rc45 = new RoadChunk((byte) 1, new RoadChunk[]{rc35}, new float[]{1.0f});
+        rc45.setSprite(roadImg);
+        world.addRoadChunk(4, 5, rc45);
+
+        rc25.addRoad(rc15, 1.0f);
+        rc35.addRoad(rc25, 1.0f);
+
+        RoadChunk rc55 = new RoadChunk((byte) 1, new RoadChunk[]{rc45}, new float[]{1.0f});
+        rc55.setSprite(roadImg);
+        world.addRoadChunk(5, 5, rc55);
+        world.getSummonChunk().add(rc55);
+
+
+
 
         PImage img = ui.getWindow().loadImage("src/com/HDEngine/Simulator/image/car.png");
         world.setCarImage(img);
