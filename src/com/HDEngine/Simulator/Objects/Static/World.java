@@ -3,7 +3,6 @@ package com.HDEngine.Simulator.Objects.Static;
 import com.HDEngine.Simulator.Components.Traffic.TrafficLightManager;
 import com.HDEngine.Simulator.Objects.Dynamic.Vehicle;
 import com.HDEngine.Simulator.Objects.HDObject;
-import com.HDEngine.Utilities.ITransform;
 import com.HDEngine.Utilities.Vector2D;
 import processing.core.PImage;
 
@@ -82,7 +81,7 @@ World extends HDObject {
                 // iterate through all Vehicle to find if it is collided with the RoadChunk
                 for (int j = roadCount; j < children.size(); j++) {
                     if (children.get(j) instanceof Vehicle v) {
-                        if (CollisionArea.areOverlapping(rc.getRoadArea(), v.getCollision())) {
+                        if (CollisionArea.areOverlapping(rc.getRoadArea(), v.getBackCollision())) {
                             collidedVehicle.add(v);
                             rc.hasVehicle = true;
                         }
@@ -108,8 +107,15 @@ World extends HDObject {
                 for (RoadChunk rc : collidedRoadChunk) {
                     // target vehicle
                     for (Vehicle tv : collisionMap.get(rc)) {
-                        if (CollisionArea.areOverlapping(tv.getCollision(), v.getFrontCollision())) {
-                            v.frontCollide(tv);
+                        if (CollisionArea.areOverlapping(tv.getBackCollision(), v.getFrontCollision())) {
+                            boolean flag = v.frontCollided(tv);
+                            if (flag) {
+                                tv.getBackCollision().renderCollided = true;
+                                v.getFrontCollision().renderCollided = true;
+                            }
+                        } else {
+                            tv.getBackCollision().renderCollided = false;
+                            v.getFrontCollision().renderCollided = false;
                         }
                     }
                 }

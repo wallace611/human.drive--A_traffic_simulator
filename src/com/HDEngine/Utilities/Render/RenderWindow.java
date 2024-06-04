@@ -101,7 +101,11 @@ public class RenderWindow extends PApplet {
     private void renderCollisionArea(CollisionArea ca) {
         pushMatrix();
         applyTransformations(ca.getGlobalLocation(), ca.getGlobalRotation(), ca.getGlobalScale());
-        fill(173, 216, 230, 128);
+        if (ca.renderCollided) {
+            fill(200, 100, 100, 128);
+        } else {
+            fill(173, 216, 230, 128);
+        }
         float w = (float) ca.getOffset().x * 2;
         float h = (float) ca.getOffset().y * 2;
         rect(-w / 2, -h / 2, w, h);
@@ -118,7 +122,7 @@ public class RenderWindow extends PApplet {
         if (object instanceof RoadChunk rc) {
             return rc.getRoadArea();
         } else if (object instanceof Vehicle v) {
-            return v.getCollision();
+            return v.getBackCollision();
         }
         return null;
     }

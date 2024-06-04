@@ -6,13 +6,14 @@ import com.HDEngine.Utilities.Vector2D;
 public class CollisionArea extends HDObject {
     // half of width and height
     private Vector2D offset;
+    public boolean renderCollided;
 
     public CollisionArea(Vector2D location, double rotation, Vector2D offset) {
         super();
-
         this.location = new Vector2D(location);
         this.rotation = rotation;
         this.offset = new Vector2D(offset);
+        renderCollided = false;
     }
 
     // return 4 vertex of the collision shape

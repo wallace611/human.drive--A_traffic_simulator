@@ -80,7 +80,6 @@ public class Simulator {
 
     public static void main(String[] args) throws InterruptedException {
         //world = loadFile("src/SavedFile/editor_map.obj");
-        TrafficLightManager.tLGroupsSecs.put(0, new TLGroup(new int[]{2, 3, 4}));
 
         world = new World(100, 100);
         ui = constructSimulatePage(world);
@@ -157,8 +156,10 @@ public class Simulator {
         world.addRoadChunk(5, 5, rc55);
         world.getSummonChunk().add(rc55);
 
+        TLGroup tl1 = new TLGroup(new int[]{3, 3});
+        TrafficLightManager.addGroup(0, tl1);
 
-
+        rc55.setTrafficLight(0, 0);
 
         PImage img = ui.getWindow().loadImage("src/com/HDEngine/Simulator/image/car.png");
         world.setCarImage(img);

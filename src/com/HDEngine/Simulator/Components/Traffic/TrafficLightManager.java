@@ -4,7 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TrafficLightManager {
-    public static Map<Integer, TLGroup> tLGroupsSecs = new HashMap<>();
+    private static Map<Integer, TLGroup> tLGroupsSecs = new HashMap<>();
+
+    public static void addGroup(int groupNum, TLGroup group) {
+        tLGroupsSecs.put(groupNum, group);
+    }
 
     public static int getSecs(int group, int team) {
         return tLGroupsSecs.get(group).getTeamSec(team);

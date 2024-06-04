@@ -3,32 +3,48 @@ package com.HDEngine.Simulator.Objects.Dynamic;
 import com.HDEngine.Simulator.Objects.Static.CollisionArea;
 import com.HDEngine.Simulator.Objects.HDObject;
 import static java.lang.Math.*;
+
+import com.HDEngine.Simulator.Settings;
 import com.HDEngine.Utilities.Vector2D;
 
 public class Vehicle extends HDObject {
     protected boolean arrived;
     protected double speed; // x meters per second
     protected double maxSpeed;
-    protected double acceleration;
-    protected double deceleration;
+    protected double accelerationRate;
+    protected double decelerationRate;
+    protected double stopTime;
+    protected final int timeout;
     protected MovingState movingState;
     protected Vector2D targetLocation;
-    protected CollisionArea collision;
+    protected CollisionArea backCollision;
+    protected final double bcWidth;
+    protected final double bcHeight;
     protected CollisionArea frontCollision;
+    protected final double fcWidth;
+    protected final double fcHeight;
+    protected Vehicle frontVehicle;
 
     public Vehicle(double maxSpeed) {
         speed = 100.0f;
         this.maxSpeed = maxSpeed;
-        acceleration = 50.0f;
-        deceleration = 80.0f;
+        accelerationRate = 0.5f;
+        decelerationRate = 0.8f;
+        stopTime = 0.0f;
+        timeout = Settings.congestionTimeout;
         movingState = MovingState.IDLE;
-        collision = new CollisionArea(new Vector2D(-20, 0), 0.0f, new Vector2D(30, 10));
-        collision.setParent(this);
-        frontCollision = new CollisionArea(new Vector2D(30, 0), 0.0f, new Vector2D(15, 15));
+        bcWidth = 10;
+        bcHeight = 30;
+        backCollision = new CollisionArea(new Vector2D(-20, 0), 0.0f, new Vector2D(bcHeight, bcWidth));
+        backCollision.setParent(this);
+        fcWidth = 15;
+        fcHeight = 15;
+        frontCollision = new CollisionArea(new Vector2D(20, 0), 0.0f, new Vector2D(fcHeight, fcWidth));
         frontCollision.setParent(this);
         targetLocation = null;
         arrived = false;
         killed = false;
+        frontVehicle = null;
     }
 
     @Override
@@ -41,23 +57,56 @@ public class Vehicle extends HDObject {
         super.tick(deltaTime);
 
         setNextSpeed(deltaTime);
+        if (speed < 1e-4) {
+            stopTime += deltaTime;
+            if (stopTime >= timeout && Settings.killCongestedVehicle) {
+                kill();
+            }
+        } else {
+            stopTime = 0.0f;
+        }
+        resizeCollisionShapeAccordingToSpeed();
         move(deltaTime);
         movingState = MovingState.FORWARD;
+        frontVehicle = null;
     }
 
     private void setNextSpeed(double deltaTime) {
         switch (movingState) {
             case FORWARD:
-                setSpeed(speed + acceleration * deltaTime);
+                setSpeed(speed + accelerationRate * maxSpeed * deltaTime);
                 break;
 
             case BREAK:
-                setSpeed(speed - acceleration * deltaTime);
+                if (frontVehicle != null) {
+                    double dist = Vector2D.distance(frontVehicle.getGlobalLocation(), getGlobalLocation());
+                    setSpeed(speed - decelerationRate * maxSpeed / dist * 200 * deltaTime);
+                } else {
+                    setSpeed(speed - decelerationRate * maxSpeed * deltaTime);
+                }
                 break;
 
             case IDLE:
                 break;
         }
+    }
+
+    private void detectTrafficLight() {
+
+    }
+
+    private void resizeCollisionShapeAccordingToSpeed() {
+        Vector2D fcMag = new Vector2D(
+                (speed + 1) / 100 * fcHeight,
+                (speed + 50) / 150 * fcWidth
+        );
+        Vector2D bcMag = new Vector2D(
+                150 / (speed + 150) * bcHeight,
+                bcWidth
+        );
+
+        frontCollision.setOffset(fcMag);
+        backCollision.setOffset(bcMag);
     }
 
     private void move(double deltaTime) {
@@ -112,18 +161,27 @@ public class Vehicle extends HDObject {
         else this.speed = Math.min(speed, maxSpeed);
     }
 
-    public CollisionArea getCollision() {
-        return collision;
+    public CollisionArea getBackCollision() {
+        return backCollision;
     }
 
     public CollisionArea getFrontCollision() {
         return frontCollision;
     }
 
-    public void frontCollide(HDObject target) {
+    public boolean backCollided(HDObject target) {
+        return true;
+    }
+
+    public boolean frontCollided(HDObject target) {
         if (target != this) {
             movingState = MovingState.BREAK;
+            if (target instanceof Vehicle v) {
+                frontVehicle = v;
+            }
+            return true;
         }
+        return false;
     }
 
     public Vector2D getTargetLocation() {

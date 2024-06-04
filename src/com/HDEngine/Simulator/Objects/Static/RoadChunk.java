@@ -90,24 +90,22 @@ public class RoadChunk extends HDObject {
         return hasTrafficLight;
     }
 
-    public void setHasTrafficLight(boolean hasTrafficLight) {
-        this.hasTrafficLight = hasTrafficLight;
-    }
-
     public int getTrafficLightGroup() {
         return trafficLightGroup;
-    }
-
-    public void setTrafficLightGroup(int trafficLightGroup) {
-        this.trafficLightGroup = trafficLightGroup;
     }
 
     public int getTrafficLightTeam() {
         return trafficLightTeam;
     }
 
-    public void setTrafficLightTeam(int trafficLightTeam) {
-        this.trafficLightTeam = trafficLightTeam;
+    public void setTrafficLight(int group, int team) {
+        if (group == -1) {
+            hasTrafficLight = false;
+            return;
+        }
+        hasTrafficLight = true;
+        trafficLightGroup = group;
+        trafficLightTeam = team;
     }
 
     public boolean isTrafficLightGreen() {
