@@ -8,6 +8,7 @@ import processing.core.PApplet;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.EventListener;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.border.*;
@@ -23,6 +24,8 @@ public class SimulationPage extends JFrame {
 
     private JButton startButton;
     private JButton pauseButton;
+
+    private ActionListener buttonHandler;
 
     // HashMap to store JTextFields
     private Map<String, JTextField> textFieldMap = new HashMap<>();
@@ -114,19 +117,37 @@ public class SimulationPage extends JFrame {
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10)); // Center buttons with 20px horizontal gap and 10px vertical gap
 
         startButton = createTextButton("  ▶️");
+        startButton.setActionCommand("start");
         pauseButton = createTextButton("  ⏸️");
+        pauseButton.setActionCommand("pause");
 
         startButton.addActionListener(e -> swapButton(buttonPanel, startButton, pauseButton));
         pauseButton.addActionListener(e -> swapButton(buttonPanel, pauseButton, startButton));
 
         JButton speedUpButton = createTextButton("  ⏩️");
+        speedUpButton.setActionCommand("speedUp");
         JButton slowDownButton = createTextButton("  ⏪️");
+        slowDownButton.setActionCommand("slowDown");
         JButton resetSpeedButton = createTextButton("🔄");
+        resetSpeedButton.setActionCommand("resetSpeed");
 
-        buttonPanel.add(startButton); // Initially add startButton
-        buttonPanel.add(speedUpButton);
         buttonPanel.add(slowDownButton);
+        buttonPanel.add(startButton);
+        buttonPanel.add(speedUpButton);
         buttonPanel.add(resetSpeedButton);
+
+        buttonHandler = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println(e.getActionCommand());
+            }
+        };
+
+        slowDownButton.addActionListener(buttonHandler);
+        startButton.addActionListener(buttonHandler);
+        pauseButton.addActionListener(buttonHandler);
+        speedUpButton.addActionListener(buttonHandler);
+        resetSpeedButton.addActionListener(buttonHandler);
 
         topNorthPanel.setLayout(new BorderLayout());
         topNorthPanel.add(buttonPanel, BorderLayout.CENTER);
