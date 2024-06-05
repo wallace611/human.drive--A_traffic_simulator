@@ -26,6 +26,7 @@ public class Vehicle extends HDObject {
     protected final double fcHeight;
     protected Vehicle frontVehicle;
     protected boolean ignoreTrafficLight;
+    protected boolean waitingTrafficLight;
 
     public Vehicle(double maxSpeed) {
         speed = 100.0f;
@@ -60,7 +61,7 @@ public class Vehicle extends HDObject {
 
         nextState();
         setNextSpeed(deltaTime);
-        if (speed < 1e-4) {
+        if (speed < 1e-2) {
             stopTime += deltaTime;
             if (Settings.killCongestedVehicle && stopTime >= timeout) {
                 kill();
@@ -108,13 +109,15 @@ public class Vehicle extends HDObject {
             movingState = MovingState.FORWARD;
         }
         // traffic light
+        waitingTrafficLight = false;
         if (!ignoreTrafficLight && targetRoadChunk.isTrafficLight() && !targetRoadChunk.isTrafficLightGreen()) {
             movingState = MovingState.BREAK;
+            waitingTrafficLight = true;
             stopTime = 0.0f;
         }
         if (frontVehicle != null) {
             movingState = MovingState.BREAK;
-            if (frontVehicle.stopTime < 1) {
+            if (frontVehicle.isWaitingTrafficLight()) {
                 stopTime = 0.0f;
             }
         }
@@ -123,13 +126,12 @@ public class Vehicle extends HDObject {
     private void resizeCollisionShapeAccordingToSpeed() {
         Vector2D fcMag = new Vector2D(
                 (speed + 1) / (100 + 1) * fcHeight,
-                (speed + 20) / (speed + 40) * fcWidth
+                (speed - 50) / (100 + 1) * fcWidth
         );
         Vector2D bcMag = new Vector2D(
-                (maxSpeed + 50) / (speed + (maxSpeed + 50)) * bcHeight,
+                (maxSpeed + 50) / (speed + (maxSpeed + 50)) / 1.2 * bcHeight,
                 bcWidth
         );
-
         frontCollision.setOffset(fcMag);
         backCollision.setOffset(bcMag);
     }
@@ -229,5 +231,13 @@ public class Vehicle extends HDObject {
 
     public void setIgnoreTrafficLight(boolean ignoreTrafficLight) {
         this.ignoreTrafficLight = ignoreTrafficLight;
+    }
+
+    public double getStopTime() {
+        return stopTime;
+    }
+
+    public boolean isWaitingTrafficLight() {
+        return waitingTrafficLight;
     }
 }

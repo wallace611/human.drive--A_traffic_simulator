@@ -6,6 +6,7 @@ import com.HDEngine.Simulator.Objects.HDObject;
 import com.HDEngine.Utilities.Vector2D;
 import processing.core.PImage;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +16,7 @@ World extends HDObject {
     private final RoadChunk[][] chunks;
     private final ArrayList<RoadChunk> summonChunk;
     private int roadCount;
-    private int count = 0;
+    private float count = 0;
     private PImage carImage;
 
     // private ArrayList<HDObject> children; from HDObject class, containing the RoadChunk and Vehicle which need to be rendered
@@ -51,11 +52,11 @@ World extends HDObject {
         super.tick(deltaTime);
         collisionDetection();
 
-        if (count % 200 == 0) {
+        if (count >= 1.0f) {
             count = 0;
             spawnVehicleThroughArr();
         }
-        count += 1;
+        count += deltaTime;
         TrafficLightManager.nextTime(deltaTime);
 
         for (RoadChunk[] rcArr : chunks) {
@@ -122,13 +123,16 @@ World extends HDObject {
     }
 
     public void spawnVehicleThroughArr() {
+        SecureRandom random = new SecureRandom();
         for (RoadChunk rc : summonChunk) {
-            if (!rc.hasVehicle) {
-                Vehicle v = new Vehicle(200);
-                v.setScale(1.5f);
-                v.setSprite(carImage);
-                rc.spawnVehicle(v);
-                children.add(v);
+            if (random.nextFloat() < rc.getSummonProbability()) {
+                if (!rc.hasVehicle) {
+                    Vehicle v = new Vehicle(200);
+                    v.setScale(1.5f);
+                    v.setSprite(carImage);
+                    rc.spawnVehicle(v);
+                    children.add(v);
+                }
             }
         }
     }

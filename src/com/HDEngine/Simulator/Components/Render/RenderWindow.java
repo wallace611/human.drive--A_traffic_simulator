@@ -119,11 +119,12 @@ public class RenderWindow extends PApplet {
         fill(0);
         if (object instanceof Vehicle v) {
             text(String.format("%.1f, %.1f", axis.x, axis.y), -30, -20);
-            text(String.format("%.1f\nheading to %s\nignore TL: %b\nstate: %s",
+            text(String.format("%.1f\nheading to %s\nignore TL: %b\nstate: %s\nstop time: %f",
                     v.getSpeed(),
                     v.getTargetRoadChunk(),
                     v.isIgnoreTrafficLight(),
-                    v.getMovingState()),
+                    v.getMovingState(),
+                    v.getStopTime()),
                     -30, 20
             );
 

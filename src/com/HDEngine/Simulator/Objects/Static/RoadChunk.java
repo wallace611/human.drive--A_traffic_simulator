@@ -16,6 +16,7 @@ public class RoadChunk extends HDObject {
     private int trafficLightTeam;
     private boolean trafficLightGreen;
     private double speedLimit;
+    private float summonProbability;
 
     // private ArrayList<Vehicle> children; from HDObject class, containing the cars which are heading here
 
@@ -30,6 +31,7 @@ public class RoadChunk extends HDObject {
         roadArea.setParent(this);
         hasTrafficLight = false;
         speedLimit = 100.0f;
+        summonProbability = 1.0f;
     }
 
     public RoadChunk(byte dirs, RoadChunk[] connectRoad, float[] roadWeight) {
@@ -137,6 +139,14 @@ public class RoadChunk extends HDObject {
 
     public void setSpeedLimit(double speedLimit) {
         this.speedLimit = speedLimit;
+    }
+
+    public float getSummonProbability() {
+        return summonProbability;
+    }
+
+    public void setSummonProbability(float summonProbability) {
+        this.summonProbability = summonProbability;
     }
 
     @Override

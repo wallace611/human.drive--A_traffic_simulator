@@ -145,7 +145,6 @@ public class SimulationPage extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String cmd = e.getActionCommand();
-                System.out.println(cmd);
                 switch (cmd) {
                     case "start" -> Settings.running = true;
                     case "pause" -> Settings.running = false;

@@ -216,7 +216,7 @@ public class Editor implements Serializable
                 System.out.print("please endet axis:");
                 IDX= input.nextInt();
                 IDY = input.nextInt();
-                if (IDX > 20 || IDX <= 0 || IDY > 20 || IDY <= 0) 
+                if (IDX > 20 || IDX <= 0 || IDY > 20 || IDY <= 0)
                 {
                     throw new IllegalArgumentException("Coordinates must be in the range of 1 to 20.");
                 }
@@ -228,7 +228,7 @@ public class Editor implements Serializable
                 EditorRoadChunk target = map[IDX][IDY];
                 target.initializeScanner();
                 System.out.print("Enter the attribute to edit (PS.axis can't edit):");
-                String attribute = input.next().toLowerCase();;
+                String attribute = input.next().toLowerCase();
                 switch (attribute) {
                     case "start flag","start","startflag": target.setStartPoint();break;
                     case "speedlimit","speed limit": target.setSpeedLimit();  break;
@@ -579,13 +579,13 @@ public class Editor implements Serializable
     }
 
     private void showChunk() {
-        for (int i = 20; i > 0; i--) {
-            for (int j = 1; j <= 20; j++) {
-                if (map[j][i] == null) {
+        for (int i = 0; i < map.length; i++) {
+            for (int j = 0; j < map[0].length; j++) {
+                if (map[i][j] == null) {
                     System.out.print("| |");
-                } else if (map[j][i].haveTrafficLight()) {
+                } else if (map[i][j].haveTrafficLight()) {
                     System.out.print("|T|");
-                } else if (!map[j][i].getIntersection()) {
+                } else if (!map[i][j].getIntersection()) {
                     System.out.print("|U|");
                 } else {
                     System.out.print("|T|");
