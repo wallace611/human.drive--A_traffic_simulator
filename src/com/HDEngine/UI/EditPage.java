@@ -18,8 +18,11 @@ public class EditPage extends JFrame implements ActionListener {
     JMenuItem loadItem = new JMenuItem("Load");
     JMenuItem saveItem = new JMenuItem("Save");
     JMenuItem backMenuItem = new JMenuItem("Home");
+    JScrollPane attributeScrollPane;
     JPanel attributePanel = new JPanel(); // Moved this line to be an instance variable
     MouseEventHandler handler;
+    JScrollPane screenScrollPane;
+    JPanel screenPanel;
 
     private Editor editor;  //要有editor的實例才能操作editor by.昌
 
@@ -50,16 +53,37 @@ public class EditPage extends JFrame implements ActionListener {
         backMenuItem.addActionListener(this);
 
         JPanel carPanel = new JPanel();
-        JPanel screenPanel = new JPanel();
         JPanel roadPanel = new JPanel();
 
-        screenPanel.setBounds(300, 20, 550, 300);
+        screenPanel = new JPanel(new GridLayout(20, 20));
+        screenPanel.setPreferredSize(new Dimension(1100, 1100));
         screenPanel.setBackground(Color.GRAY);
-        attributePanel.setBounds(600, 335, 250, 200);
-        attributePanel.setBackground(Color.LIGHT_GRAY);
+        screenScrollPane = new JScrollPane(screenPanel);
+        screenScrollPane.setBounds(300, 20, 550, 300);
+        screenScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        screenScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        screenScrollPane.getViewport().setBackground(Color.GRAY);
 
-        background.add(screenPanel);
-        background.add(attributePanel);
+        // Fill the screenPanel with 20x20 grid of panels
+        for (int row = 0; row < 20; row++) {
+            for (int col = 0; col < 20; col++) {
+                JPanel cell = new JPanel(new BorderLayout());
+                cell.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                JLabel label = new JLabel("[" + row + "," + col + "]", JLabel.CENTER);
+                cell.add(label, BorderLayout.CENTER);
+                screenPanel.add(cell);
+            }
+        }
+
+        attributePanel.setLayout(new BoxLayout(attributePanel, BoxLayout.Y_AXIS));
+        attributeScrollPane = new JScrollPane(attributePanel);
+        attributeScrollPane.setBounds(600, 335, 250, 200);
+        attributeScrollPane.setBackground(Color.LIGHT_GRAY);
+        attributeScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        attributeScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+        background.add(screenScrollPane);
+        background.add(attributeScrollPane);
 
         // carPanel
         carPanel.setLayout(new BoxLayout(carPanel, BoxLayout.Y_AXIS));
@@ -71,7 +95,7 @@ public class EditPage extends JFrame implements ActionListener {
             JButton tbutton = createtrafficlightButton("No. " + i);
             tbutton.setActionCommand("trafficlightButton" + i);
             tbutton.addActionListener(this);
-            handler = new MouseEventHandler(tbutton, background, screenPanel);
+            handler = new MouseEventHandler(tbutton, screenPanel, screenScrollPane);
             tbutton.addMouseListener(handler);
             tbutton.addMouseMotionListener(handler);
 
@@ -100,7 +124,7 @@ public class EditPage extends JFrame implements ActionListener {
             JButton rbutton = createroadButton("No. " + i);
             rbutton.setActionCommand("roadButton" + i);
             rbutton.addActionListener(this);
-            handler = new MouseEventHandler(rbutton, background, screenPanel);
+            handler = new MouseEventHandler(rbutton, screenPanel, screenScrollPane);
             rbutton.addMouseListener(handler);
             rbutton.addMouseMotionListener(handler);
 
@@ -119,8 +143,6 @@ public class EditPage extends JFrame implements ActionListener {
         roadScrollPane.setBorder(new LineBorder(Color.BLACK, 2));
 
         background.add(roadScrollPane);
-
-        attributePanel.setLayout(new BoxLayout(attributePanel, BoxLayout.Y_AXIS));
 
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
@@ -178,32 +200,72 @@ public class EditPage extends JFrame implements ActionListener {
         }
     }
 
-    private void updateAttributePanel(String string, String buttonId) {
+    private void updateAttributePanel(String type, String buttonId) {
         attributePanel.removeAll(); // Clear existing components
 
-        //在這邊的panel改紅綠燈或道路需要的參數名稱(jlabel)，可能設判斷每個i要加甚麼jlabel?
-
-        //reply: 之後我們討論一下哪個參數要訂多少 可以考慮用static final來用文字化的描述 by.昌
-        for (int i = 1; i <= 5; i++) {
+        for (int i = 1; i <= 10; i++) {
             JPanel linePanel = new JPanel();
             linePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-            JLabel label = new JLabel("Parameter " + i + " for No." + buttonId + ": ");
-            JTextField textField = new JTextField(10);
-            int parameterIndex = i; // 記錄當前參數索引
 
-            // 新增 FocusListener  如果使用者點離開parameter就會觸發 by.昌
-            textField.addFocusListener(new FocusAdapter() 
-            {
-                @Override
-                public void focusLost(FocusEvent e) {
-                    System.out.println("focusLost");
-                    String newValue = textField.getText();
-                    updateEditorParameter(buttonId, parameterIndex, newValue);
+            if (i == 2) {
+                JLabel label1 = new JLabel("Traffic Light Flag:");
+                JCheckBox trueCheckBox = new JCheckBox("True");
+                JCheckBox falseCheckBox = new JCheckBox("False");
+                ButtonGroup group = new ButtonGroup();
+                group.add(trueCheckBox);
+                group.add(falseCheckBox);
+
+                trueCheckBox.addActionListener(e -> {
+                    if (trueCheckBox.isSelected()) {
+                        editor.updateTrafficLightParameter(buttonId, 2, "true");
+                    }
+                });
+
+                falseCheckBox.addActionListener(e -> {
+                    if (falseCheckBox.isSelected()) {
+                        editor.updateTrafficLightParameter(buttonId, 2, "false");
+                    }
+                });
+
+                linePanel.add(label1);
+                linePanel.add(trueCheckBox);
+                linePanel.add(falseCheckBox);
+            } else {
+                JLabel label;
+                switch (i) {
+                    case 1:
+                        label = new JLabel("Set your traffic light flag: ");
+                        break;
+                    case 3:
+                        label = new JLabel("Set your traffic light timer: ");
+                        break;
+                    case 4:
+                        label = new JLabel("Set your traffic light group: ");
+                        break;
+                    case 5:
+                        label = new JLabel("Set your speed limit: ");
+                        break;
+                    
+                    default:
+                        label = new JLabel("Unknown Parameter for No." + buttonId + ": ");
+                        break;
                 }
-            });//匿名內部類的使用方式 酷東西
+                JTextField textField = new JTextField(10);
+                int parameterIndex = i; // 記錄當前參數索引
 
-            linePanel.add(label);
-            linePanel.add(textField);
+                // 新增 FocusListener 如果使用者點離開parameter就會觸發 by.昌
+                textField.addFocusListener(new FocusAdapter() {
+                    @Override
+                    public void focusLost(FocusEvent e) {
+                        System.out.println("focusLost");
+                        String newValue = textField.getText();
+                        updateEditorParameter(buttonId, parameterIndex, newValue);
+                    }
+                });
+
+                linePanel.add(label);
+                linePanel.add(textField);
+            }
             attributePanel.add(linePanel);
             attributePanel.add(Box.createVerticalStrut(10)); // Add spacing between fields
         }
@@ -219,11 +281,13 @@ public class EditPage extends JFrame implements ActionListener {
         JPanel bottomPanel;
         private Point initialClick;
         private JWindow ghostWindow;
+        private JScrollPane screenScrollPane;
+        private Timer scrollTimer;
 
-        public MouseEventHandler(JComponent component, JPanel dragPanel, JPanel bottomPanel) {
+        public MouseEventHandler(JComponent component, JPanel dragPanel, JScrollPane screenScrollPane) {
             this.component = component;
             this.dragPanel = dragPanel;
-            this.bottomPanel = bottomPanel;
+            this.screenScrollPane = screenScrollPane;
         }
 
         @Override
@@ -233,7 +297,11 @@ public class EditPage extends JFrame implements ActionListener {
             // Create a semi-transparent JWindow to use as the drag image
             ghostWindow = new JWindow();
             ghostWindow.setLayout(new BorderLayout());
-            ghostWindow.setSize(component.getSize());
+
+            // Reduce the size of the ghost window to half of the original component size
+            int width = component.getWidth() / 2;
+            int height = component.getHeight() / 2;
+            ghostWindow.setSize(width, height);
 
             // Create a JPanel with a semi-transparent button appearance
             JPanel ghostPanel = new JPanel() {
@@ -242,46 +310,99 @@ public class EditPage extends JFrame implements ActionListener {
                     super.paintComponent(g);
                     Graphics2D g2 = (Graphics2D) g.create();
                     g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+                    g2.scale(0.5, 0.5); // Scale down the component by 50%
                     component.paint(g2);
                     g2.dispose();
                 }
             };
-            ghostPanel.setSize(component.getSize());
+            ghostPanel.setSize(width, height);
             ghostWindow.add(ghostPanel);
-            ghostWindow.setLocation(component.getLocationOnScreen());
+
+            // Adjust the ghostWindow location to match the mouse press location
+            Point locationOnScreen = e.getLocationOnScreen();
+            ghostWindow.setLocation(locationOnScreen.x - (initialClick.x / 2), locationOnScreen.y - (initialClick.y / 2));
             ghostWindow.setVisible(true);
+
+            startScrollTimer();
         }
 
         @Override
         public void mouseDragged(MouseEvent e) {
-            int xMoved = e.getXOnScreen() - initialClick.x;
-            int yMoved = e.getYOnScreen() - initialClick.y;
-            Point newLocation = new Point(xMoved, yMoved);
-            ghostWindow.setLocation(newLocation);
+            Point locationOnScreen = e.getLocationOnScreen();
+            ghostWindow.setLocation(locationOnScreen.x - (initialClick.x / 2), locationOnScreen.y - (initialClick.y / 2));
         }
-        
-        //在這邊擷取updateAttributePanel的jtextfield然後丟到Editor就行
+
         @Override
         public void mouseReleased(MouseEvent e) {
-            Point releasePoint = ghostWindow.getLocation();
-            SwingUtilities.convertPointFromScreen(releasePoint, bottomPanel);
+            Point releasePoint = e.getLocationOnScreen();
+            SwingUtilities.convertPointFromScreen(releasePoint, dragPanel);
 
-            if (bottomPanel.contains(releasePoint)) {
-                System.out.println("Dropped at screenPanel at: " + releasePoint);
+            if (dragPanel.contains(releasePoint)) {
+                // Find the corresponding panel
+                int cellWidth = screenPanel.getWidth() / 20;
+                int cellHeight = screenPanel.getHeight() / 20;
+                int col = releasePoint.x / cellWidth;
+                int row = releasePoint.y / cellHeight;
+
+                int index = row * 20 + col;
+                if (index >= 0 && index < screenPanel.getComponentCount()) {
+                    JPanel cell = (JPanel) screenPanel.getComponent(index);
+                    cell.removeAll();
+                    cell.add(component);
+                    cell.revalidate();
+                    cell.repaint();
+                }
+
+                System.out.println("Dropped at cell: [" + row + "," + col + "]");
             } else {
                 System.out.println("Dropped outside screenPanel");
             }
-            
+
             ghostWindow.dispose(); // Dispose the drag image window
+            stopScrollTimer();
+        }
+        //感應滑鼠來控制滾輪
+        private void startScrollTimer() {
+            scrollTimer = new Timer(100, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Point mousePosition = MouseInfo.getPointerInfo().getLocation();
+                    SwingUtilities.convertPointFromScreen(mousePosition, screenScrollPane);
+
+                    JScrollBar verticalScrollBar = screenScrollPane.getVerticalScrollBar();
+                    JScrollBar horizontalScrollBar = screenScrollPane.getHorizontalScrollBar();
+                    int scrollSpeed = 20;
+                    int edgeThreshold = 50; // 調整邊緣檢測範圍
+
+                    if (mousePosition.y <= edgeThreshold) {
+                        verticalScrollBar.setValue(verticalScrollBar.getValue() - scrollSpeed);
+                    } else if (mousePosition.y >= screenScrollPane.getHeight() - edgeThreshold) {
+                        verticalScrollBar.setValue(verticalScrollBar.getValue() + scrollSpeed);
+                    }
+
+                    if (mousePosition.x <= edgeThreshold) {
+                        horizontalScrollBar.setValue(horizontalScrollBar.getValue() - scrollSpeed);
+                    } else if (mousePosition.x >= screenScrollPane.getWidth() - edgeThreshold) {
+                        horizontalScrollBar.setValue(horizontalScrollBar.getValue() + scrollSpeed);
+                    }
+                }
+            });
+            scrollTimer.start();
+        }
+
+        private void stopScrollTimer() {
+            if (scrollTimer != null) {
+                scrollTimer.stop();
+            }
         }
     }
 
-    //new function by.昌
+    // new function by.昌
     private void updateEditorParameter(String buttonId, int parameterIndex, String newValue) {
-        if (buttonId.startsWith("r")) {//r = road
+        if (buttonId.startsWith("r")) {// r = road
             // 處理道路參數
             editor.updateRoadParameter(buttonId, parameterIndex, newValue);
-        } else if (buttonId.startsWith("t")) { //  t = traffic light 
+        } else if (buttonId.startsWith("t")) { // t = traffic light
             // 處理紅綠燈參數
             editor.updateTrafficLightParameter(buttonId, parameterIndex, newValue);
         }
