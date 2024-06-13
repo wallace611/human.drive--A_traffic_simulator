@@ -38,7 +38,7 @@ public class Vehicle extends HDObject {
         movingState = MovingState.IDLE;
         bcWidth = 8;
         bcHeight = 30;
-        backCollision = new CollisionArea(new Vector2D(-10, 0), 0.0f, new Vector2D(bcHeight, bcWidth));
+        backCollision = new CollisionArea(new Vector2D(-5, 0), 0.0f, new Vector2D(bcHeight, bcWidth));
         backCollision.setParent(this);
         fcWidth = 15;
         fcHeight = 15;
@@ -239,5 +239,9 @@ public class Vehicle extends HDObject {
 
     public boolean isWaitingTrafficLight() {
         return waitingTrafficLight;
+    }
+
+    public Vehicle getFrontVehicle() {
+        return frontVehicle;
     }
 }

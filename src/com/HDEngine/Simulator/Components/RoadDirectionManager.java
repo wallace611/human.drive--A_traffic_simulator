@@ -87,4 +87,7 @@ public class RoadDirectionManager {
         return currentRoadCount;
     }
 
+    public RoadChunk[] getRoadRef() {
+        return roadRef;
+    }
 }

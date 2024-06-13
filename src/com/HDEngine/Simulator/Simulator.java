@@ -4,13 +4,12 @@ import com.HDEngine.Editor.Object.Road.EditorRoadChunk;
 import com.HDEngine.Simulator.Objects.HDObject;
 import com.HDEngine.Simulator.Objects.Static.RoadChunk;
 import com.HDEngine.Simulator.Objects.Static.World;
-import com.HDEngine.Simulator.Components.Render.RenderWindow;
+import com.HDEngine.Utilities.RenderWindow;
 import com.HDEngine.UI.SimulationPage;
 import com.HDEngine.Utilities.FileManageTools.FileManager;
 import processing.core.PImage;
 
 import javax.swing.*;
-import java.util.ArrayList;
 
 public class Simulator {
     public static World world;
@@ -18,27 +17,55 @@ public class Simulator {
 
     private static World loadFile(String path) {
         System.out.println("Simulator Main thread: Start loading file...");
-        FileManager file = FileManager.loadFromFile("src/SavedFile/editor_map.obj");
+        FileManager file = FileManager.loadFromFile(path);
         World world = new World(file.getMap().length, file.getMap()[0].length);
 
-        ArrayList<RoadChunk> rcToConnect = new ArrayList<>();
-        for (EditorRoadChunk[] ercArr : file.getMap()) {
-            for (EditorRoadChunk erc : ercArr) {
+        RoadChunk[][] roadChunks = new RoadChunk[file.getMap().length][file.getMap()[0].length];
+
+        // First pass: create all RoadChunks
+        for (int i = 0; i < file.getMap().length; i++) {
+            for (int j = 0; j < file.getMap()[0].length; j++) {
+                EditorRoadChunk erc = file.getMap()[i][j];
                 if (erc != null) {
-                    byte roadDir = 0;
-                    for (int i : erc.getDirection()) {
+                    int roadDir = 0;
+                    for (int dir : erc.getDirection()) {
                         roadDir <<= 1;
-                        roadDir += (byte) i;
+                        roadDir += dir;
                     }
-                    RoadChunk rc = new RoadChunk(roadDir);
+                    roadDir >>= 1;
+                    RoadChunk rc = new RoadChunk((byte) roadDir);
                     rc.setImagePath("src\\com\\HDEngine\\Simulator\\image\\testimg.png");
-                    world.addRoadChunk(erc.getIDX(), erc.getIDY(), rc);
-                    rcToConnect.add(rc);
+                    world.addRoadChunk(i, j, rc);
+                    roadChunks[i][j] = rc;
+
+                    if (erc.haveTrafficLight()) {
+                        rc.setTrafficLight(erc.getTrafficLightGroup(), erc.getTrafficLightTeams());
+                    }
                 }
             }
         }
-        for (RoadChunk rc : rcToConnect) {
-            // TODO
+
+        // Second pass: connect RoadChunks
+        for (int i = 0; i < file.getMap().length; i++) {
+            for (int j = 0; j < file.getMap()[0].length; j++) {
+                EditorRoadChunk erc = file.getMap()[i][j];
+                if (erc != null) {
+                    RoadChunk rc = roadChunks[i][j];
+                    int[] connections = erc.getDirection();
+                    for (int k = 0; k < connections.length; k++) {
+                        if (connections[k] == 1) {
+                            int ni = i + (int) Math.round(Math.sin(Math.PI / 4 * k));
+                            int nj = j + (int) Math.round(Math.cos(Math.PI / 4 * k));
+                            if (ni >= 0 && ni < file.getMap().length && nj >= 0 && nj < file.getMap()[0].length && roadChunks[ni][nj] != null) {
+                                rc.addRoad(roadChunks[ni][nj], 1.0f); // Assuming equal weight for all connections
+                            }
+                        }
+                    }
+                    if (erc.startCheck()) {
+                        world.getSummonChunk().add(rc);
+                    }
+                }
+            }
         }
 
         System.out.println("Simulator Main Thread: Done!");
@@ -77,8 +104,8 @@ public class Simulator {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        //world = loadFile("src/SavedFile/editor_map.obj");
-        world = Settings.getDemoWorld1();
+        world = loadFile("src/SavedFile/editor_map.obj");
+        //world = Settings.getDemoWorld1();
         ui = constructSimulatePage(world);
         setupImage(world, ui.getWindow());
         PImage img = ui.getWindow().loadImage("src/com/HDEngine/Simulator/image/car.png");

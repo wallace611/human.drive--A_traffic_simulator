@@ -1,8 +1,9 @@
 package com.HDEngine.UI;
 
+import com.HDEngine.Simulator.Components.SimulatorRenderer;
 import com.HDEngine.Simulator.Objects.Static.World;
 import com.HDEngine.Simulator.Settings;
-import com.HDEngine.Simulator.Components.Render.RenderWindow;
+import com.HDEngine.Utilities.RenderWindow;
 import processing.awt.PSurfaceAWT;
 import processing.core.PApplet;
 
@@ -17,7 +18,7 @@ import static java.lang.Math.*;
 
 public class SimulationPage extends JFrame {
     private World world;
-    private RenderWindow window;
+    private SimulatorRenderer window;
     private JFrame frame;
     private JPanel background;
     private JPanel screenPanel;
@@ -167,7 +168,7 @@ public class SimulationPage extends JFrame {
         topNorthPanel.add(buttonPanel, BorderLayout.CENTER);
 
         SwingUtilities.invokeLater(() -> {
-            window = new RenderWindow(world.getChildren());
+            window = new SimulatorRenderer(world.getChildren());
             String[] processingArgs = {"window"};
             PApplet.runSketch(processingArgs, window);
             PSurfaceAWT surf = (PSurfaceAWT) window.getSurface();
@@ -181,8 +182,8 @@ public class SimulationPage extends JFrame {
                     @Override
                     public void componentResized(ComponentEvent e) {
                         // 當 screenPanel 大小改變時，更新 RenderWindow 的大小
-                        window.windowWidth = screenPanel.getWidth();
-                        window.windowHeight = screenPanel.getHeight();
+                        window.setWindowWidth(screenPanel.getWidth());
+                        window.setWindowHeight(screenPanel.getHeight());
                     }
                 });
             }

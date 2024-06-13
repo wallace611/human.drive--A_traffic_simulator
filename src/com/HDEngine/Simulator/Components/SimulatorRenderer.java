@@ -1,4 +1,4 @@
-package com.HDEngine.Simulator.Components.Render;
+package com.HDEngine.Simulator.Components;
 
 import com.HDEngine.Simulator.Info;
 import com.HDEngine.Simulator.Objects.Dynamic.Vehicle;
@@ -6,63 +6,33 @@ import com.HDEngine.Simulator.Objects.HDObject;
 import com.HDEngine.Simulator.Objects.Static.CollisionArea;
 import com.HDEngine.Simulator.Objects.Static.RoadChunk;
 import com.HDEngine.Simulator.Settings;
+import com.HDEngine.Utilities.RenderWindow;
 import com.HDEngine.Utilities.Vector2D;
-import processing.core.PApplet;
 import processing.core.PImage;
-
-import static java.lang.Math.*;
 
 import java.util.ArrayList;
 
-public class RenderWindow extends PApplet {
-    private final ArrayList<HDObject> objToRender;
-    private Vector2D camLoc;
-    private float camRot;
-    private float camScale;
-    public int windowWidth, windowHeight;
+import static java.lang.Math.toDegrees;
 
-    public RenderWindow(ArrayList<HDObject> renderListRef) {
-        super();
-        objToRender = renderListRef;
-        camLoc = new Vector2D();
-        camRot = 0.0f;
-        camScale = 1.0f;
-        windowWidth = Settings.windowWidth;
-        windowHeight = Settings.windowHeight;
+public class SimulatorRenderer extends RenderWindow {
+    public SimulatorRenderer(ArrayList<HDObject> renderListRef) {
+        super(renderListRef);
     }
 
     @Override
     public void settings() {
-        System.out.println("Simulator renderer thread: Loading settings...");
-        size(windowWidth, windowHeight);
-        System.out.println("Simulator renderer thread: Done!");
+        super.settings();
     }
 
     @Override
     public void setup() {
-        System.out.println("Simulator renderer thread: Setting everything up...");
-        frameRate(Settings.fps);
-        background(200);
-        translate(0, 0);
-        surface.setVisible(false);
-        System.out.println("Simulator renderer thread: All stuff has been set up, it's time for rendering something :D");
+        super.setup();
     }
+
     @Override
     public void draw() {
-        surface.setSize(windowWidth, windowHeight);
-        background(200);
-        float centerX = width >> 1;
-        float centerY = height >> 1;
+        super.draw();
 
-        setupCamera(centerX, centerY);
-
-        HDObject[] tmp = new ArrayList<>(objToRender).toArray(new HDObject[0]);
-        for (HDObject object : tmp) {
-            if (object == null || object.isKilled()) continue;
-            renderObject(object);
-
-        }
-        resetMatrix();
         renderWindowState();
     }
 
@@ -75,15 +45,8 @@ public class RenderWindow extends PApplet {
         }
     }
 
-    private void setupCamera(float centerX, float centerY) {
-        translate(centerX, centerY);
-        scale(camScale);
-        rotate(camRot);
-        translate((float) camLoc.x, (float) camLoc.y);
-        translate(-centerX, -centerY);
-    }
-
-    private void renderObject(HDObject object) {
+    @Override
+    protected void renderObject(HDObject object) {
         pushMatrix();
         applyTransformations(object.getGlobalLocation(), object.getGlobalRotation(), object.getGlobalScale());
         if (object.getSprite() != null && object.getSprite().getImage() != null) {
@@ -119,21 +82,18 @@ public class RenderWindow extends PApplet {
         fill(0);
         if (object instanceof Vehicle v) {
             text(String.format("%.1f, %.1f", axis.x, axis.y), -30, -20);
-            text(String.format("%.1f\nheading to %s\nignore TL: %b\nstate: %s\nstop time: %f",
-                    v.getSpeed(),
-                    v.getTargetRoadChunk(),
-                    v.isIgnoreTrafficLight(),
-                    v.getMovingState(),
-                    v.getStopTime()),
+            text(String.format("%.1f\nheading to %s\nignore TL: %b\nstate: %s\nstop time: %f\ncollided obj: %s",
+                            v.getSpeed(),
+                            v.getTargetRoadChunk(),
+                            v.isIgnoreTrafficLight(),
+                            v.getMovingState(),
+                            v.getStopTime(),
+                            v.getFrontVehicle()),
                     -30, 20
             );
 
         } else if (object instanceof RoadChunk rc) {
-            text(String.valueOf(rc), -40, -40);
-            text(String.format("tf: %b", rc.isTrafficLight()), -40, -20);
-            if (rc.isTrafficLight()) {
-                text(String.format("green: %b", rc.isTrafficLightGreen()), -40, -10);
-            }
+            text(rc.toString(), -40, -40);
         }
         popMatrix();
     }
@@ -185,50 +145,5 @@ public class RenderWindow extends PApplet {
             return v.getBackCollision();
         }
         return null;
-    }
-    @Override
-    public void keyPressed() {
-        float moveSpeed = 10;
-
-        if (key == 'w') {
-            camLoc.x += moveSpeed * sin(camRot);
-            camLoc.y += moveSpeed * cos(camRot);
-        }
-        if (key == 's') {
-            camLoc.x -= moveSpeed * sin(camRot);
-            camLoc.y -= moveSpeed * cos(camRot);
-        }
-        if (key == 'a') {
-            camLoc.x += moveSpeed * cos(camRot);
-            camLoc.y -= moveSpeed * sin(camRot);
-        }
-        if (key == 'd') {
-            camLoc.x -= moveSpeed * cos(camRot);
-            camLoc.y += moveSpeed * sin(camRot);
-        }
-        if (key == '-') {
-            camScale *= 1.1f;
-        }
-        if (key == '=') {
-            camScale /= 1.1f;
-        }
-        if (key == 'e') {
-            camRot += (float) toRadians(10);
-        }
-        if (key == 'q') {
-            camRot -= (float) toRadians(10);
-        }
-    }
-
-    public Vector2D getCamLoc() {
-        return camLoc;
-    }
-
-    public float getCamRot() {
-        return camRot;
-    }
-
-    public float getCamScale() {
-        return camScale;
     }
 }

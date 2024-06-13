@@ -151,6 +151,45 @@ public class RoadChunk extends HDObject {
 
     @Override
     public String toString() {
-        return "RoadChunk" + String.format("%d, %d", (int) getGlobalLocation().y / 100, (int) getGlobalLocation().x / 100);
+        // name
+        StringBuilder infoString = new StringBuilder(
+                String.format(
+                        "RoadChunk: %d, %d\n",
+                        (int) getGlobalLocation().y / 100,
+                        (int) getGlobalLocation().x / 100
+                )
+        );
+
+        // state
+        if (hasTrafficLight) {
+            infoString.append("TF: true\n");
+            infoString.append(String.format("Green: %b\n", trafficLightGreen));
+        }
+
+        // connection
+        if (roadDir.getRoadDirection() == 0) {
+            infoString.append("end\n");
+        } else {
+            for (int i = 0, j = roadDir.getRoadDirection(), k = 0; i < 8; i++) {
+                if ((j & 1) == 1) {
+                    Vector2D loc = roadDir.getRoadRef()[k++].getLocation();
+                    if (loc != null) {
+                        infoString.append(
+                                String.format(
+                                        "%d RoadChunk %d %d\n",
+                                        i,
+                                        (int) loc.y / 100,
+                                        (int) loc.x / 100
+                                )
+                        );
+                    } else {
+                        infoString.append(String.format("%d error", i));
+                    }
+                }
+                j >>= 1;
+            }
+        }
+
+        return infoString.toString();
     }
 }

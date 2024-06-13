@@ -7,7 +7,7 @@ import com.HDEngine.Simulator.Objects.Static.World;
 
 public class Settings {
     public static int fps = 100;
-    public static int tps = 40;
+    public static int tps = 500;
     public static int uiWidth = 900;
     public static int uiHeight = 615;
     public static int windowWidth = 800;
