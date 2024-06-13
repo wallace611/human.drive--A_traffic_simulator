@@ -655,7 +655,7 @@ public class Editor implements Serializable
             }
         }
     }
-
+//for normal attribute
     public void updateRoadParameter(String buttonId, int parameterIndex, String newValue) {
         int id = Integer.parseInt(buttonId);
         if (templateChunks[id] != null) {
@@ -688,7 +688,7 @@ public class Editor implements Serializable
             }
         }
     }
-
+//for Direction
     public void updateRoadParameter(String buttonId, int parameterIndex, int[] newValue) {
         int id = Integer.parseInt(buttonId);
         if (templateChunks[id] != null) {
@@ -699,7 +699,7 @@ public class Editor implements Serializable
             }
         }
     }
-
+//for Weight
     public void updateRoadParameter(String buttonId, int parameterIndex, double[] newValue) {
         int id = Integer.parseInt(buttonId);
         if (templateChunks[id] != null) {
@@ -718,9 +718,11 @@ public class Editor implements Serializable
 
     public void templateToMap(int tempalteID,int IDX, int IDY){
         EditorRoadChunk newchunk = new EditorRoadChunk();
-        newchunk = templateChunks[tempalteID]
+        newchunk = templateChunks[tempalteID];
         map[IDX][IDY] = newchunk;
     }
 
-
+    public void deleteMapChunk(int IDX, int IDY){
+        map[IDX][IDY] = null;
+    }
 }
