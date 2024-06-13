@@ -18,17 +18,13 @@ public class Editor implements Serializable
     private static final int SE = 7;
     private static final int SW = 5;
     private static final int NW = 3;
-    /*private static final int INTERSECTION = 1;
-    private static final int TRAFFICLIGHTFLAG = 2;
-    private static final int TRAFFICLIGHTTIMER = 3;
-    private static final int TRAFFICLIGHTGROUP = 4;
-    private static final int SPEEDLIMIT = 5;
-    private static final int IDX = 6;
-    private static final int IDY = 7;
-    private static final int STARTFLAG = 8;
-    private static final int WEIGHTS = 9;
-    private static final int CONNECTION = 10;*/
+    private static final int STARTFLAG = 1;
+    private static final int SPEEDLIMIT = 2;
+    private static final int DIRECTION = 3;
+    private static final int ISWEIGHTED = 4;
+    private static final int WEIGHTS = 5;
     private EditorRoadChunk[][] map = new EditorRoadChunk[22][22];//if possible, keep the outer side of the array clear(eg. map[0][0] should always be null)
+    private EditorRoadChunk[] templateChunks = new EditorRoadChunk[20];
     private Map<Integer,int[]> trafficLight = new HashMap<>();
     private transient FileManager fileManager = new FileManager();
     //private transient FileManager loadedFileManager = FileManager.loadFromFile("src/SavedFile/editor_map.obj");
@@ -659,5 +655,72 @@ public class Editor implements Serializable
             }
         }
     }
+
+    public void updateRoadParameter(String buttonId, int parameterIndex, String newValue) {
+        int id = Integer.parseInt(buttonId);
+        if (templateChunks[id] != null) {
+            try {
+                switch (parameterIndex) {
+                    case STARTFLAG:
+                        if(newValue.toLowerCase().equals("true"))
+                            templateChunks[id].setStartFlag(true);
+                        else{
+                            templateChunks[id].setStartFlag(false);
+                        }
+                    break;
+
+                    case SPEEDLIMIT:
+                        double newval = Double.parseDouble(newValue);
+                        templateChunks[id].setSpeedLimit(newval);
+                    break;
+
+                    case ISWEIGHTED:
+                        if(newValue.toLowerCase().equals("true")){
+                            templateChunks[id].setIsWeighted(true);
+                        }
+                        else{
+                            templateChunks[id].setIsWeighted(false);
+                        }
+                    break;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input for parameter " + parameterIndex + ": " + newValue);
+            }
+        }
+    }
+
+    public void updateRoadParameter(String buttonId, int parameterIndex, int[] newValue) {
+        int id = Integer.parseInt(buttonId);
+        if (templateChunks[id] != null) {
+            try {
+                templateChunks[id].setDirection(newValue);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input for parameter " + parameterIndex + ": " + newValue);
+            }
+        }
+    }
+
+    public void updateRoadParameter(String buttonId, int parameterIndex, double[] newValue) {
+        int id = Integer.parseInt(buttonId);
+        if (templateChunks[id] != null) {
+            try {
+                templateChunks[id].setWeights(newValue);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input for parameter " + parameterIndex + ": " + newValue);
+            }
+        }
+    }
+
+    public void mapToMap(int oldIDX,int oldIDY, int newIDX, int newIDY){
+        map[newIDX][newIDY] = map[oldIDX][oldIDY];
+        map[oldIDX][oldIDY] = null;
+    }
+
+    public void templateToMap(int tempalteID,int IDX, int IDY){
+        EditorRoadChunk newchunk = new EditorRoadChunk();
+        newchunk = templateChunks[tempalteID]
+        map[IDX][IDY] = newchunk;
+    }
+
 
 }
