@@ -4,6 +4,9 @@ import com.HDEngine.Editor.Object.Road.EditorRoadChunk;
 import com.HDEngine.Simulator.Objects.HDObject;
 import com.HDEngine.Simulator.Objects.Static.RoadChunk;
 import com.HDEngine.Simulator.Objects.Static.World;
+import com.HDEngine.Simulator.Settings.Info;
+import com.HDEngine.Simulator.Settings.Setter;
+import com.HDEngine.Simulator.Settings.Settings;
 import com.HDEngine.Utilities.RenderWindow;
 import com.HDEngine.UI.SimulationPage;
 import com.HDEngine.Utilities.FileManageTools.FileManager;
@@ -104,12 +107,20 @@ public class Simulator {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        world = loadFile("src/SavedFile/editor_map.obj");
-        //world = Settings.getDemoWorld1();
+        //world = loadFile("src/SavedFile/editor_map.obj");
+        world = Settings.getDemoWorld1();
         ui = constructSimulatePage(world);
         setupImage(world, ui.getWindow());
         PImage img = ui.getWindow().loadImage("src/com/HDEngine/Simulator/image/car.png");
         world.setCarImage(img);
+
+        // wait for render window setting up
+        while (!ui.getWindow().isSet()) {
+            Thread.sleep(10);
+        }
+
+        Thread setterThread = new Thread(new Setter());
+        setterThread.start();
 
         long targetDeltaTime;
         long startMS;

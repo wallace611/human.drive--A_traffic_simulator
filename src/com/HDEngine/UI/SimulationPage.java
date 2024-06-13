@@ -2,7 +2,7 @@ package com.HDEngine.UI;
 
 import com.HDEngine.Simulator.Components.SimulatorRenderer;
 import com.HDEngine.Simulator.Objects.Static.World;
-import com.HDEngine.Simulator.Settings;
+import com.HDEngine.Simulator.Settings.Settings;
 import com.HDEngine.Utilities.RenderWindow;
 import processing.awt.PSurfaceAWT;
 import processing.core.PApplet;

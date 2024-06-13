@@ -1,22 +1,39 @@
 package com.HDEngine.Simulator.Components;
 
-import com.HDEngine.Simulator.Info;
+import com.HDEngine.Simulator.Settings.Info;
 import com.HDEngine.Simulator.Objects.Dynamic.Vehicle;
 import com.HDEngine.Simulator.Objects.HDObject;
 import com.HDEngine.Simulator.Objects.Static.CollisionArea;
 import com.HDEngine.Simulator.Objects.Static.RoadChunk;
-import com.HDEngine.Simulator.Settings;
+import com.HDEngine.Simulator.Settings.Settings;
 import com.HDEngine.Utilities.RenderWindow;
 import com.HDEngine.Utilities.Vector2D;
 import processing.core.PImage;
+import processing.event.KeyEvent;
+import processing.event.MouseEvent;
 
 import java.util.ArrayList;
 
 import static java.lang.Math.toDegrees;
 
 public class SimulatorRenderer extends RenderWindow {
+    private boolean[] isKeyPressed;
+    private float camAcc;
+    private float camMovXSpeed;
+    private float camMovYSpeed;
+    private float camRotSpeed;
+    private float maxMovSpeed;
+    private float maxRotSpeed;
     public SimulatorRenderer(ArrayList<HDObject> renderListRef) {
         super(renderListRef);
+        windowWidth = Settings.windowWidth;
+        windowHeight = Settings.windowHeight;
+        isKeyPressed = new boolean[256];
+        camAcc = 1.0f;
+        camMovXSpeed = 0.0f;
+        camMovYSpeed = 0.0f;
+        maxMovSpeed = 50.0f;
+        maxRotSpeed = 5.0f;
     }
 
     @Override
@@ -27,12 +44,15 @@ public class SimulatorRenderer extends RenderWindow {
     @Override
     public void setup() {
         super.setup();
+        frameRate(Settings.fps);
     }
 
     @Override
     public void draw() {
         super.draw();
 
+        getKeyActions();
+        frameRate(Settings.fps);
         renderWindowState();
     }
 
@@ -145,5 +165,68 @@ public class SimulatorRenderer extends RenderWindow {
             return v.getBackCollision();
         }
         return null;
+    }
+
+    private void getKeyActions() {
+        float friction = 0.9f;
+
+        if (isKeyPressed['W']) {
+            camMovXSpeed += camAcc * sin(camRot);
+            camMovYSpeed += camAcc * cos(camRot);
+        }
+        if (isKeyPressed['S']) {
+            camMovXSpeed -= camAcc * sin(camRot);
+            camMovYSpeed -= camAcc * cos(camRot);
+        }
+        if (isKeyPressed['A']) {
+            camMovXSpeed += camAcc * cos(camRot);
+            camMovYSpeed -= camAcc * sin(camRot);
+        }
+        if (isKeyPressed['D']) {
+            camMovXSpeed -= camAcc * cos(camRot);
+            camMovYSpeed += camAcc * sin(camRot);
+        }
+        if (isKeyPressed['Q']) {
+            camRotSpeed += 0.01;
+        }
+        if (isKeyPressed['E']) {
+            camRotSpeed -= 0.01;
+        }
+        if (isKeyPressed['=']) {
+            camScale *= 1.01f;
+        }
+        if (isKeyPressed['-']) {
+            camScale /= 1.01f;
+        }
+
+        camMovXSpeed = constrain(camMovXSpeed, -maxMovSpeed, maxMovSpeed);
+        camMovYSpeed = constrain(camMovYSpeed, -maxMovSpeed, maxMovSpeed);
+        camRotSpeed = constrain(camRotSpeed, -maxRotSpeed, maxRotSpeed);
+
+        camLoc.x += camMovXSpeed;
+        camLoc.y += camMovYSpeed;
+        camRot += camRotSpeed;
+
+        camMovXSpeed *= friction;
+        camMovYSpeed *= friction;
+        camRotSpeed *= friction;
+    }
+
+    @Override
+    public void keyPressed(KeyEvent event) {
+        super.keyPressed(event);
+        isKeyPressed[event.getKeyCode()] = true;
+    }
+
+    @Override
+    public void keyReleased(KeyEvent event) {
+        super.keyReleased(event);
+        isKeyPressed[event.getKeyCode()] = false;
+    }
+
+    @Override
+    public void mouseWheel(MouseEvent event) {
+        super.mouseWheel(event);
+        System.out.println(event.getCount());
     }
 }

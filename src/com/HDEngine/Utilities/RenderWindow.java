@@ -1,11 +1,7 @@
 package com.HDEngine.Utilities;
 
-import com.HDEngine.Simulator.Info;
-import com.HDEngine.Simulator.Objects.Dynamic.Vehicle;
 import com.HDEngine.Simulator.Objects.HDObject;
-import com.HDEngine.Simulator.Objects.Static.CollisionArea;
-import com.HDEngine.Simulator.Objects.Static.RoadChunk;
-import com.HDEngine.Simulator.Settings;
+import com.HDEngine.Simulator.Settings.Settings;
 import processing.core.PApplet;
 import processing.core.PImage;
 
@@ -19,6 +15,7 @@ public class RenderWindow extends PApplet {
     protected float camRot;
     protected float camScale;
     protected int windowWidth, windowHeight;
+    protected boolean isSet;
 
     public RenderWindow(ArrayList<HDObject> renderListRef) {
         super();
@@ -26,8 +23,7 @@ public class RenderWindow extends PApplet {
         camLoc = new Vector2D();
         camRot = 0.0f;
         camScale = 1.0f;
-        windowWidth = Settings.windowWidth;
-        windowHeight = Settings.windowHeight;
+        isSet = false;
     }
 
     @Override
@@ -40,11 +36,11 @@ public class RenderWindow extends PApplet {
     @Override
     public void setup() {
         System.out.println("Renderer thread: Setting everything up...");
-        frameRate(Settings.fps);
         background(200);
         translate(0, 0);
         surface.setVisible(false);
         System.out.println("Renderer thread: All stuff has been set up, it's time for rendering something :D");
+        isSet = true;
     }
     @Override
     public void draw() {
@@ -88,39 +84,39 @@ public class RenderWindow extends PApplet {
         scale((float) scale);
     }
 
-    @Override
-    public void keyPressed() {
-        float moveSpeed = 10;
-
-        if (key == 'w') {
-            camLoc.x += moveSpeed * sin(camRot);
-            camLoc.y += moveSpeed * cos(camRot);
-        }
-        if (key == 's') {
-            camLoc.x -= moveSpeed * sin(camRot);
-            camLoc.y -= moveSpeed * cos(camRot);
-        }
-        if (key == 'a') {
-            camLoc.x += moveSpeed * cos(camRot);
-            camLoc.y -= moveSpeed * sin(camRot);
-        }
-        if (key == 'd') {
-            camLoc.x -= moveSpeed * cos(camRot);
-            camLoc.y += moveSpeed * sin(camRot);
-        }
-        if (key == '-') {
-            camScale *= 1.1f;
-        }
-        if (key == '=') {
-            camScale /= 1.1f;
-        }
-        if (key == 'e') {
-            camRot += (float) toRadians(10);
-        }
-        if (key == 'q') {
-            camRot -= (float) toRadians(10);
-        }
-    }
+//    @Override
+//    public void keyPressed() {
+//        float moveSpeed = 10;
+//
+//        if (key == 'w') {
+//            camLoc.x += moveSpeed * sin(camRot);
+//            camLoc.y += moveSpeed * cos(camRot);
+//        }
+//        if (key == 's') {
+//            camLoc.x -= moveSpeed * sin(camRot);
+//            camLoc.y -= moveSpeed * cos(camRot);
+//        }
+//        if (key == 'a') {
+//            camLoc.x += moveSpeed * cos(camRot);
+//            camLoc.y -= moveSpeed * sin(camRot);
+//        }
+//        if (key == 'd') {
+//            camLoc.x -= moveSpeed * cos(camRot);
+//            camLoc.y += moveSpeed * sin(camRot);
+//        }
+//        if (key == '-') {
+//            camScale *= 1.1f;
+//        }
+//        if (key == '=') {
+//            camScale /= 1.1f;
+//        }
+//        if (key == 'e') {
+//            camRot += (float) toRadians(10);
+//        }
+//        if (key == 'q') {
+//            camRot -= (float) toRadians(10);
+//        }
+//    }
 
     public Vector2D getCamLoc() {
         return camLoc;
@@ -150,4 +146,7 @@ public class RenderWindow extends PApplet {
         this.windowHeight = windowHeight;
     }
 
+    public boolean isSet() {
+        return isSet;
+    }
 }

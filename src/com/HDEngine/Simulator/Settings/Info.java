@@ -1,4 +1,4 @@
-package com.HDEngine.Simulator;
+package com.HDEngine.Simulator.Settings;
 
 public class Info {
     public static int tps;

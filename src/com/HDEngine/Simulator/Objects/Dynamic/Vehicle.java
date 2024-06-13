@@ -5,7 +5,7 @@ import com.HDEngine.Simulator.Objects.HDObject;
 import static java.lang.Math.*;
 
 import com.HDEngine.Simulator.Objects.Static.RoadChunk;
-import com.HDEngine.Simulator.Settings;
+import com.HDEngine.Simulator.Settings.Settings;
 import com.HDEngine.Utilities.Vector2D;
 
 public class Vehicle extends HDObject {
@@ -15,7 +15,7 @@ public class Vehicle extends HDObject {
     protected double accelerationRate;
     protected double decelerationRate;
     protected double stopTime;
-    protected final int timeout;
+    protected int timeout;
     protected MovingState movingState;
     protected RoadChunk targetRoadChunk;
     protected CollisionArea backCollision;
@@ -38,7 +38,7 @@ public class Vehicle extends HDObject {
         movingState = MovingState.IDLE;
         bcWidth = 8;
         bcHeight = 30;
-        backCollision = new CollisionArea(new Vector2D(-5, 0), 0.0f, new Vector2D(bcHeight, bcWidth));
+        backCollision = new CollisionArea(new Vector2D(-8, 0), 0.0f, new Vector2D(bcHeight, bcWidth));
         backCollision.setParent(this);
         fcWidth = 15;
         fcHeight = 15;
@@ -58,7 +58,7 @@ public class Vehicle extends HDObject {
     @Override
     public void tick(double deltaTime) {
         super.tick(deltaTime);
-
+        timeout = Settings.congestionTimeout;
         nextState();
         setNextSpeed(deltaTime);
         if (speed < 1e-2) {
