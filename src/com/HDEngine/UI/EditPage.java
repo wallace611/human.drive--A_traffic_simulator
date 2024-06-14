@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Arrays;
 import javax.swing.border.*;
 
 import com.HDEngine.Editor.Editor;
@@ -101,10 +102,10 @@ public class EditPage extends JFrame implements ActionListener {
 
         // Add "Add" button at the top left
         JButton addButton = new JButton("Add");
-        addButton.setPreferredSize(new Dimension(50, 30));
         addButton.setActionCommand("addTrafficLightButton");
         addButton.addActionListener(this);
         JPanel addPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        addButton.setPreferredSize(new Dimension(50, 30));
         addButton.setFont(new Font("Arial", Font.BOLD, 14));
         addButton.setBackground(Color.LIGHT_GRAY);
         addButton.setForeground(Color.BLACK);
@@ -212,26 +213,34 @@ public class EditPage extends JFrame implements ActionListener {
     private void updateAttributePanel(String type, String buttonId) {
         attributePanel.removeAll(); // Clear existing components
 
-        JPanel linePanel1 = createRightAlignedPanel(new JLabel("Set your Traffic Light Flag:"), createCheckBoxPanel(buttonId, 1));
-        attributePanel.add(linePanel1);
+        if (type.equals("t")) {
+            JPanel linePanel1 = createRightAlignedPanel(new JLabel("Traffic Light Group:"), createTextField(buttonId, 3));
+            attributePanel.add(linePanel1);
 
-        JPanel linePanel2 = createRightAlignedPanel(new JLabel("Set your Traffic Light Timer:"), createTextField(buttonId, 2));
-        attributePanel.add(linePanel2);
+            JPanel linePanel2 = createRightAlignedPanel(new JLabel("Traffic Light Team:"), createTextField(buttonId, 4));
+            attributePanel.add(linePanel2);
 
-        JPanel linePanel3 = createRightAlignedPanel(new JLabel("Set your Traffic Light Group:"), createTextField(buttonId, 3));
-        attributePanel.add(linePanel3);
+            JPanel linePanel3 = createRightAlignedPanel(new JLabel("Traffic Light Timer:"), createTextField(buttonId, 2));
+            attributePanel.add(linePanel3);
+        } else {
+            JPanel linePanel1 = createRightAlignedPanel(new JLabel("Traffic Light Flag:"), createCheckBoxPanel(buttonId, 1));
+            attributePanel.add(linePanel1);
 
-        JPanel linePanel4 = createRightAlignedPanel(new JLabel("Set your Speed Limit:"), createTextField(buttonId, 4));
-        attributePanel.add(linePanel4);
+            JPanel linePanel2 = createRightAlignedPanel(new JLabel("Traffic Light Group:"), createTextField(buttonId, 3));
+            attributePanel.add(linePanel2);
 
-        JPanel linePanel5 = createRightAlignedPanel(new JLabel("Set your Start Flag:"), createCheckBoxPanel(buttonId, 5));
-        attributePanel.add(linePanel5);
+            JPanel linePanel3 = createRightAlignedPanel(new JLabel("Speed Limit:"), createTextField(buttonId, 5));
+            attributePanel.add(linePanel3);
 
-        JPanel linePanel6 = createRightAlignedPanel(new JLabel("Set your Intersection:"), createButton("Set", e -> showIntersectionPanel(buttonId)));
-        attributePanel.add(linePanel6);
+            JPanel linePanel4 = createRightAlignedPanel(new JLabel("Start Flag:"), createCheckBoxPanel(buttonId, 8));
+            attributePanel.add(linePanel4);
 
-        JPanel linePanel7 = createRightAlignedPanel(new JLabel("Set your Weights:"), createButton("Set", e -> showWeightsPanel(buttonId)));
-        attributePanel.add(linePanel7);
+            JPanel linePanel5 = createRightAlignedPanel(new JLabel("INTERSECTION:"), createButton("Set", e -> showIntersectionPanel(buttonId)));
+            attributePanel.add(linePanel5);
+
+            JPanel linePanel6 = createRightAlignedPanel(new JLabel("Weights:"), createButton("Set", e -> showWeightsPanel(buttonId)));
+            attributePanel.add(linePanel6);
+        }
 
         // Refresh the panel
         attributePanel.revalidate();
@@ -241,13 +250,9 @@ public class EditPage extends JFrame implements ActionListener {
     }
 
     private JPanel createRightAlignedPanel(JLabel label, JComponent component) {
-        JPanel panel = new JPanel(new BorderLayout());
-        JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JPanel componentPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        labelPanel.add(label);
-        componentPanel.add(component);
-        panel.add(labelPanel, BorderLayout.WEST);
-        panel.add(componentPanel, BorderLayout.CENTER);
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        panel.add(label);
+        panel.add(component);
         return panel;
     }
 
@@ -280,8 +285,9 @@ public class EditPage extends JFrame implements ActionListener {
         textField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
+                System.out.println("focusLost");
                 String newValue = textField.getText();
-                editor.updateTrafficLightParameter(buttonId, parameterIndex, newValue);
+                updateEditorParameter(buttonId, parameterIndex, newValue);
             }
         });
         return textField;
@@ -289,8 +295,8 @@ public class EditPage extends JFrame implements ActionListener {
 
     private JButton createButton(String text, ActionListener actionListener) {
         JButton button = new JButton(text);
-        button.addActionListener(actionListener);
         button.setFocusPainted(false);
+        button.addActionListener(actionListener);
         return button;
     }
 
@@ -363,6 +369,14 @@ public class EditPage extends JFrame implements ActionListener {
                 JLabel directionLabel = new JLabel(directions[i < 4 ? i : i - 1]);
                 directionLabel.setHorizontalAlignment(SwingConstants.CENTER);
                 textFields[i < 4 ? i : i - 1] = new JTextField(5);
+                textFields[i < 4 ? i : i - 1].addFocusListener(new FocusAdapter() {
+                    @Override
+                    public void focusLost(FocusEvent e) {
+                        System.out.println("focusLost");
+                        String newValue = ((JTextField)e.getSource()).getText();
+                        updateEditorParameter(buttonId, Arrays.asList(directions).indexOf(directionLabel.getText()) + 1, newValue);
+                    }
+                });
                 innerPanel.setLayout(new BoxLayout(innerPanel, BoxLayout.Y_AXIS));
                 innerPanel.add(directionLabel);
                 innerPanel.add(textFields[i < 4 ? i : i - 1]);
@@ -373,7 +387,6 @@ public class EditPage extends JFrame implements ActionListener {
 
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton backButton = new JButton("Back");
-        backButton.setFocusPainted(false);
         backButton.addActionListener(e -> {
             saveWeightStates(buttonId, textFields);
             restorePreviousAttributePanelState(buttonId);
@@ -394,7 +407,6 @@ public class EditPage extends JFrame implements ActionListener {
     }
 
     private void saveCurrentAttributePanelState(String buttonId) {
-        
         savedAttributePanelComponents.put(buttonId, attributePanel.getComponents());
         for (Component component : attributePanel.getComponents()) {
             if (component instanceof JPanel) {
@@ -410,7 +422,6 @@ public class EditPage extends JFrame implements ActionListener {
     }
 
     private void restorePreviousAttributePanelState(String buttonId) {
-        
         attributePanel.removeAll();
 
         Component[] components = savedAttributePanelComponents.get(buttonId);
@@ -429,6 +440,7 @@ public class EditPage extends JFrame implements ActionListener {
             }
         }
 
+        // 刷新面板
         attributePanel.revalidate();
         attributeScrollPane.setViewportView(attributePanel);
         attributeScrollPane.revalidate();
@@ -441,6 +453,7 @@ public class EditPage extends JFrame implements ActionListener {
             states[i] = checkboxes[i].isSelected() ? "1" : "0";
         }
         savedIntersectionStates.put(buttonId, states);
+        updateEditorParameter(buttonId, Arrays.asList(states).indexOf(states) + 1, Arrays.toString(states)); // Use the saved array
     }
 
     private void restoreIntersectionStates(String buttonId, JCheckBox[] checkboxes) {
@@ -458,13 +471,14 @@ public class EditPage extends JFrame implements ActionListener {
             states[i] = textFields[i].getText();
         }
         savedWeightStates.put(buttonId, states);
+        updateEditorParameter(buttonId, Arrays.asList(states).indexOf(states) + 1, Arrays.toString(states)); // Use the saved array
     }
 
     private void restoreWeightStates(String buttonId, JTextField[] textFields) {
         String[] states = savedWeightStates.get(buttonId);
         if (states != null) {
             for (int i = 0; i < states.length; i++) {
-                textFields[i].setText(states[i]);
+                textFields[i].setText(states[i]));
             }
         }
     }
@@ -549,28 +563,25 @@ public class EditPage extends JFrame implements ActionListener {
         @Override
         public void mouseReleased(MouseEvent e) {
             Point releasePoint = e.getLocationOnScreen();
-            SwingUtilities.convertPointFromScreen(releasePoint, dragPanel);
+            SwingUtilities.convertPointFromScreen(releasePoint, screenScrollPane.getViewport());
 
-            if (dragPanel.contains(releasePoint)) {
-                // Find the corresponding panel
-                int cellWidth = screenPanel.getWidth() / 20;
-                int cellHeight = screenPanel.getHeight() / 20;
-                int col = releasePoint.x / cellWidth;
-                int row = releasePoint.y / cellHeight;
+            int cellWidth = screenPanel.getWidth() / 20;
+            int cellHeight = screenPanel.getHeight() / 20;
+            Point viewPosition = screenScrollPane.getViewport().getViewPosition();
 
-                int index = row * 20 + col;
-                if (index >= 0 && index < screenPanel.getComponentCount()) {
-                    JPanel cell = (JPanel) screenPanel.getComponent(index);
-                    cell.removeAll();
-                    cell.add(component);
-                    cell.revalidate();
-                    cell.repaint();
-                }
+            int col = (releasePoint.x + viewPosition.x) / cellWidth;
+            int row = (releasePoint.y + viewPosition.y) / cellHeight;
 
-                System.out.println("Dropped at cell: [" + row + "," + col + "]");
-            } else {
-                System.out.println("Dropped outside screenPanel");
+            int index = row * 20 + col;
+            if (index >= 0 && index < screenPanel.getComponentCount()) {
+                JPanel cell = (JPanel) screenPanel.getComponent(index);
+                cell.removeAll();
+                cell.add(component);
+                cell.revalidate();
+                cell.repaint();
             }
+
+            System.out.println("Dropped at cell: [" + row + "," + col + "]");
 
             ghostWindow.dispose(); // Dispose the drag image window
             stopScrollTimer();
@@ -622,3 +633,4 @@ public class EditPage extends JFrame implements ActionListener {
         }
     }
 }
+

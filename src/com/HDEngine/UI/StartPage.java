@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 public class StartPage extends JFrame implements ActionListener{
 
@@ -13,7 +14,6 @@ public class StartPage extends JFrame implements ActionListener{
     JButton archivebtn = new JButton("先前存檔");
     JButton instructionbtn = new JButton("使用說明");
     JButton quitbtn = new JButton("離開");
-    EditPage NEditPage;
     InstructionPage NInstructionPage;
     ProgressPage NProgressPage;
 
@@ -27,7 +27,7 @@ public class StartPage extends JFrame implements ActionListener{
         ImageIcon logo = new ImageIcon("src/photo/human.drive-logo.png");
         setIconImage(logo.getImage());
 
-        // setting window zise
+        // setting window size
         ImageIcon backgroundImageIcon = new ImageIcon("src/photo/startpage.png");
         setSize(backgroundImageIcon.getIconWidth(), backgroundImageIcon.getIconHeight());
 
@@ -46,7 +46,6 @@ public class StartPage extends JFrame implements ActionListener{
         JPanel backgroundPanel = new JPanel();
         backgroundPanel.setPreferredSize(new Dimension(getWidth(), getHeight()));
         backgroundPanel.setOpaque(false);
-        //backgroundPanel.setBackground(Color.PINK);
         add(backgroundPanel);
         
         backgroundPanel.setLayout(new BorderLayout());
@@ -141,16 +140,15 @@ public class StartPage extends JFrame implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == startbtn) {
-            dispose();
-            NEditPage = new EditPage();
-        }
-        else if(e.getSource() == instructionbtn){
-            
+            try {
+                String command = "cmd.exe /c start cmd.exe /k \"cd src && java com.HDEngine.Editor.Editor\"";
+                Runtime.getRuntime().exec(command);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        } else if (e.getSource() == instructionbtn) {
             NInstructionPage = new InstructionPage();
-
-        }
-        else if(e.getSource() == quitbtn){
-            
+        } else if (e.getSource() == quitbtn) {
             System.exit(0);
         }
     }
