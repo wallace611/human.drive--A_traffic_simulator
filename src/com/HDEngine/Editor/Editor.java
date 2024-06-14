@@ -4,9 +4,18 @@ import com.HDEngine.Editor.Object.Road.EditorRoadChunk;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+
+import javax.swing.SwingUtilities;
+
 import java.util.Map;
+import java.awt.FileDialog;
 import java.io.*;
 import com.HDEngine.Utilities.FileManageTools.FileManager;
+import java.awt.*;
+import java.awt.Frame;
+import com.HDEngine.Simulator.*;
+import com.HDEngine.Simulator.Objects.*;
+
 
 public class Editor implements Serializable
 {
@@ -66,7 +75,7 @@ public class Editor implements Serializable
                     case "delete chunk": deleteChunk();break;
                     case "add traffic light group", "add trafficlight group": newTrafficLightGroup();break;
                     case "edit traffic light group","edit trafficlight group": editTrafficLightTeamTimer();break;
-                    case "save": exportData();break;
+                    case "save": savedFile(); ;break;
                     case "load": importData(); break;
                     case "quit","leave": 
                         exportData();
@@ -75,6 +84,7 @@ public class Editor implements Serializable
                     break;
                     case "how" , "help":showHow();break;
                     case "chunk info","chunkinfo": chunkInfo();break;
+                    case "sim","simulate","simulation":exportData();
                 }
             }
             catch (IllegalArgumentException e) 
@@ -741,4 +751,60 @@ public class Editor implements Serializable
         System.out.println("Timer updated");
     }
 
+    public void runSim(){
+        System.out.println("start simulation");
+        try{
+        Simulator.main(new String[]{loadFile()});
+        }
+        catch(Exception e)
+        {
+            System.out.println("fail");
+        }
+    }
+
+
+    private String loadFile() throws Exception 
+    {
+        FileDialog dialog = new FileDialog((Frame) null, "Select an obj file");
+        dialog.setMode(FileDialog.LOAD);
+        dialog.setVisible(true);
+        String file = dialog.getDirectory() + dialog.getFile();
+        dialog.dispose();
+        return file;
+    }
+
+    protected void savedFile() {
+    // 創建一個無參數的 Frame 對象
+    Frame frame = new Frame();
+
+    // 使用 SwingUtilities.invokeLater 確保 FileDialog 在事件調度線程上運行
+    SwingUtilities.invokeLater(() -> {
+        // 創建一個 FileDialog 對象，用於保存文件
+        FileDialog dialog = new FileDialog(frame, "Save File", FileDialog.SAVE);
+        dialog.setVisible(true);
+
+        // 獲取選擇的文件名和路徑
+        String directory = dialog.getDirectory();
+        String fileName = dialog.getFile();
+
+        // 如果用戶選擇了文件
+        if (directory != null && fileName != null) {
+            // 創建文件對象
+            File file = new File(directory, fileName);
+
+            // 假設我們寫入一些測試內容到文件
+            try (FileWriter writer = new FileWriter(file)) {
+                writer.write("This is a test content.");
+                System.out.println("File saved: " + file.getAbsolutePath());
+            } catch (IOException e) {
+                System.err.println("Error saving file: " + e.getMessage());
+            }
+        } else {
+            System.out.println("File save operation was cancelled.");
+        }
+
+        // 關閉 Frame
+        frame.dispose();
+    });
+}
 }
