@@ -41,6 +41,7 @@ public class Simulator {
                     }
                     roadDir >>= 1;
                     RoadChunk rc = new RoadChunk((byte) roadDir);
+                    rc.setIntersection(erc.getIntersection());
                     rc.setImagePath(rcImagePath);
                     world.addRoadChunk(i, j, rc);
                     roadChunks[i][j] = rc;
@@ -161,8 +162,18 @@ public class Simulator {
     public static void main(String[] args) throws InterruptedException, URISyntaxException {
         setupImagePath();
 
+        world = Settings.getDemoWorld1();
+        Info.world = world;
+
         ui = constructSimulatePage();
         Info.uiPage = ui;
+
+        while (Info.uiPage == null) {
+            Thread.sleep(10);
+        }
+        setupImage(world, Info.uiPage.getWindow());
+        PImage img = ui.getWindow().loadImage(vehicleImagePath);
+        world.setCarImage(img);
 
         // wait for render window setting up
         while (!ui.getWindow().isSet()) {

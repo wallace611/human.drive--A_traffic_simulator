@@ -75,7 +75,7 @@ public class Editor implements Serializable
                     case "delete chunk": deleteChunk();break;
                     case "add traffic light group", "add trafficlight group": newTrafficLightGroup();break;
                     case "edit traffic light group","edit trafficlight group": editTrafficLightTeamTimer();break;
-                    case "save": savedFile(); ;break;
+                    case "save": exportData(); ;break;
                     case "load": importData(); break;
                     case "quit","leave": 
                         exportData();
@@ -91,6 +91,8 @@ public class Editor implements Serializable
             {
                 System.out.println("we dont have this attribute");
                 input.nextLine();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         }
     }
@@ -558,13 +560,15 @@ public class Editor implements Serializable
 
     public void exportData() 
     {
+        String path = saveFile();
         fileManager.setData(map,trafficLight);
-        fileManager.saveToFile("src/SavedFile/editor_map.obj");
+        fileManager.saveToFile(path);
     }
 
     // read file from FileManager
-    public void importData() {
-        FileManager fileManager = FileManager.loadFromFile("src/SavedFile/editor_map.obj");
+    public void importData() throws Exception {
+        String filePath = loadFile();
+        FileManager fileManager = FileManager.loadFromFile(filePath);
         if (fileManager != null) {
             this.map = fileManager.getMap();
             this.trafficLight = fileManager.getTrafficLight();
@@ -594,14 +598,14 @@ public class Editor implements Serializable
                 } else if (!map[i][j].getIntersection()) {
                     System.out.print("|U|");
                 } else {
-                    System.out.print("|T|");
+                    System.out.print("|V|");
                 }
             }
             System.out.println();
         }
-        System.out.println("V = this chunk dont have traffic light, " +
+        System.out.println("U = this chunk dont have traffic light, " +
         "T = this chunk have traffic light, "+
-        "U = this chunk dont get effected by traffic light"
+        "V = this chunk dont get effected by traffic light"
         );
     }
 
@@ -763,8 +767,7 @@ public class Editor implements Serializable
     }
 
 
-    private String loadFile() throws Exception 
-    {
+    private String loadFile() throws Exception {
         FileDialog dialog = new FileDialog((Frame) null, "Select an obj file");
         dialog.setMode(FileDialog.LOAD);
         dialog.setVisible(true);
@@ -773,38 +776,12 @@ public class Editor implements Serializable
         return file;
     }
 
-    protected void savedFile() {
-    // 創建一個無參數的 Frame 對象
-    Frame frame = new Frame();
-
-    // 使用 SwingUtilities.invokeLater 確保 FileDialog 在事件調度線程上運行
-    SwingUtilities.invokeLater(() -> {
-        // 創建一個 FileDialog 對象，用於保存文件
-        FileDialog dialog = new FileDialog(frame, "Save File", FileDialog.SAVE);
+    private String saveFile() {
+        FileDialog dialog = new FileDialog((Frame) null, "Select an obj file");
+        dialog.setMode(FileDialog.SAVE);
         dialog.setVisible(true);
-
-        // 獲取選擇的文件名和路徑
-        String directory = dialog.getDirectory();
-        String fileName = dialog.getFile();
-
-        // 如果用戶選擇了文件
-        if (directory != null && fileName != null) {
-            // 創建文件對象
-            File file = new File(directory, fileName);
-
-            // 假設我們寫入一些測試內容到文件
-            try (FileWriter writer = new FileWriter(file)) {
-                writer.write("This is a test content.");
-                System.out.println("File saved: " + file.getAbsolutePath());
-            } catch (IOException e) {
-                System.err.println("Error saving file: " + e.getMessage());
-            }
-        } else {
-            System.out.println("File save operation was cancelled.");
-        }
-
-        // 關閉 Frame
-        frame.dispose();
-    });
-}
+        String file = dialog.getDirectory() + dialog.getFile();
+        dialog.dispose();
+        return file;
+    }
 }

@@ -7,20 +7,20 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 public class StartPage extends JFrame implements ActionListener{
 
     Image backgroundimg;
     JPanel imagePanel = null;
-    JButton startbtn = new JButton("開始編輯");
-    JButton archivebtn = new JButton("先前存檔");
+    JButton startbtn = new JButton("開始模擬");
+    JButton archivebtn = new JButton("載入存檔");
     JButton instructionbtn = new JButton("使用說明");
     JButton quitbtn = new JButton("離開");
     InstructionPage NInstructionPage;
     ProgressPage NProgressPage;
 
     StartPage() {
-        NProgressPage = new ProgressPage();
         setTitle("Human.Drive");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
@@ -143,10 +143,10 @@ public class StartPage extends JFrame implements ActionListener{
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == startbtn) {
             try {
-                String command = "cmd.exe /c start cmd.exe /k \"cd src && java com.HDEngine.Editor.Editor\"";
-                Runtime.getRuntime().exec(command);
-            } catch (IOException ex) {
-                ex.printStackTrace();
+                dispose();
+                Simulator.main(null);
+            } catch (URISyntaxException | InterruptedException ex) {
+                throw new RuntimeException(ex);
             }
         } else if (e.getSource() == instructionbtn) {
             NInstructionPage = new InstructionPage();

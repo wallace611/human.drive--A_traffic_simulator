@@ -311,9 +311,6 @@ public class RenderWindow extends PApplet {
         float worldX = screenX;
         float worldY = screenY;
 
-        worldX /= camScale;
-        worldY /= camScale;
-
         float cosTheta = cos(-camRot);
         float sinTheta = sin(-camRot);
         float tmpX = worldX * cosTheta - worldY * sinTheta;
