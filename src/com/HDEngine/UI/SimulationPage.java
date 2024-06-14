@@ -27,6 +27,9 @@ public class SimulationPage extends JFrame {
 
     private JButton startButton;
     private JButton pauseButton;
+    private JButton speedUpButton;
+    private JButton slowDownButton;
+    private JButton resetSpeedButton;
 
     private ActionListener buttonHandler;
 
@@ -89,8 +92,14 @@ public class SimulationPage extends JFrame {
         pauseButton = createTextButton("  ⏸️");
         pauseButton.setActionCommand("pause");
 
-        startButton.addActionListener(e -> swapButton(buttonPanel, startButton, pauseButton));
-        pauseButton.addActionListener(e -> swapButton(buttonPanel, pauseButton, startButton));
+        //在這邊改actionPerformed by.ㄐㄐ
+        startButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("start");
+                swapButton(buttonPanel, startButton, pauseButton);
+            }
+        });
 
         JButton speedUpButton = createTextButton("  ⏩️");
         speedUpButton.setActionCommand("speedUp");
