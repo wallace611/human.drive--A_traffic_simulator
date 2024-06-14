@@ -713,6 +713,7 @@ public class Editor implements Serializable
 
     public void mapToMap(int oldIDX,int oldIDY, int newIDX, int newIDY){
         map[newIDX][newIDY] = map[oldIDX][oldIDY];
+        map[newIDX][newIDY].setID(newIDX,newIDY);
         map[oldIDX][oldIDY] = null;
     }
 
