@@ -14,6 +14,7 @@ import processing.core.PImage;
 
 import javax.swing.*;
 import java.awt.*;
+import java.net.URISyntaxException;
 
 public class Simulator {
     public static World world;
@@ -40,7 +41,7 @@ public class Simulator {
                     }
                     roadDir >>= 1;
                     RoadChunk rc = new RoadChunk((byte) roadDir);
-                    rc.setImagePath("src\\com\\HDEngine\\Simulator\\image\\testimg.png");
+                    rc.setImagePath(rcImagePath);
                     world.addRoadChunk(i, j, rc);
                     roadChunks[i][j] = rc;
 
@@ -83,9 +84,7 @@ public class Simulator {
         for (HDObject object : world.getChildren()) {
             try {
                 object.setSprite(renderer.loadImage(object.getImagePath()));
-            } catch (Exception e) {
-                System.out.println("shit");
-            }
+            } catch (Exception ignore) {}
         }
         System.out.println("Simulator Main Thread: Done!");
     }
@@ -112,22 +111,25 @@ public class Simulator {
         return uiContainer[0];
     }
 
+    public static String getFilePath(String title) {
+        FileDialog dialog = new FileDialog((Frame) null, title);
+        dialog.setMode(FileDialog.LOAD);
+        dialog.setVisible(true);
+        String file = dialog.getDirectory() + dialog.getFile();
+        dialog.dispose();
+        System.out.println(file);
+        return file;
+    }
+
     public static void loadFileInBackground() {
         SwingWorker<String, Void> fileLoader = new SwingWorker<String, Void>() {
             @Override
             protected String doInBackground() throws Exception {
-                FileDialog dialog = new FileDialog((Frame) null, "Select an obj file");
-                dialog.setMode(FileDialog.LOAD);
-                dialog.setVisible(true);
-                String file = dialog.getDirectory() + dialog.getFile();
-                dialog.dispose();
-                System.out.println(file);
-                return file;
+                return getFilePath("Select an obj");
             }
 
             @Override
             protected void done() {
-                System.out.println("sdf");
                 try {
                     String path = get();
                     try {
@@ -140,7 +142,7 @@ public class Simulator {
                         Thread.sleep(10);
                     }
                     setupImage(world, Info.uiPage.getWindow());
-                    PImage img = ui.getWindow().loadImage("src/com/HDEngine/Simulator/image/car.png");
+                    PImage img = ui.getWindow().loadImage(vehicleImagePath);
                     world.setCarImage(img);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -150,12 +152,13 @@ public class Simulator {
         fileLoader.execute();
     }
 
-    public static void setupImagePath() {
-        String classpath = System.getProperty("java.class.path");
-        System.out.println(classpath);
+    public static void setupImagePath() throws URISyntaxException {
+        String classpath = String.valueOf(Simulator.class.getProtectionDomain().getCodeSource().getLocation());
+        rcImagePath = getFilePath("Select road image");
+        vehicleImagePath = getFilePath("Select vehicle image");
     }
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, URISyntaxException {
         setupImagePath();
 
         ui = constructSimulatePage();

@@ -1,9 +1,12 @@
 package com.HDEngine.UI;
 
+import com.HDEngine.Simulator.Simulator;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URISyntaxException;
 
 public class StartPage extends JFrame implements ActionListener{
 
@@ -142,7 +145,13 @@ public class StartPage extends JFrame implements ActionListener{
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == startbtn) {
             dispose();
-            NEditPage = new EditPage();
+            try {
+                Simulator.main(null);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            } catch (URISyntaxException ex) {
+                throw new RuntimeException(ex);
+            }
         }
         else if(e.getSource() == instructionbtn){
             
