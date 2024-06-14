@@ -3,6 +3,8 @@ package com.HDEngine.Simulator.Objects.Static;
 import com.HDEngine.Simulator.Components.Traffic.TrafficLightManager;
 import com.HDEngine.Simulator.Objects.Dynamic.Vehicle;
 import com.HDEngine.Simulator.Objects.HDObject;
+import com.HDEngine.Simulator.Settings.Info;
+import com.HDEngine.Simulator.Settings.Settings;
 import com.HDEngine.Utilities.Vector2D;
 import processing.core.PImage;
 
@@ -10,6 +12,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
 public class
 World extends HDObject {
@@ -18,6 +21,11 @@ World extends HDObject {
     private int roadCount;
     private float count = 0;
     private PImage carImage;
+    Vehicle tmpVehicle;
+    private double timer;
+    private int spawnCount;
+    private int arriveCount;
+
 
     // private ArrayList<HDObject> children; from HDObject class, containing the RoadChunk and Vehicle which need to be rendered
 
@@ -25,7 +33,9 @@ World extends HDObject {
         chunks = new RoadChunk[x][y];
         summonChunk = new ArrayList<>();
         roadCount = 0;
-
+        timer = 0.0;
+        spawnCount = 0;
+        arriveCount = 0;
     }
 
     @Override
@@ -50,13 +60,14 @@ World extends HDObject {
     @Override
     public void tick(double deltaTime) {
         super.tick(deltaTime);
+        timer += deltaTime;
         collisionDetection();
 
         if (count >= 1.0f) {
             count = 0;
             spawnVehicleThroughArr();
         }
-        count += deltaTime;
+        count += (float) deltaTime;
         TrafficLightManager.nextTime(deltaTime);
 
         for (RoadChunk[] rcArr : chunks) {
@@ -67,6 +78,34 @@ World extends HDObject {
                 }
             }
         }
+        if (timer > 1.0) {
+            calculateValues();
+            timer = 0.0;
+        }
+    }
+
+    private void calculateValues() {
+        // average speed
+        double sumSpd = 0.0f;
+        int carCount = 0;
+        for (int i = roadCount; i < children.size(); i++) {
+            if (children.get(i) == tmpVehicle) {
+                continue;
+            }
+            if (children.get(i) instanceof Vehicle v) {
+                carCount += 1;
+                sumSpd += v.getSpeed();
+            }
+        }
+        Info.averageSpeed = (float) sumSpd / carCount;
+
+        // spawn rate
+        Info.spawnPerSecond = spawnCount;
+        spawnCount = 0;
+
+        // arrival rate
+        Info.arrivePerSecond = arriveCount;
+        arriveCount = 0;
     }
 
     private void collisionDetection() {
@@ -132,9 +171,23 @@ World extends HDObject {
                     v.setSprite(carImage);
                     rc.spawnVehicle(v);
                     children.add(v);
+                    spawnCount += 1;
                 }
             }
         }
+    }
+
+    public void spawnTmpVehicle(Vector2D loc) {
+        if (tmpVehicle == null) {
+            tmpVehicle = new Vehicle(0);
+            tmpVehicle.setGlobalLocation(loc);
+            children.add(tmpVehicle);
+        }
+    }
+
+    public void removeTmpVehicle() {
+        children.remove(tmpVehicle);
+        tmpVehicle = null;
     }
 
     public void spawnVehicle(int x, int y, Vehicle car) {
@@ -150,6 +203,12 @@ World extends HDObject {
     @Override
     public void removeChild(HDObject child) {
         super.removeChild(child);
+    }
+
+    @Override
+    public void removeChildRecursively(HDObject child) {
+        super.removeChildRecursively(child);
+        arriveCount += 1;
     }
 
     public void addRoadChunk(int x, int y, RoadChunk rc) {

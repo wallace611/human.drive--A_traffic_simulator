@@ -4,8 +4,12 @@ import com.HDEngine.Simulator.Components.Traffic.TLGroup;
 import com.HDEngine.Simulator.Components.Traffic.TrafficLightManager;
 import com.HDEngine.Simulator.Objects.Static.RoadChunk;
 import com.HDEngine.Simulator.Objects.Static.World;
+import processing.core.PImage;
 
+import javax.swing.*;
 import java.io.*;
+
+import static com.HDEngine.Simulator.Simulator.*;
 
 public class Settings {
     public static int fps = 100;
@@ -19,10 +23,12 @@ public class Settings {
     public static boolean killCongestedVehicle = true;
     public static int congestionTimeout = 8;
     public static boolean speedUpAtIntersection = true;
+    public static float reactionTime = 0.5f;
     public static boolean debugMode = false;
     public static int[] movingKey = new int[]{87, 65, 83, 68};
     public static int[] rotKey = new int[]{81, 69};
     public static int[] scaleKey = new int[]{45, 61};
+
 
     public static World getDemoWorld1() {
         World world = new World(100, 100);

@@ -7,18 +7,21 @@ import com.HDEngine.Simulator.Objects.Static.World;
 import com.HDEngine.Simulator.Settings.Info;
 import com.HDEngine.Simulator.Settings.Setter;
 import com.HDEngine.Simulator.Settings.Settings;
-import com.HDEngine.Utilities.RenderWindow;
+import com.HDEngine.Simulator.Components.RenderWindow;
 import com.HDEngine.UI.SimulationPage;
 import com.HDEngine.Utilities.FileManageTools.FileManager;
 import processing.core.PImage;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class Simulator {
     public static World world;
     public static SimulationPage ui;
+    public static String rcImagePath;
+    public static String vehicleImagePath;
 
-    private static World loadFile(String path) {
+    public static World loadFile(String path) {
         System.out.println("Simulator Main thread: Start loading file...");
         FileManager file = FileManager.loadFromFile(path);
         World world = new World(file.getMap().length, file.getMap()[0].length);
@@ -75,7 +78,7 @@ public class Simulator {
         return world;
     }
 
-    private static void setupImage(World world, RenderWindow renderer) {
+    public static void setupImage(World world, RenderWindow renderer) {
         System.out.println("Simulator Main thread: Start loading image");
         for (HDObject object : world.getChildren()) {
             try {
@@ -87,32 +90,76 @@ public class Simulator {
         System.out.println("Simulator Main Thread: Done!");
     }
 
-    private static SimulationPage constructSimulatePage(World world) throws InterruptedException {
+    private static SimulationPage constructSimulatePage() throws InterruptedException {
         final SimulationPage[] uiContainer = new SimulationPage[1];
 
         System.out.println("Simulator Main thread: Start the process for simulator page");
-        SwingUtilities.invokeLater(() -> {
-            uiContainer[0] = new SimulationPage();
-            uiContainer[0].setWorld(world);
-        });
+        try {
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    uiContainer[0] = new SimulationPage();
+                } catch (Exception e) {
+                    e.printStackTrace();  // 更好的錯誤處理
+                }
+            });
 
-        long tmpTime = System.currentTimeMillis();
-        System.out.println("Simulator Main thread: Waiting for ui respond...");
-        while (uiContainer[0] == null || uiContainer[0].getWindow() == null || uiContainer[0].getWorld() == null) {
-            Thread.sleep(1);
+            while (uiContainer[0] == null || uiContainer[0].getWindow() == null) {
+                Thread.sleep(10);  // 避免過度佔用 CPU
+            }
+        } catch (Exception e) {
+            e.printStackTrace();  // 處理可能的異步錯誤
         }
-        tmpTime = System.currentTimeMillis() - tmpTime;
-        System.out.println("Simulator Main thread: Done!, it takes for " + (float) tmpTime / 1000 + " seconds, better than 90% users");
         return uiContainer[0];
     }
 
+    public static void loadFileInBackground() {
+        SwingWorker<String, Void> fileLoader = new SwingWorker<String, Void>() {
+            @Override
+            protected String doInBackground() throws Exception {
+                FileDialog dialog = new FileDialog((Frame) null, "Select an obj file");
+                dialog.setMode(FileDialog.LOAD);
+                dialog.setVisible(true);
+                String file = dialog.getDirectory() + dialog.getFile();
+                dialog.dispose();
+                System.out.println(file);
+                return file;
+            }
+
+            @Override
+            protected void done() {
+                System.out.println("sdf");
+                try {
+                    String path = get();
+                    try {
+                        world = loadFile(path);
+                    } catch (Exception e) {
+                        world = Settings.getDemoWorld1();
+                    }
+                    Info.world = world;
+                    while (Info.uiPage == null) {
+                        Thread.sleep(10);
+                    }
+                    setupImage(world, Info.uiPage.getWindow());
+                    PImage img = ui.getWindow().loadImage("src/com/HDEngine/Simulator/image/car.png");
+                    world.setCarImage(img);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        fileLoader.execute();
+    }
+
+    public static void setupImagePath() {
+        String classpath = System.getProperty("java.class.path");
+        System.out.println(classpath);
+    }
+
     public static void main(String[] args) throws InterruptedException {
-        //world = loadFile("src/SavedFile/editor_map.obj");
-        world = Settings.getDemoWorld1();
-        ui = constructSimulatePage(world);
-        setupImage(world, ui.getWindow());
-        PImage img = ui.getWindow().loadImage("src/com/HDEngine/Simulator/image/car.png");
-        world.setCarImage(img);
+        setupImagePath();
+
+        ui = constructSimulatePage();
+        Info.uiPage = ui;
 
         // wait for render window setting up
         while (!ui.getWindow().isSet()) {
@@ -135,7 +182,7 @@ public class Simulator {
 
                 double deltaTime = (double) (currentMS - startMS) / 1e9f;
                 startMS = currentMS;
-                ui.getWorld().tick((double) deltaTime * Settings.speed);
+                Info.world.tick((double) deltaTime * Settings.speed);
                 Info.tps = (int) (1 / deltaTime);
             } else {
                 Thread.sleep(10);

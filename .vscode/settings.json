@@ -3,7 +3,7 @@
     "java.project.outputPath": "out",
     "java.project.referencedLibraries": [
         "lib/**/*.jar",
-        "${workspaceFolder\\lib\\processing-3.5.4\\core\\library\\core.jar"
+        "${workspaceFolder}\\lib\\processing-3.5.4\\core\\library\\core.jar"
     ],
     "java.debug.settings.onBuildFailureProceed": true,
     "java.debug.settings.showQualifiedNames": true

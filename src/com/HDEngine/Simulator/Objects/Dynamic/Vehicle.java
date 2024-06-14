@@ -2,6 +2,8 @@ package com.HDEngine.Simulator.Objects.Dynamic;
 
 import com.HDEngine.Simulator.Objects.Static.CollisionArea;
 import com.HDEngine.Simulator.Objects.HDObject;
+
+import static com.HDEngine.Simulator.Objects.Dynamic.MovingState.FORWARD;
 import static java.lang.Math.*;
 
 import com.HDEngine.Simulator.Objects.Static.RoadChunk;
@@ -15,7 +17,7 @@ public class Vehicle extends HDObject {
     protected double accelerationRate;
     protected double decelerationRate;
     protected double stopTime;
-    protected int timeout;
+    protected float reactionTime;
     protected MovingState movingState;
     protected RoadChunk targetRoadChunk;
     protected CollisionArea backCollision;
@@ -34,7 +36,7 @@ public class Vehicle extends HDObject {
         accelerationRate = 0.2f;
         decelerationRate = 0.8f;
         stopTime = 0.0f;
-        timeout = Settings.congestionTimeout;
+        reactionTime = 0.0f;
         movingState = MovingState.IDLE;
         bcWidth = 8;
         bcHeight = 30;
@@ -58,12 +60,14 @@ public class Vehicle extends HDObject {
     @Override
     public void tick(double deltaTime) {
         super.tick(deltaTime);
-        timeout = Settings.congestionTimeout;
         nextState();
         setNextSpeed(deltaTime);
         if (speed < 1e-2) {
             stopTime += deltaTime;
-            if (Settings.killCongestedVehicle && stopTime >= timeout) {
+            if (movingState != FORWARD) {
+                reactionTime = 0.0f;
+            }
+            if (Settings.killCongestedVehicle && stopTime >= Settings.congestionTimeout) {
                 kill();
             }
         } else {
@@ -77,7 +81,11 @@ public class Vehicle extends HDObject {
     private void setNextSpeed(double deltaTime) {
         switch (movingState) {
             case FORWARD:
-                setSpeed(speed + accelerationRate * maxSpeed * deltaTime);
+                if (reactionTime < Settings.reactionTime) {
+                    reactionTime += (float) deltaTime;
+                } else {
+                    setSpeed(speed + accelerationRate * maxSpeed * deltaTime);
+                }
                 break;
 
             case BREAK:
@@ -100,13 +108,13 @@ public class Vehicle extends HDObject {
             if (targetRoadChunk.getSpeedLimit() < speed) {
                 movingState = MovingState.BREAK;
             } else {
-                movingState = MovingState.FORWARD;
+                movingState = FORWARD;
             }
         } else {
-            movingState = MovingState.FORWARD;
+            movingState = FORWARD;
         }
         if (Settings.speedUpAtIntersection && (targetRoadChunk.isIntersection() || targetRoadChunk.isTrafficLight())) {
-            movingState = MovingState.FORWARD;
+            movingState = FORWARD;
         }
         // traffic light
         waitingTrafficLight = false;
@@ -201,9 +209,11 @@ public class Vehicle extends HDObject {
     }
 
     public boolean frontCollided(HDObject target) {
-        if (target != this && target instanceof Vehicle v) {
-            frontVehicle = v;
-            return true;
+        if (target != this && !(target instanceof RoadChunk)) {
+            if (target instanceof Vehicle v) {
+                frontVehicle = v;
+                return true;
+            }
         }
         return false;
     }

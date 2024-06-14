@@ -2,7 +2,13 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/lib/processing-3.5.4/modes/java/libraries/dxf/dxf.iml" filepath="$PROJECT_DIR$/lib/processing-3.5.4/modes/java/libraries/dxf/dxf.iml" />
       <module fileurl="file://$PROJECT_DIR$/human.drive--A_traffic_simulator.iml" filepath="$PROJECT_DIR$/human.drive--A_traffic_simulator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lib/processing-3.5.4/modes/java/libraries/net/net.iml" filepath="$PROJECT_DIR$/lib/processing-3.5.4/modes/java/libraries/net/net.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lib/processing-3.5.4/modes/java/libraries/pdf/pdf.iml" filepath="$PROJECT_DIR$/lib/processing-3.5.4/modes/java/libraries/pdf/pdf.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lib/processing-3.5.4/modes/java/libraries/serial/serial.iml" filepath="$PROJECT_DIR$/lib/processing-3.5.4/modes/java/libraries/serial/serial.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lib/processing-3.5.4/modes/java/libraries/svg/svg.iml" filepath="$PROJECT_DIR$/lib/processing-3.5.4/modes/java/libraries/svg/svg.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lib/processing-3.5.4/tools/tools.iml" filepath="$PROJECT_DIR$/lib/processing-3.5.4/tools/tools.iml" />
     </modules>
   </component>
 </project>
