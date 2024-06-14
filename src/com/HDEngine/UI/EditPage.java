@@ -3,6 +3,8 @@ package com.HDEngine.UI;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.border.*;
 
 import com.HDEngine.Editor.Editor;
@@ -25,6 +27,14 @@ public class EditPage extends JFrame implements ActionListener {
     JPanel screenPanel;
 
     private Editor editor;  //要有editor的實例才能操作editor by.昌
+
+    // 保存状态的变量
+    private Map<String, Component[]> savedAttributePanelComponents = new HashMap<>();
+    private Map<String, String> savedValues = new HashMap<>();
+    private Map<String, String[]> savedIntersectionStates = new HashMap<>();
+    private Map<String, String[]> savedWeightStates = new HashMap<>();
+
+    private int trafficLightButtonCount = 0; // To keep track of the number of traffic light buttons added
 
     EditPage() {
         frame.setTitle("Human.Drive - Start a new simulation");
@@ -52,12 +62,12 @@ public class EditPage extends JFrame implements ActionListener {
 
         backMenuItem.addActionListener(this);
 
-        JPanel carPanel = new JPanel();
+        JPanel trafficlightPanel = new JPanel();
         JPanel roadPanel = new JPanel();
 
         screenPanel = new JPanel(new GridLayout(20, 20));
-        screenPanel.setPreferredSize(new Dimension(1100, 1100));
-        screenPanel.setBackground(Color.GRAY);
+        screenPanel.setPreferredSize(new Dimension(1100, 1100)); // 设置首选大小
+        screenPanel.setBackground(Color.GRAY); // 设置背景颜色为灰色
         screenScrollPane = new JScrollPane(screenPanel);
         screenScrollPane.setBounds(300, 20, 550, 300);
         screenScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -65,8 +75,8 @@ public class EditPage extends JFrame implements ActionListener {
         screenScrollPane.getViewport().setBackground(Color.GRAY);
 
         // Fill the screenPanel with 20x20 grid of panels
-        for (int row = 0; row < 20; row++) {
-            for (int col = 0; col < 20; col++) {
+        for (int row = 1; row < 21; row++) {
+            for (int col = 1; col < 21; col++) {
                 JPanel cell = new JPanel(new BorderLayout());
                 cell.setBorder(BorderFactory.createLineBorder(Color.BLACK));
                 JLabel label = new JLabel("[" + row + "," + col + "]", JLabel.CENTER);
@@ -85,36 +95,32 @@ public class EditPage extends JFrame implements ActionListener {
         background.add(screenScrollPane);
         background.add(attributeScrollPane);
 
-        // carPanel
-        carPanel.setLayout(new BoxLayout(carPanel, BoxLayout.Y_AXIS));
-        carPanel.setBackground(Color.DARK_GRAY);
+        // trafficlightPanel
+        trafficlightPanel.setLayout(new BoxLayout(trafficlightPanel, BoxLayout.Y_AXIS));
+        trafficlightPanel.setBackground(Color.DARK_GRAY);
 
-        for (int i = 1; i <= 10; i++) {
-            carPanel.add(Box.createVerticalStrut(15)); // Add vertical spacing
-
-            JButton tbutton = createtrafficlightButton("No. " + i);
-            tbutton.setActionCommand("trafficlightButton" + i);
-            tbutton.addActionListener(this);
-            handler = new MouseEventHandler(tbutton, screenPanel, screenScrollPane);
-            tbutton.addMouseListener(handler);
-            tbutton.addMouseMotionListener(handler);
-
-            // For horizontally centering buttons
-            JPanel wrapperPanel1 = new JPanel();
-            wrapperPanel1.setLayout(new FlowLayout(FlowLayout.CENTER));
-            wrapperPanel1.add(tbutton);
-            wrapperPanel1.setBackground(Color.DARK_GRAY);
-
-            carPanel.add(wrapperPanel1);
-        }
+        // Add "Add" button at the top left
+        JButton addButton = new JButton("Add");
+        addButton.setPreferredSize(new Dimension(50, 30));
+        addButton.setActionCommand("addTrafficLightButton");
+        addButton.addActionListener(this);
+        JPanel addPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        addButton.setFont(new Font("Arial", Font.BOLD, 14));
+        addButton.setBackground(Color.LIGHT_GRAY);
+        addButton.setForeground(Color.BLACK);
+        addButton.setFocusPainted(false);
+        addButton.setBorder(new LineBorder(Color.BLACK, 2));
+        addPanel.add(addButton);
+        addPanel.setBackground(Color.DARK_GRAY);
+        trafficlightPanel.add(addPanel);
 
         // Place JPanel in JScrollPane
-        JScrollPane carScrollPane = new JScrollPane(carPanel);
-        carScrollPane.setBounds(35, 20, 250, 300);
-        carScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        carScrollPane.setBorder(new LineBorder(Color.BLACK, 2));
+        JScrollPane trafficLightScrollPane = new JScrollPane(trafficlightPanel);
+        trafficLightScrollPane.setBounds(35, 20, 250, 300);
+        trafficLightScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        trafficLightScrollPane.setBorder(new LineBorder(Color.BLACK, 2));
 
-        background.add(carScrollPane);
+        background.add(trafficLightScrollPane);
 
         // roadPanel
         roadPanel.setLayout(new GridBagLayout());
@@ -193,86 +199,294 @@ public class EditPage extends JFrame implements ActionListener {
         } else if (e.getActionCommand().startsWith("trafficlightButton")) {
             // Handle trafficlight button clicks
             String buttonId = e.getActionCommand().substring(18); // Get button id
-            System.out.println("trafficlight button " + buttonId + " clicked!");
+            System.out.println("Traffic light button " + buttonId + " clicked!");
 
             // Update attributePanel with new JTextFields
             updateAttributePanel("t", buttonId);
+        } else if (e.getActionCommand().equals("addTrafficLightButton")) {
+            // Handle add button click
+            addTrafficLightButton((JPanel)((JButton)e.getSource()).getParent().getParent());
         }
     }
 
     private void updateAttributePanel(String type, String buttonId) {
         attributePanel.removeAll(); // Clear existing components
 
-        for (int i = 1; i <= 10; i++) {
-            JPanel linePanel = new JPanel();
-            linePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        JPanel linePanel1 = createRightAlignedPanel(new JLabel("Set your Traffic Light Flag:"), createCheckBoxPanel(buttonId, 1));
+        attributePanel.add(linePanel1);
 
-            if (i == 2) {
-                JLabel label1 = new JLabel("Traffic Light Flag:");
-                JCheckBox trueCheckBox = new JCheckBox("True");
-                JCheckBox falseCheckBox = new JCheckBox("False");
-                ButtonGroup group = new ButtonGroup();
-                group.add(trueCheckBox);
-                group.add(falseCheckBox);
+        JPanel linePanel2 = createRightAlignedPanel(new JLabel("Set your Traffic Light Timer:"), createTextField(buttonId, 2));
+        attributePanel.add(linePanel2);
 
-                trueCheckBox.addActionListener(e -> {
-                    if (trueCheckBox.isSelected()) {
-                        editor.updateTrafficLightParameter(buttonId, 2, "true");
-                    }
-                });
+        JPanel linePanel3 = createRightAlignedPanel(new JLabel("Set your Traffic Light Group:"), createTextField(buttonId, 3));
+        attributePanel.add(linePanel3);
 
-                falseCheckBox.addActionListener(e -> {
-                    if (falseCheckBox.isSelected()) {
-                        editor.updateTrafficLightParameter(buttonId, 2, "false");
-                    }
-                });
+        JPanel linePanel4 = createRightAlignedPanel(new JLabel("Set your Speed Limit:"), createTextField(buttonId, 4));
+        attributePanel.add(linePanel4);
 
-                linePanel.add(label1);
-                linePanel.add(trueCheckBox);
-                linePanel.add(falseCheckBox);
-            } else {
-                JLabel label;
-                switch (i) {
-                    case 1:
-                        label = new JLabel("Set your traffic light flag: ");
-                        break;
-                    case 3:
-                        label = new JLabel("Set your traffic light timer: ");
-                        break;
-                    case 4:
-                        label = new JLabel("Set your traffic light group: ");
-                        break;
-                    case 5:
-                        label = new JLabel("Set your speed limit: ");
-                        break;
-                    
-                    default:
-                        label = new JLabel("Unknown Parameter for No." + buttonId + ": ");
-                        break;
-                }
-                JTextField textField = new JTextField(10);
-                int parameterIndex = i; // 記錄當前參數索引
+        JPanel linePanel5 = createRightAlignedPanel(new JLabel("Set your Start Flag:"), createCheckBoxPanel(buttonId, 5));
+        attributePanel.add(linePanel5);
 
-                // 新增 FocusListener 如果使用者點離開parameter就會觸發 by.昌
-                textField.addFocusListener(new FocusAdapter() {
-                    @Override
-                    public void focusLost(FocusEvent e) {
-                        System.out.println("focusLost");
-                        String newValue = textField.getText();
-                        updateEditorParameter(buttonId, parameterIndex, newValue);
-                    }
-                });
+        JPanel linePanel6 = createRightAlignedPanel(new JLabel("Set your Intersection:"), createButton("Set", e -> showIntersectionPanel(buttonId)));
+        attributePanel.add(linePanel6);
 
-                linePanel.add(label);
-                linePanel.add(textField);
-            }
-            attributePanel.add(linePanel);
-            attributePanel.add(Box.createVerticalStrut(10)); // Add spacing between fields
-        }
+        JPanel linePanel7 = createRightAlignedPanel(new JLabel("Set your Weights:"), createButton("Set", e -> showWeightsPanel(buttonId)));
+        attributePanel.add(linePanel7);
 
         // Refresh the panel
         attributePanel.revalidate();
-        attributePanel.repaint();
+        attributeScrollPane.setViewportView(attributePanel);
+        attributeScrollPane.revalidate();
+        attributeScrollPane.repaint();
+    }
+
+    private JPanel createRightAlignedPanel(JLabel label, JComponent component) {
+        JPanel panel = new JPanel(new BorderLayout());
+        JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel componentPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        labelPanel.add(label);
+        componentPanel.add(component);
+        panel.add(labelPanel, BorderLayout.WEST);
+        panel.add(componentPanel, BorderLayout.CENTER);
+        return panel;
+    }
+
+    private JPanel createCheckBoxPanel(String buttonId, int parameterIndex) {
+        JCheckBox trueCheckBox = new JCheckBox("True");
+        trueCheckBox.setFocusPainted(false);
+        JCheckBox falseCheckBox = new JCheckBox("False");
+        falseCheckBox.setFocusPainted(false);
+        ButtonGroup group = new ButtonGroup();
+        group.add(trueCheckBox);
+        group.add(falseCheckBox);
+        trueCheckBox.addActionListener(e -> {
+            if (trueCheckBox.isSelected()) {
+                editor.updateTrafficLightParameter(buttonId, parameterIndex, "true");
+            }
+        });
+        falseCheckBox.addActionListener(e -> {
+            if (falseCheckBox.isSelected()) {
+                editor.updateTrafficLightParameter(buttonId, parameterIndex, "false");
+            }
+        });
+        JPanel checkBoxPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        checkBoxPanel.add(trueCheckBox);
+        checkBoxPanel.add(falseCheckBox);
+        return checkBoxPanel;
+    }
+
+    private JTextField createTextField(String buttonId, int parameterIndex) {
+        JTextField textField = new JTextField(10);
+        textField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                String newValue = textField.getText();
+                editor.updateTrafficLightParameter(buttonId, parameterIndex, newValue);
+            }
+        });
+        return textField;
+    }
+
+    private JButton createButton(String text, ActionListener actionListener) {
+        JButton button = new JButton(text);
+        button.addActionListener(actionListener);
+        button.setFocusPainted(false);
+        return button;
+    }
+
+    private void showIntersectionPanel(String buttonId) {
+        saveCurrentAttributePanelState(buttonId);
+
+        attributePanel.removeAll(); // Clear existing components
+
+        attributePanel.setLayout(new BorderLayout());
+
+        JPanel gridPanel = new JPanel(new GridLayout(3, 3));
+        JCheckBox[] checkboxes = new JCheckBox[8];
+        String[] directions = {"North-West", "North", "North-East", "West", "East", "South-West", "South", "South-East"};
+
+        for (int i = 0; i < 9; i++) {
+            JPanel cell = new JPanel(new BorderLayout());
+            if (i == 4) {
+                cell.setBackground(Color.GRAY);
+                JLabel label = new JLabel("Button ID: " + buttonId, JLabel.CENTER);
+                cell.add(label, BorderLayout.CENTER);
+            } else {
+                checkboxes[i < 4 ? i : i - 1] = new JCheckBox(directions[i < 4 ? i : i - 1]);
+                cell.add(checkboxes[i < 4 ? i : i - 1], BorderLayout.CENTER);
+            }
+            gridPanel.add(cell);
+        }
+
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton backButton = new JButton("Back");
+        backButton.setFocusPainted(false);
+        backButton.addActionListener(e -> {
+            saveIntersectionStates(buttonId, checkboxes);
+            restorePreviousAttributePanelState(buttonId);
+        });
+        bottomPanel.add(backButton);
+
+        attributePanel.add(gridPanel, BorderLayout.CENTER);
+        attributePanel.add(bottomPanel, BorderLayout.SOUTH);
+
+        // Refresh the panel
+        attributePanel.revalidate();
+        attributeScrollPane.setViewportView(attributePanel);
+        attributeScrollPane.revalidate();
+        attributeScrollPane.repaint();
+
+        // Restore previous states if available
+        restoreIntersectionStates(buttonId, checkboxes);
+    }
+
+    private void showWeightsPanel(String buttonId) {
+        saveCurrentAttributePanelState(buttonId);
+
+        attributePanel.removeAll(); // Clear existing components
+
+        attributePanel.setLayout(new BorderLayout());
+
+        JPanel gridPanel = new JPanel(new GridLayout(3, 3));
+        JTextField[] textFields = new JTextField[8];
+        String[] directions = {"North-West", "North", "North-East", "West", "East", "South-West", "South", "South-East"};
+
+        for (int i = 0; i < 9; i++) {
+            JPanel cell = new JPanel(new BorderLayout());
+            if (i == 4) {
+                cell.setBackground(Color.GRAY);
+                JLabel label = new JLabel("Button ID: " + buttonId, JLabel.CENTER);
+                label.setHorizontalAlignment(SwingConstants.CENTER); // Center the label
+                cell.add(label, BorderLayout.CENTER);
+            } else {
+                JPanel innerPanel = new JPanel(new BorderLayout());
+                JLabel directionLabel = new JLabel(directions[i < 4 ? i : i - 1]);
+                directionLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                textFields[i < 4 ? i : i - 1] = new JTextField(5);
+                innerPanel.setLayout(new BoxLayout(innerPanel, BoxLayout.Y_AXIS));
+                innerPanel.add(directionLabel);
+                innerPanel.add(textFields[i < 4 ? i : i - 1]);
+                cell.add(innerPanel, BorderLayout.CENTER);
+            }
+            gridPanel.add(cell);
+        }
+
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton backButton = new JButton("Back");
+        backButton.setFocusPainted(false);
+        backButton.addActionListener(e -> {
+            saveWeightStates(buttonId, textFields);
+            restorePreviousAttributePanelState(buttonId);
+        });
+        bottomPanel.add(backButton);
+
+        attributePanel.add(gridPanel, BorderLayout.CENTER);
+        attributePanel.add(bottomPanel, BorderLayout.SOUTH);
+
+        // Refresh the panel
+        attributePanel.revalidate();
+        attributeScrollPane.setViewportView(attributePanel);
+        attributeScrollPane.revalidate();
+        attributeScrollPane.repaint();
+
+        // Restore previous states if available
+        restoreWeightStates(buttonId, textFields);
+    }
+
+    private void saveCurrentAttributePanelState(String buttonId) {
+        
+        savedAttributePanelComponents.put(buttonId, attributePanel.getComponents());
+        for (Component component : attributePanel.getComponents()) {
+            if (component instanceof JPanel) {
+                JPanel panel = (JPanel) component;
+                for (Component subComponent : panel.getComponents()) {
+                    if (subComponent instanceof JTextField) {
+                        JTextField textField = (JTextField) subComponent;
+                        savedValues.put(buttonId + textField.hashCode(), textField.getText());
+                    }
+                }
+            }
+        }
+    }
+
+    private void restorePreviousAttributePanelState(String buttonId) {
+        
+        attributePanel.removeAll();
+
+        Component[] components = savedAttributePanelComponents.get(buttonId);
+        if (components != null) {
+            for (Component component : components) {
+                if (component instanceof JPanel) {
+                    JPanel panel = (JPanel) component;
+                    for (Component subComponent : panel.getComponents()) {
+                        if (subComponent instanceof JTextField) {
+                            JTextField textField = (JTextField) subComponent;
+                            textField.setText(savedValues.get(buttonId + textField.hashCode()));
+                        }
+                    }
+                }
+                attributePanel.add(component);
+            }
+        }
+
+        attributePanel.revalidate();
+        attributeScrollPane.setViewportView(attributePanel);
+        attributeScrollPane.revalidate();
+        attributeScrollPane.repaint();
+    }
+
+    private void saveIntersectionStates(String buttonId, JCheckBox[] checkboxes) {
+        String[] states = new String[8];
+        for (int i = 0; i < checkboxes.length; i++) {
+            states[i] = checkboxes[i].isSelected() ? "1" : "0";
+        }
+        savedIntersectionStates.put(buttonId, states);
+    }
+
+    private void restoreIntersectionStates(String buttonId, JCheckBox[] checkboxes) {
+        String[] states = savedIntersectionStates.get(buttonId);
+        if (states != null) {
+            for (int i = 0; i < states.length; i++) {
+                checkboxes[i].setSelected("1".equals(states[i]));
+            }
+        }
+    }
+
+    private void saveWeightStates(String buttonId, JTextField[] textFields) {
+        String[] states = new String[8];
+        for (int i = 0; i < textFields.length; i++) {
+            states[i] = textFields[i].getText();
+        }
+        savedWeightStates.put(buttonId, states);
+    }
+
+    private void restoreWeightStates(String buttonId, JTextField[] textFields) {
+        String[] states = savedWeightStates.get(buttonId);
+        if (states != null) {
+            for (int i = 0; i < states.length; i++) {
+                textFields[i].setText(states[i]);
+            }
+        }
+    }
+
+    private void addTrafficLightButton(JPanel trafficlightPanel) {
+        trafficLightButtonCount++;
+        JButton tbutton = createtrafficlightButton("No. " + trafficLightButtonCount);
+        tbutton.setActionCommand("trafficlightButton" + trafficLightButtonCount);
+        tbutton.addActionListener(this);
+        handler = new MouseEventHandler(tbutton, screenPanel, screenScrollPane);
+        tbutton.addMouseListener(handler);
+        tbutton.addMouseMotionListener(handler);
+
+        // For horizontally centering buttons
+        JPanel wrapperPanel = new JPanel();
+        wrapperPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        wrapperPanel.add(tbutton);
+        wrapperPanel.setBackground(Color.DARK_GRAY);
+
+        trafficlightPanel.add(wrapperPanel);
+        trafficlightPanel.revalidate();
+        trafficlightPanel.repaint();
     }
 
     class MouseEventHandler extends MouseAdapter {
@@ -361,7 +575,7 @@ public class EditPage extends JFrame implements ActionListener {
             ghostWindow.dispose(); // Dispose the drag image window
             stopScrollTimer();
         }
-        //感應滑鼠來控制滾輪
+
         private void startScrollTimer() {
             scrollTimer = new Timer(100, new ActionListener() {
                 @Override
@@ -372,7 +586,7 @@ public class EditPage extends JFrame implements ActionListener {
                     JScrollBar verticalScrollBar = screenScrollPane.getVerticalScrollBar();
                     JScrollBar horizontalScrollBar = screenScrollPane.getHorizontalScrollBar();
                     int scrollSpeed = 20;
-                    int edgeThreshold = 50; // 調整邊緣檢測範圍
+                    int edgeThreshold = 50; // 调整边缘检测的范围
 
                     if (mousePosition.y <= edgeThreshold) {
                         verticalScrollBar.setValue(verticalScrollBar.getValue() - scrollSpeed);
