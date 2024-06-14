@@ -683,6 +683,7 @@ public class Editor implements Serializable
                         }
                     break;
                 }
+                System.out.println("parameter updated");
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input for parameter " + parameterIndex + ": " + newValue);
             }
@@ -694,6 +695,7 @@ public class Editor implements Serializable
         if (templateChunks[id] != null) {
             try {
                 templateChunks[id].setDirection(newValue);
+                System.out.println("weighte updated");
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input for parameter " + parameterIndex + ": " + newValue);
             }
@@ -705,6 +707,7 @@ public class Editor implements Serializable
         if (templateChunks[id] != null) {
             try {
                 templateChunks[id].setWeights(newValue);
+                System.out.println("weight updated");
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input for parameter " + parameterIndex + ": " + newValue);
             }
@@ -715,15 +718,27 @@ public class Editor implements Serializable
         map[newIDX][newIDY] = map[oldIDX][oldIDY];
         map[newIDX][newIDY].setID(newIDX,newIDY);
         map[oldIDX][oldIDY] = null;
+        System.out.println("move chunk");
     }
 
     public void templateToMap(int tempalteID,int IDX, int IDY){
         EditorRoadChunk newchunk = new EditorRoadChunk();
         newchunk = templateChunks[tempalteID];
         map[IDX][IDY] = newchunk;
+        System.out.println("add to map by template");
     }
 
     public void deleteMapChunk(int IDX, int IDY){
         map[IDX][IDY] = null;
+        System.out.println("chunk delete");
     }
+
+    public void updateTrafficLightParamater(int group,int teams, String timer){
+        int timerVal = Integer.parseInt(timer);
+        int[] newTimer = trafficLight.get(group);
+        newTimer[teams] = timerVal;
+        trafficLight.replace(group, newTimer);
+        System.out.println("Timer updated");
+    }
+
 }
