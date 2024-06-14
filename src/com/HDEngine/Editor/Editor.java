@@ -4,9 +4,18 @@ import com.HDEngine.Editor.Object.Road.EditorRoadChunk;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+
+import javax.swing.SwingUtilities;
+
 import java.util.Map;
+import java.awt.FileDialog;
 import java.io.*;
 import com.HDEngine.Utilities.FileManageTools.FileManager;
+import java.awt.*;
+import java.awt.Frame;
+import com.HDEngine.Simulator.*;
+import com.HDEngine.Simulator.Objects.*;
+
 
 public class Editor implements Serializable
 {
@@ -18,17 +27,13 @@ public class Editor implements Serializable
     private static final int SE = 7;
     private static final int SW = 5;
     private static final int NW = 3;
-    /*private static final int INTERSECTION = 1;
-    private static final int TRAFFICLIGHTFLAG = 2;
-    private static final int TRAFFICLIGHTTIMER = 3;
-    private static final int TRAFFICLIGHTGROUP = 4;
-    private static final int SPEEDLIMIT = 5;
-    private static final int IDX = 6;
-    private static final int IDY = 7;
-    private static final int STARTFLAG = 8;
-    private static final int WEIGHTS = 9;
-    private static final int CONNECTION = 10;*/
+    private static final int STARTFLAG = 1;
+    private static final int SPEEDLIMIT = 2;
+    private static final int DIRECTION = 3;
+    private static final int ISWEIGHTED = 4;
+    private static final int WEIGHTS = 5;
     private EditorRoadChunk[][] map = new EditorRoadChunk[22][22];//if possible, keep the outer side of the array clear(eg. map[0][0] should always be null)
+    private EditorRoadChunk[] templateChunks = new EditorRoadChunk[20];
     private Map<Integer,int[]> trafficLight = new HashMap<>();
     private transient FileManager fileManager = new FileManager();
     //private transient FileManager loadedFileManager = FileManager.loadFromFile("src/SavedFile/editor_map.obj");
@@ -70,7 +75,7 @@ public class Editor implements Serializable
                     case "delete chunk": deleteChunk();break;
                     case "add traffic light group", "add trafficlight group": newTrafficLightGroup();break;
                     case "edit traffic light group","edit trafficlight group": editTrafficLightTeamTimer();break;
-                    case "save": exportData();break;
+                    case "save": savedFile(); ;break;
                     case "load": importData(); break;
                     case "quit","leave": 
                         exportData();
@@ -79,6 +84,7 @@ public class Editor implements Serializable
                     break;
                     case "how" , "help":showHow();break;
                     case "chunk info","chunkinfo": chunkInfo();break;
+                    case "sim","simulate","simulation":exportData();
                 }
             }
             catch (IllegalArgumentException e) 
@@ -659,5 +665,146 @@ public class Editor implements Serializable
             }
         }
     }
+//for normal attribute
+    public void updateRoadParameter(String buttonId, int parameterIndex, String newValue) {
+        int id = Integer.parseInt(buttonId);
+        if (templateChunks[id] != null) {
+            try {
+                switch (parameterIndex) {
+                    case STARTFLAG:
+                        if(newValue.toLowerCase().equals("true"))
+                            templateChunks[id].setStartFlag(true);
+                        else{
+                            templateChunks[id].setStartFlag(false);
+                        }
+                    break;
 
+                    case SPEEDLIMIT:
+                        double newval = Double.parseDouble(newValue);
+                        templateChunks[id].setSpeedLimit(newval);
+                    break;
+
+                    case ISWEIGHTED:
+                        if(newValue.toLowerCase().equals("true")){
+                            templateChunks[id].setIsWeighted(true);
+                        }
+                        else{
+                            templateChunks[id].setIsWeighted(false);
+                        }
+                    break;
+                }
+                System.out.println("parameter updated");
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input for parameter " + parameterIndex + ": " + newValue);
+            }
+        }
+    }
+//for Direction
+    public void updateRoadParameter(String buttonId, int parameterIndex, int[] newValue) {
+        int id = Integer.parseInt(buttonId);
+        if (templateChunks[id] != null) {
+            try {
+                templateChunks[id].setDirection(newValue);
+                System.out.println("weighte updated");
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input for parameter " + parameterIndex + ": " + newValue);
+            }
+        }
+    }
+//for Weight
+    public void updateRoadParameter(String buttonId, int parameterIndex, double[] newValue) {
+        int id = Integer.parseInt(buttonId);
+        if (templateChunks[id] != null) {
+            try {
+                templateChunks[id].setWeights(newValue);
+                System.out.println("weight updated");
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input for parameter " + parameterIndex + ": " + newValue);
+            }
+        }
+    }
+
+    public void mapToMap(int oldIDX,int oldIDY, int newIDX, int newIDY){
+        map[newIDX][newIDY] = map[oldIDX][oldIDY];
+        map[newIDX][newIDY].setID(newIDX,newIDY);
+        map[oldIDX][oldIDY] = null;
+        System.out.println("move chunk");
+    }
+
+    public void templateToMap(int tempalteID,int IDX, int IDY){
+        EditorRoadChunk newchunk = new EditorRoadChunk();
+        newchunk = templateChunks[tempalteID];
+        map[IDX][IDY] = newchunk;
+        System.out.println("add to map by template");
+    }
+
+    public void deleteMapChunk(int IDX, int IDY){
+        map[IDX][IDY] = null;
+        System.out.println("chunk delete");
+    }
+
+    public void updateTrafficLightParamater(int group,int teams, String timer){
+        int timerVal = Integer.parseInt(timer);
+        int[] newTimer = trafficLight.get(group);
+        newTimer[teams] = timerVal;
+        trafficLight.replace(group, newTimer);
+        System.out.println("Timer updated");
+    }
+
+    public void runSim(){
+        System.out.println("start simulation");
+        try{
+        Simulator.main(new String[]{loadFile()});
+        }
+        catch(Exception e)
+        {
+            System.out.println("fail");
+        }
+    }
+
+
+    private String loadFile() throws Exception 
+    {
+        FileDialog dialog = new FileDialog((Frame) null, "Select an obj file");
+        dialog.setMode(FileDialog.LOAD);
+        dialog.setVisible(true);
+        String file = dialog.getDirectory() + dialog.getFile();
+        dialog.dispose();
+        return file;
+    }
+
+    protected void savedFile() {
+    // 創建一個無參數的 Frame 對象
+    Frame frame = new Frame();
+
+    // 使用 SwingUtilities.invokeLater 確保 FileDialog 在事件調度線程上運行
+    SwingUtilities.invokeLater(() -> {
+        // 創建一個 FileDialog 對象，用於保存文件
+        FileDialog dialog = new FileDialog(frame, "Save File", FileDialog.SAVE);
+        dialog.setVisible(true);
+
+        // 獲取選擇的文件名和路徑
+        String directory = dialog.getDirectory();
+        String fileName = dialog.getFile();
+
+        // 如果用戶選擇了文件
+        if (directory != null && fileName != null) {
+            // 創建文件對象
+            File file = new File(directory, fileName);
+
+            // 假設我們寫入一些測試內容到文件
+            try (FileWriter writer = new FileWriter(file)) {
+                writer.write("This is a test content.");
+                System.out.println("File saved: " + file.getAbsolutePath());
+            } catch (IOException e) {
+                System.err.println("Error saving file: " + e.getMessage());
+            }
+        } else {
+            System.out.println("File save operation was cancelled.");
+        }
+
+        // 關閉 Frame
+        frame.dispose();
+    });
+}
 }

@@ -10,15 +10,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5982281d-7aa8-4e79-90eb-f95657c5d734" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Editor/EditorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Editor/EditorTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Settings/Settings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Settings/Settings.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Simulator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Simulator/Simulator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Simulator/image/car.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Simulator/image/test.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Simulator/image/test2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Simulator/image/testimg.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/UI/StartPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/UI/StartPage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/launch.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/launch.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Editor/Editor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Editor/Editor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/HDEngine/Editor/Object/Road/EditorRoadChunk.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/HDEngine/Editor/Object/Road/EditorRoadChunk.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,7 +41,7 @@
     "JAR Application.human.drive--A_traffic_simulator.jar.executor": "Debug",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "Merging main",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "E:/human.drive--A_traffic_simulator/lib/processing-4.3/core/library/windows-amd64",
     "node.js.detected.package.eslint": "true",
@@ -61,7 +55,7 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Application.EditorTest">
     <configuration name="EditorTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.HDEngine.Editor.EditorTest" />
       <module name="human.drive--A_traffic_simulator" />
@@ -117,7 +111,7 @@
       <updated>1718355636545</updated>
       <workItem from="1718355637772" duration="2046000" />
       <workItem from="1718357846244" duration="2610000" />
-      <workItem from="1718366442408" duration="4479000" />
+      <workItem from="1718366442408" duration="4830000" />
     </task>
     <servers />
   </component>

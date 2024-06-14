@@ -15,8 +15,8 @@ public class EditorRoadChunk implements Serializable
     private boolean isWeighted;
     private double[] weights = new double[8];//recording the weight of different road
     private int[] connection = new int[8];//to record where is the road going (if data==0 -> no)(if data == 1  ==  the road is connected)(1 is on the right hand side, clockwise)
-    transient Scanner input = new Scanner(System.in);
     private EditorRoadChunk[] connected =new EditorRoadChunk[8];//do it last
+    transient Scanner input = new Scanner(System.in);
     private boolean trafficLightFlag;
     private TrafficLight trafficLight;
     private boolean intersection;
@@ -390,6 +390,48 @@ public String toString() {
         this.input = new Scanner(System.in);
     }
 
+//function overload for GUI
+
+    public void setDirection(int[] direction) {
+        this.direction = direction;//需要修改 intersection陣列
+    }
+
+    public void setTrafficLightFlag(boolean trafficLightFlag) {
+        this.trafficLightFlag = trafficLightFlag;
+    }
+
+    public void setSpeedLimit(double speedLimit) {
+        this.speedLimit = speedLimit;
+    }
+
+    public void setIdX(int idX) {
+        this.idX = idX;
+    }
+
+    public void setIdY(int idY) {
+        this.idY = idY;
+    }
+
+    public void setStartFlag(boolean startFlag) {
+        this.startFlag = startFlag;
+    }
+
+    public void setIsWeighted(boolean weighted)
+    {
+        this.isWeighted = weighted;
+        if(!isWeighted)
+            for(int i = 0 ; i < 8 ; i++)
+                weights[i] = 1.0;
+    }
+
+    public void setWeights(double[] weights) {
+        this.weights = weights;  // 需修改：處理 weights 陣列
+    }
+
+    public void setConnection(int[] connection) {
+        this.connection = connection;  // 需修改：處理 connection 陣列
+    }
 }
+
 
 
